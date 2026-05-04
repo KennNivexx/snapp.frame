@@ -14,7 +14,7 @@ const ABOUT_POINTS = [
     desc: "Studio kami dirancang dengan estetika minimalis agar foto berbicara sendiri tanpa distraksi.",
   },
   {
-    title: "Fotografer Profesional",
+    title: "Fotografer yang Profesional",
     desc: "Tim fotografer berpengalaman yang paham pencahayaan, komposisi, dan cara membuat klien nyaman.",
   },
   {
