@@ -2,7 +2,7 @@
 // Data packages dan FAQ di-fetch saat build time
 // Accordion FAQ ada di FaqAccordion (client component)
 
-import { Check, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { packages } from "@/data/packages";
 import { faqs } from "@/data/faq";
 import { formatPrice } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { site } from "@/data/site";
 import { btn } from "@/lib/button-classes";
 import { FaqAccordion } from "@/components/packages/faq-accordion";
+import { ExpandableFeatures } from "@/components/ui/expandable-features";
 
 const sortedPackages = [...packages].sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -65,19 +66,10 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
       {/* Divider */}
       <div className="h-px bg-[#E0E0DA] mb-6" />
 
-      <ul className="flex-1 space-y-3.5 mb-8">
-        {pkg.features.map((f) => (
-          <li key={f} className="flex items-start gap-3">
-            {/* Check icon — hijau bukan gold */}
-            <Check
-              size={15}
-              className="flex-shrink-0 mt-0.5 text-[#1D9E75]"
-              strokeWidth={2.5}
-            />
-            <span className="text-sm text-[#3A3A3A] leading-snug">{f}</span>
-          </li>
-        ))}
-      </ul>
+      {/* Features — truncatable on mobile, full on desktop */}
+      <div className="flex-1 mb-6">
+        <ExpandableFeatures features={pkg.features} collapseAt={3} />
+      </div>
 
       {/* CTA */}
       <a
@@ -132,8 +124,8 @@ export default function PackagesPage() {
       </div>
 
       {/* ── Packages Grid — 2 kolom (bukan 4) ── */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pb-24">
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
           {sortedPackages.map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />
           ))}

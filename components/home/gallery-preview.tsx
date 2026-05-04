@@ -1,8 +1,8 @@
 "use client";
 
 // components/home/gallery-preview.tsx
-// Masonry grid 6 foto featured + lightbox + CTA "Lihat Semua Foto"
-// Fase B: warm light background, no gold accents
+// Bento editorial grid — 6 foto, ukuran bervariasi, tanpa ruang kosong
+// Desain: hangat, manusiawi, dan estetik
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
@@ -15,59 +15,68 @@ import { photos } from "@/data/photos";
 import type { Photo } from "@/data/photos";
 import { btn } from "@/lib/button-classes";
 
-/* ─── Data: ambil featured, max 9, sort by sortOrder ─────── */
+/* ─── Data ─────────────────────────────────────────────────── */
 
 const featuredPhotos: Photo[] = photos
   .filter((p) => p.isFeatured)
   .sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99))
-  .slice(0, 9);
+  .slice(0, 6);
 
-/* ─── Animation Variants ────────────────────────────────── */
+/* ─── Bento Layout Config ───────────────────────────────────
+   Grid: 12 kolom, 3 baris.
+   Setiap foto mendapat kolom + baris span yang tetap
+   agar tidak ada celah kosong dan terlihat editorial.
+   Layout visual:
+   [  Foto 1 (4×2)  ] [  Foto 2 (4×1)  ] [  Foto 3 (4×2)  ]
+                      [  Foto 4 (4×1)  ]
+   [  Foto 5 (6×1)  ] [         Foto 6 (6×1)               ]
+   ─────────────────────────────────────────────────────────── */
 
-const sectionVariants = {
+const bentoConfig = [
+  { colSpan: "lg:col-span-4", rowSpan: "lg:row-span-2" }, // besar kiri
+  { colSpan: "lg:col-span-4", rowSpan: "lg:row-span-1" }, // kecil tengah atas
+  { colSpan: "lg:col-span-4", rowSpan: "lg:row-span-2" }, // besar kanan
+  { colSpan: "lg:col-span-4", rowSpan: "lg:row-span-1" }, // kecil tengah bawah
+  { colSpan: "lg:col-span-6", rowSpan: "lg:row-span-1" }, // landscape kiri
+  { colSpan: "lg:col-span-6", rowSpan: "lg:row-span-1" }, // landscape kanan
+];
+
+/* ─── Animation Variants ────────────────────────────────────── */
+
+const containerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.09, delayChildren: 0.05 },
   },
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.96 },
+const itemVariants = {
+  hidden: { opacity: 0, y: 28, scale: 0.97 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   },
 };
 
-/* ─── Photo Card ─────────────────────────────────────────── */
+/* ─── Photo Card ─────────────────────────────────────────────── */
 
 interface PhotoCardProps {
   photo: Photo;
   index: number;
   onOpen: (index: number) => void;
+  className?: string;
 }
 
-function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
+function PhotoCard({ photo, index, onOpen, className = "" }: PhotoCardProps) {
   const [hovered, setHovered] = useState(false);
-
-  const aspectRatio = photo.width / photo.height;
-  const isPortrait = aspectRatio < 1;
 
   return (
     <motion.div
-      variants={cardVariants}
-      className={`relative overflow-hidden rounded-xl cursor-pointer group ${
-        isPortrait ? "row-span-2" : "row-span-1"
-      }`}
-      style={{
-        aspectRatio: isPortrait ? "3/4" : "4/3",
-        breakInside: "avoid",
-        marginBottom: "12px",
-        display: "inline-block",
-        width: "100%",
-      }}
+      variants={itemVariants}
+      className={`relative overflow-hidden rounded-2xl cursor-pointer group ${className}`}
+      style={{ minHeight: "200px" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => onOpen(index)}
@@ -87,10 +96,10 @@ function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
         alt={photo.alt}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
         style={{
-          filter: hovered ? "brightness(0.75)" : "brightness(1)",
-          transition: "filter 0.35s ease, transform 0.7s ease",
+          filter: hovered ? "brightness(0.72)" : "brightness(0.96)",
+          transition: "filter 0.4s ease, transform 0.7s ease",
         }}
         onError={(e) => {
           const img = e.currentTarget;
@@ -98,35 +107,48 @@ function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
           const parent = img.parentElement;
           if (parent) {
             parent.style.background =
-              "linear-gradient(135deg, #E8E8E4 0%, #D8D8D4 100%)";
+              "linear-gradient(145deg, #E8E8E4 0%, #D4D3CD 100%)";
           }
         }}
       />
 
-      {/* Gradient overlay */}
+      {/* Gradient bawah — selalu sedikit ada untuk memberikan depth */}
       <div
-        className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-350"
-        style={{ opacity: hovered ? 1 : 0.4 }}
+        className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"
+        style={{ opacity: hovered ? 0.9 : 0.5, transition: "opacity 0.4s ease" }}
       />
 
-      {/* Expand icon di tengah saat hover — bg putih bukan gold */}
+      {/* Expand icon saat hover */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         initial={false}
-        animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.8 }}
-        transition={{ duration: 0.2 }}
+        animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.75 }}
+        transition={{ duration: 0.22 }}
       >
-        <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-          <Expand size={18} color="#1A1A1A" />
+        <div className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md">
+          <Expand size={17} color="#1A1A1A" />
         </div>
       </motion.div>
 
-      {/* Caption kecil di bawah */}
+      {/* Nomor urut kecil di pojok kiri atas — gaya editorial */}
       <div
-        className="absolute bottom-0 left-0 right-0 px-4 py-3 transition-opacity duration-300"
-        style={{ opacity: hovered ? 1 : 0 }}
+        className="absolute top-3 left-3 transition-opacity duration-300"
+        style={{ opacity: hovered ? 0 : 1 }}
       >
-        <p className="text-xs text-white/90 leading-snug line-clamp-2">
+        <span
+          className="text-[10px] font-semibold text-white/60 tracking-widest"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
+
+      {/* Caption hover */}
+      <div
+        className="absolute bottom-0 left-0 right-0 px-4 py-4 transition-all duration-300"
+        style={{ opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0)" : "translateY(6px)" }}
+      >
+        <p className="text-xs text-white/90 leading-snug line-clamp-2 font-medium">
           {photo.alt}
         </p>
       </div>
@@ -134,7 +156,7 @@ function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
   );
 }
 
-/* ─── Main Section ───────────────────────────────────────── */
+/* ─── Main Section ───────────────────────────────────────────── */
 
 export function GalleryPreview() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -158,70 +180,98 @@ export function GalleryPreview() {
       className="relative bg-[#F0EFE9] py-24 lg:py-32 overflow-hidden"
       aria-labelledby="gallery-preview-heading"
     >
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      {/* Dekoratif teks besar di background */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
+        <span
+          className="text-[18vw] font-black text-[#1A1A1A]/[0.025] leading-none whitespace-nowrap"
+          style={{ fontFamily: "var(--font-heading)" }}
+          aria-hidden="true"
+        >
+          GALLERY
+        </span>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+
         {/* ── Section Header ── */}
         <motion.div
-          className="mb-14 lg:mb-16"
+          className="mb-12 lg:mb-14"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
         >
-          {/* Eyebrow dihapus — langsung heading */}
-          <div className="flex items-end justify-between gap-6 flex-wrap">
-            <h2
-              id="gallery-preview-heading"
-              className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Karya Terbaik Kami
-            </h2>
-            <p className="text-[#5A5A5A] text-sm max-w-xs lg:max-w-sm leading-relaxed">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-8">
+            <div>
+              {/* Eyebrow */}
+              <p
+                className="text-[10px] tracking-[0.3em] uppercase text-[#888888] mb-3 font-semibold"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Portfolio
+              </p>
+              <h2
+                id="gallery-preview-heading"
+                className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] leading-tight"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Karya Terbaik Kami
+              </h2>
+            </div>
+            <p className="text-[#5A5A5A] text-sm max-w-xs leading-relaxed flex-shrink-0">
               Setiap foto adalah cerita. Kami mengabadikan momen Anda dengan
               sentuhan estetik minimalis yang timeless.
             </p>
           </div>
         </motion.div>
 
-        {/* ── Masonry Grid (CSS columns) ── */}
+        {/* ── Bento Grid ── */}
         {featuredPhotos.length > 0 ? (
           <motion.div
-            className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 md:gap-4"
-            variants={sectionVariants}
+            className="grid grid-cols-2 lg:grid-cols-12 auto-rows-[220px] gap-3 lg:gap-4"
+            variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
           >
-            {featuredPhotos.map((photo, i) => (
-              <PhotoCard
-                key={photo.id}
-                photo={photo}
-                index={i}
-                onOpen={openLightbox}
-              />
-            ))}
+            {featuredPhotos.map((photo, i) => {
+              const config = bentoConfig[i] ?? { colSpan: "lg:col-span-4", rowSpan: "lg:row-span-1" };
+              return (
+                <PhotoCard
+                  key={photo.id}
+                  photo={photo}
+                  index={i}
+                  onOpen={openLightbox}
+                  className={`${config.colSpan} ${config.rowSpan}`}
+                />
+              );
+            })}
           </motion.div>
         ) : (
           /* Skeleton placeholder */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
+          <div className="grid grid-cols-2 lg:grid-cols-12 auto-rows-[220px] gap-3 lg:gap-4">
+            {bentoConfig.map((config, i) => (
               <div
                 key={i}
-                className="rounded-xl bg-[#E0E0DA] animate-pulse"
-                style={{ aspectRatio: i % 3 === 0 ? "3/4" : "4/3" }}
+                className={`rounded-2xl bg-[#E0E0DA] animate-pulse ${config.colSpan} ${config.rowSpan}`}
               />
             ))}
           </div>
         )}
 
-        {/* ── CTA Bawah — border hitam, bukan gold ── */}
+        {/* ── CTA ── */}
         <motion.div
-          className="mt-14 lg:mt-16 flex justify-center"
+          className="mt-12 lg:mt-14 flex flex-col sm:flex-row items-center justify-between gap-4"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
         >
+          {/* Kiri: info kecil */}
+          <p className="text-xs text-[#888888] tracking-wide">
+            {photos.filter(p => p.isFeatured).length}+ foto tersedia di galeri lengkap
+          </p>
+
           <Link
             href="/gallery"
             className={`group ${btn.secondary} rounded-full px-10 py-4`}
