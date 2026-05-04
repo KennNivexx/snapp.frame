@@ -2,7 +2,7 @@
 
 // components/home/hero-section.tsx
 // Hero 3D interaktif: background foto studio blurred + scroll parallax + mouse parallax
-// Tema Dark/Warm elegan (ramah mata) dengan transisi mulus ke section bawah (#FAFAF8)
+// Tema Dark/Warm elegann (ramah mata) dengan transisi mulus ke section bawah (#FAFAF8)
 import { useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
