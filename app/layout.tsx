@@ -1,7 +1,7 @@
 // app/layout.tsx — Root layout dengan font, metadata, navbar, footer, WA button
 
 import type { Metadata } from "next";
-import { Syne, DM_Sans } from "next/font/google";
+import { Syne, DM_Sans, Montserrat } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
 import { Navbar } from "@/components/layout/navbar";
@@ -21,6 +21,13 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -67,7 +74,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${syne.variable} ${dmSans.variable}`}>
+    <html lang="id" className={`${syne.variable} ${dmSans.variable} ${montserrat.variable}`}>
       <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-dm-sans)] antialiased">
         {/* Global Navbar */}
         <Navbar />

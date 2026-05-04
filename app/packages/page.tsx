@@ -19,7 +19,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
   return (
     <div
       className={[
-        "relative flex flex-col rounded-2xl border p-8 transition-all duration-200 h-full hover:-translate-y-0.5 hover:shadow-sm group",
+        "relative flex flex-col rounded-2xl border p-4 sm:p-8 transition-all duration-200 h-full hover:-translate-y-0.5 hover:shadow-sm group",
         pkg.isPopular
           ? "border-[#E0E0DA] bg-white ring-2 ring-[#1A1A1A] ring-offset-2 ring-offset-[#FAFAF8]"
           : "border-[#E0E0DA] bg-white hover:border-[#1A1A1A]/20",
@@ -27,7 +27,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
     >
       {/* Badge Terpopuler — hitam bukan gold */}
       {pkg.isPopular && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-4 py-1 bg-[#1A1A1A] text-[#FAFAF8] text-xs font-bold tracking-widest uppercase rounded-full shadow-md whitespace-nowrap">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] sm:px-4 sm:py-1 sm:text-xs bg-[#1A1A1A] text-[#FAFAF8] font-bold tracking-widest uppercase rounded-full shadow-md whitespace-nowrap">
           ★ Terpopuler
         </span>
       )}
@@ -43,7 +43,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         <div className="flex items-baseline gap-1 mb-3">
           {/* Harga — hitam bukan gold */}
           <span
-            className="text-4xl font-bold text-[#1A1A1A]"
+            className="text-xl sm:text-4xl font-bold text-[#1A1A1A]"
             style={{ fontFamily: "var(--font-syne)" }}
           >
             {formatPrice(pkg.price)}
@@ -79,15 +79,26 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         ))}
       </ul>
 
-      {/* CTA — btn.secondary untuk non-popular, btn.whatsapp untuk popular */}
+      {/* CTA */}
       <a
         href={getWhatsAppUrl("package", pkg.name)}
         target="_blank"
         rel="noopener noreferrer"
-        className={[
-          "w-full justify-center",
-          pkg.isPopular ? btn.whatsapp : btn.secondary,
-        ].join(" ")}
+        className={
+          pkg.isPopular
+            ? [
+                "inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-lg",
+                "text-sm font-semibold tracking-wide transition-all duration-200",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]",
+                "bg-[#F5F5F5] text-[#0A0A0A] hover:bg-white",
+              ].join(" ")
+            : [
+                "inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-lg",
+                "text-sm font-semibold tracking-wide transition-all duration-200",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A84C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]",
+                "border border-[#C9A84C]/50 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#0A0A0A]",
+              ].join(" ")
+        }
       >
         <MessageCircle size={16} />
         Tanya via WhatsApp
@@ -122,7 +133,7 @@ export default function PackagesPage() {
 
       {/* ── Packages Grid — 2 kolom (bukan 4) ── */}
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
           {sortedPackages.map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />
           ))}

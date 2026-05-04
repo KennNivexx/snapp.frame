@@ -60,32 +60,41 @@ export function Navbar() {
     return pathname === href;
   };
 
+  // Determine if we are on a transparent navbar over a dark hero section
+  const isDarkBg = pathname === "/" && !scrolled;
+  const headerTextColor = isDarkBg ? "text-white" : "text-[#1A1A1A]";
+
   return (
     <>
       {/* ── Navbar Bar ─────────────────────────────────────── */}
-      <motion.header
-        className="fixed top-0 left-0 right-0 z-50"
-        animate={{
-          backgroundColor: scrolled
-            ? "rgba(250, 250, 248, 0.97)"
-            : "rgba(250, 250, 248, 0)",
-          backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
-          boxShadow: scrolled
-            ? "0 1px 0 0 rgba(26, 26, 26, 0.08)"
-            : "none",
-        }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        <nav className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 xl:px-28">
+      <header className={`fixed top-0 left-0 right-0 z-50 ${headerTextColor}`}>
+        {/* Animated background overlay — terpisah dari elemen interaktif */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{
+            backgroundColor: scrolled
+              ? "rgba(250, 250, 248, 0.97)"
+              : "rgba(250, 250, 248, 0)",
+            backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
+            boxShadow: scrolled
+              ? "0 1px 0 0 rgba(26, 26, 26, 0.08)"
+              : "none",
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          aria-hidden="true"
+        />
+
+        {/* Nav content di atas overlay, pointer-events tetap normal */}
+        <nav className="relative max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 xl:px-28">
           <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* ── Logo ─────────────────────────────────────── */}
             <Link
               href="/"
-              className="flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded"
+              className="flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded"
               aria-label="Snappeachy Studio — Beranda"
             >
-              <Logo height={34} />
+              <Logo height={34} textColor="currentColor" />
             </Link>
 
             {/* ── Desktop Menu ─────────────────────────────── */}
@@ -96,19 +105,20 @@ export function Navbar() {
                     href={link.href}
                     role="menuitem"
                     className={[
-                      "relative text-sm font-medium tracking-wide transition-colors duration-200",
-                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A] rounded-sm",
+                      "relative text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-200",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded-sm",
+                      "font-[family-name:var(--font-montserrat)]",
                       isActive(link.href)
-                        ? "text-[#1A1A1A] border-b-2 border-[#1A1A1A] pb-0.5"
-                        : "text-[#5A5A5A] hover:text-[#1A1A1A]",
+                        ? "text-current border-b-2 border-current pb-0.5"
+                        : "text-current/70 hover:text-current",
                       "group",
                     ].join(" ")}
                   >
                     {link.label}
-                    {/* Animated underline — hitam bukan gold */}
+                    {/* Animated underline */}
                     {!isActive(link.href) && (
                       <span
-                        className="absolute -bottom-1 left-0 h-px bg-[#1A1A1A] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                        className="absolute -bottom-1 left-0 h-px bg-current w-0 group-hover:w-full transition-all duration-300 ease-out"
                       />
                     )}
                   </Link>
@@ -120,7 +130,11 @@ export function Navbar() {
             <button
               id="mobile-menu-toggle"
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-md text-[#1A1A1A] hover:text-[#2C2C2C] hover:bg-black/5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]"
+              onTouchStart={(e) => {
+                e.preventDefault();
+                setMobileOpen((prev) => !prev);
+              }}
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-md text-current hover:bg-current/10 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-current"
               aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
@@ -151,7 +165,7 @@ export function Navbar() {
             </button>
           </div>
         </nav>
-      </motion.header>
+      </header>
 
       {/* ── Mobile Menu — Full-screen Overlay ──────────────── */}
       <AnimatePresence>
@@ -215,7 +229,8 @@ export function Navbar() {
                       role="menuitem"
                       onClick={() => setMobileOpen(false)}
                       className={[
-                        "flex items-center gap-3 px-4 py-3.5 rounded-lg text-base font-medium",
+                        "flex items-center gap-3 px-4 py-3.5 rounded-lg text-sm font-bold tracking-[0.1em] uppercase",
+                        "font-[family-name:var(--font-montserrat)]",
                         "transition-all duration-200 min-h-[48px]",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]",
                         isActive(link.href)

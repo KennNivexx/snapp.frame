@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { testimonials } from "@/data/testimonials";
 
-const MAX = 6;
+const MAX = 9;
 const displayed = testimonials.slice(0, MAX);
 
 /* ─── Star Rating ────────────────────────────────────────── */
@@ -170,8 +170,8 @@ export function TestimonialsSection() {
             </button>
 
             {/* Dots */}
-            <div className="flex gap-2">
-              {displayed.map((_, i) => (
+            <div className="flex items-center gap-2">
+              {displayed.slice(0, 6).map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
@@ -183,6 +183,11 @@ export function TestimonialsSection() {
                   aria-label={`Testimoni ${i + 1}`}
                 />
               ))}
+              {displayed.length > 6 && (
+                <span className="text-[10px] text-[#6B6B6B] px-1">
+                  +{displayed.length - 6}
+                </span>
+              )}
             </div>
 
             <button

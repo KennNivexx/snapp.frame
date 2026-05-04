@@ -44,7 +44,7 @@ function PhotoCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.94 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-      className="relative overflow-hidden rounded-xl cursor-pointer group break-inside-avoid mb-4"
+      className="relative overflow-hidden rounded-xl cursor-pointer group break-inside-avoid mb-3 md:mb-4"
       style={{ aspectRatio: isPortrait ? "3/4" : "4/3" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -179,7 +179,7 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"
+            className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 md:gap-4"
           >
             {filtered.map((photo, i) => (
               <PhotoCard

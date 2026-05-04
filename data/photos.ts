@@ -21,6 +21,15 @@ export type Photo = {
 
 export const photos: Photo[] = [
   {
+    id: "photo-hero-new",
+    src: "/photos/studio-bg.jpg",
+    alt: "Latar belakang foto studio hitam putih",
+    width: 1920,
+    height: 1080,
+    category: "solo",
+    isHero: true,
+  },
+  {
     id: "photo-001",
     src: "/photos/hero-001.png",
     alt: "Sesi foto solo dengan latar belakang studio minimalis",
@@ -28,7 +37,6 @@ export const photos: Photo[] = [
     height: 1600,
     category: "solo",
     isFeatured: true,
-    isHero: true,
     sortOrder: 1,
   },
   {

@@ -56,7 +56,7 @@ export function Footer() {
       role="contentinfo"
     >
       {/* ── Main Footer Content ───────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pt-16 pb-10 lg:pt-20 lg:pb-12">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 xl:px-28 pt-10 pb-8 lg:pt-16 lg:pb-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
 
           {/* ── Col 1: Logo + Tagline ──────────────────────── */}
@@ -72,12 +72,12 @@ export function Footer() {
             <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-xs">
               {site.tagline}
             </p>
-            <p className="text-xs text-[#6B6B6B] leading-relaxed max-w-xs">
+            <p className="text-xs text-[#6B6B6B] leading-relaxed max-w-xs hidden sm:block">
               {site.subTagline}
             </p>
 
             {/* Contact quick-info */}
-            <div className="flex flex-col gap-2.5 mt-1">
+            <div className="hidden sm:flex flex-col gap-2.5 mt-1">
               <div className="flex items-start gap-2.5 text-xs text-[#6B6B6B]">
                 <MapPin size={14} className="text-[#6B6B6B] mt-0.5 flex-shrink-0" />
                 <span>{site.contact.address}</span>
@@ -106,12 +106,12 @@ export function Footer() {
           </div>
 
           {/* ── Col 2: Navigation Links ───────────────────── */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2.5 sm:gap-4">
             {/* Heading kolom: muted, bukan gold */}
             <h3 className="text-xs font-semibold text-[#888888] tracking-widest uppercase">
               Navigasi
             </h3>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-1.5 sm:gap-2.5">
               {FOOTER_NAV.map((link) => (
                 <li key={link.href}>
                   <Link
@@ -128,13 +128,13 @@ export function Footer() {
           </div>
 
           {/* ── Col 3: Sosial Media ───────────────────────── */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2.5 sm:gap-4">
             {/* Heading kolom: muted, bukan gold */}
             <h3 className="text-xs font-semibold text-[#888888] tracking-widest uppercase">
               Ikuti Kami
             </h3>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2 sm:gap-3">
               {/* Instagram */}
               <a
                 href={site.contact.instagram}
@@ -182,7 +182,7 @@ export function Footer() {
       {/* ── Copyright Bar ─────────────────────────────────── */}
       <div className="border-t border-white/5">
         {/* max-w konsisten dengan footer content di atas */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 xl:px-28 py-4">
           <p className="text-xs text-[#6B6B6B] text-center">
             © {currentYear} {site.name}. All rights reserved.
           </p>

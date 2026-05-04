@@ -19,7 +19,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
   return (
     <div
       className={[
-        "relative flex flex-col rounded-2xl border p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm group",
+        "relative flex flex-col rounded-2xl border p-4 sm:p-6 md:p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm group",
         pkg.isPopular
           ? "border-[#E0E0DA] bg-white ring-2 ring-[#1A1A1A] ring-offset-2 ring-offset-[#FAFAF8] scale-[1.02]"
           : "border-[#E0E0DA] bg-white hover:border-[#1A1A1A]/20",
@@ -42,7 +42,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         </h3>
         <div className="flex items-baseline gap-1">
           <span
-            className="text-3xl font-bold text-[#1A1A1A]"
+            className="text-2xl sm:text-4xl font-bold text-[#1A1A1A]"
             style={{ fontFamily: "var(--font-syne)" }}
           >
             {formatPrice(pkg.price)}
@@ -117,7 +117,7 @@ export function PackagesPreview() {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {previewPackages.map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />
           ))}

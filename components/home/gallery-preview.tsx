@@ -64,7 +64,7 @@ function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
       style={{
         aspectRatio: isPortrait ? "3/4" : "4/3",
         breakInside: "avoid",
-        marginBottom: "16px",
+        marginBottom: "12px",
         display: "inline-block",
         width: "100%",
       }}
@@ -186,7 +186,7 @@ export function GalleryPreview() {
         {/* ── Masonry Grid (CSS columns) ── */}
         {featuredPhotos.length > 0 ? (
           <motion.div
-            className="columns-1 sm:columns-2 lg:columns-3 gap-4"
+            className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 md:gap-4"
             variants={sectionVariants}
             initial="hidden"
             whileInView="visible"
