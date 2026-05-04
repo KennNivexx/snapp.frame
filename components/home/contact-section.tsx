@@ -7,7 +7,7 @@
 import { motion } from "framer-motion";
 import { MapPin, Mail, Clock, MessageCircle } from "lucide-react";
 import { site } from "@/data/site";
-import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { getWhatsAppUrl } from "@/lib/whatsapp"; //whatsapp
 
 export function ContactSection() {
   return (

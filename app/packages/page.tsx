@@ -80,15 +80,15 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
           pkg.isPopular
             ? [
                 "inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-lg",
-                "text-sm font-semibold tracking-wide transition-all duration-200",
+                "text-sm font-semibold tracking-wide transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]",
-                "bg-[#F5F5F5] text-[#0A0A0A] hover:bg-white",
+                "bg-[#F5F5F5] text-[#0A0A0A]",
               ].join(" ")
             : [
                 "inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-lg",
-                "text-sm font-semibold tracking-wide transition-all duration-200",
+                "text-sm font-semibold tracking-wide transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A84C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]",
-                "border border-[#C9A84C]/50 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-[#0A0A0A]",
+                "border border-[#C9A84C]/50 text-[#C9A84C]",
               ].join(" ")
         }
       >
