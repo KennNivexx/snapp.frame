@@ -54,7 +54,7 @@ function TestimonialCard({ t }: { t: (typeof displayed)[0] }) {
           <div className="w-9 h-9 rounded-full bg-[#F0EFE9] border border-[#E0E0DA] flex items-center justify-center flex-shrink-0">
             <span
               className="text-xs font-bold text-[#888888]"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               {t.name.charAt(0)}
             </span>
@@ -109,7 +109,7 @@ export function TestimonialsSection() {
           <h2
             id="testimonials-heading"
             className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
-            style={{ fontFamily: "var(--font-syne)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             Apa Kata Pelanggan Kami
           </h2>

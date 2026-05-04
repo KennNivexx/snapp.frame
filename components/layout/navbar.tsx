@@ -86,15 +86,15 @@ export function Navbar() {
 
         {/* Nav content di atas overlay, pointer-events tetap normal */}
         <nav className="relative max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 xl:px-28">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-20 lg:h-28">
 
             {/* ── Logo ─────────────────────────────────────── */}
             <Link
               href="/"
               className="flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded"
-              aria-label="Snappeachy Studio — Beranda"
+              aria-label="Snapp.frame Studio — Beranda"
             >
-              <Logo height={34} textColor="currentColor" />
+              <Logo height={42} textColor="currentColor" />
             </Link>
 
             {/* ── Desktop Menu ─────────────────────────────── */}
@@ -107,7 +107,7 @@ export function Navbar() {
                     className={[
                       "relative text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-200",
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded-sm",
-                      "font-[family-name:var(--font-montserrat)]",
+                      "font-[family-name:var(--font-heading)]",
                       isActive(link.href)
                         ? "text-current border-b-2 border-current pb-0.5"
                         : "text-current/70 hover:text-current",
@@ -201,9 +201,9 @@ export function Navbar() {
                 <Link
                   href="/"
                   onClick={() => setMobileOpen(false)}
-                  aria-label="Snappeachy Studio — Beranda"
+                  aria-label="Snapp.frame Studio — Beranda"
                 >
-                  <Logo height={28} />
+                  <Logo height={32} />
                 </Link>
                 <button
                   onClick={() => setMobileOpen(false)}
@@ -230,7 +230,7 @@ export function Navbar() {
                       onClick={() => setMobileOpen(false)}
                       className={[
                         "flex items-center gap-3 px-4 py-3.5 rounded-lg text-sm font-bold tracking-[0.1em] uppercase",
-                        "font-[family-name:var(--font-montserrat)]",
+                        "font-[family-name:var(--font-heading)]",
                         "transition-all duration-200 min-h-[48px]",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]",
                         isActive(link.href)
@@ -250,7 +250,7 @@ export function Navbar() {
               {/* Sheet Footer */}
               <div className="px-6 py-5 border-t border-[#E0E0DA]">
                 <p className="text-xs text-[#888888]">
-                  © 2025 Snappeachy Studio
+                  © 2025 Snapp.frame Studio
                 </p>
               </div>
             </motion.nav>

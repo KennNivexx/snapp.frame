@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://snappeachystudio.id/sitemap.xml",
+    sitemap: "https://snappframe.id/sitemap.xml",
   };
 }

@@ -1,5 +1,5 @@
 // components/ui/logo.tsx
-// Logo Snappeachy Studio sebagai inline SVG React component
+// Logo Snapp.frame Studio sebagai inline SVG React component
 // Menggunakan SVG path agar tidak tergantung pada font eksternal
 
 interface LogoProps {
@@ -16,7 +16,7 @@ export function Logo({ className = "", height = 36, textColor = "#1A1A1A" }: Log
       xmlns="http://www.w3.org/2000/svg"
       style={{ height, width: "auto" }}
       className={className}
-      aria-label="Snappeachy Studio"
+      aria-label="Snapp.frame Studio"
       role="img"
     >
       {/* Camera aperture icon */}
@@ -32,22 +32,22 @@ export function Logo({ className = "", height = 36, textColor = "#1A1A1A" }: Log
       {/* Center */}
       <circle cx="20" cy="20" r="2.5" fill={textColor} />
 
-      {/* Brand name: SNAPPEACHY using text with embedded font fallback */}
+      {/* Brand name: SNAPP.FRAME using text with embedded font fallback */}
       <text
         x="44"
         y="16"
-        fontFamily="'Montserrat', 'Inter', system-ui, -apple-system, sans-serif"
+        fontFamily="'Outfit', 'Inter', system-ui, -apple-system, sans-serif"
         fontSize="12.5"
         fontWeight="800"
         fill={textColor}
         letterSpacing="1.2"
       >
-        SNAPPEACHY
+        SNAPP.FRAME
       </text>
       <text
         x="44"
         y="30"
-        fontFamily="'Montserrat', 'Inter', system-ui, -apple-system, sans-serif"
+        fontFamily="'Outfit', 'Inter', system-ui, -apple-system, sans-serif"
         fontSize="9.5"
         fontWeight="600"
         fill={textColor}

@@ -31,7 +31,7 @@ export function ContactSection() {
             <h2
               id="contact-heading"
               className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               Temukan Kami
             </h2>
@@ -119,8 +119,8 @@ export function ContactSection() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Lokasi Snappeachy Studio di Google Maps"
-                aria-label="Peta lokasi Snappeachy Studio"
+                title="Lokasi Snapp.frame Studio di Google Maps"
+                aria-label="Peta lokasi Snapp.frame Studio"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-3 rounded-2xl">

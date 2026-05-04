@@ -36,14 +36,14 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
       <div className="mb-6">
         <h3
           className="text-lg font-semibold text-[#1A1A1A] mb-1"
-          style={{ fontFamily: "var(--font-syne)" }}
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           {pkg.name}
         </h3>
         <div className="flex items-baseline gap-1">
           <span
             className="text-2xl sm:text-4xl font-bold text-[#1A1A1A]"
-            style={{ fontFamily: "var(--font-syne)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             {formatPrice(pkg.price)}
           </span>
@@ -105,7 +105,7 @@ export function PackagesPreview() {
             <h2
               id="packages-heading"
               className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               Pilih Paket Foto
             </h2>

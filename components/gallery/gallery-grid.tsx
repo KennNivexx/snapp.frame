@@ -213,7 +213,7 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
             </svg>
             <p
               className="text-lg font-medium text-[#1A1A1A] mt-4"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               Belum ada foto di kategori ini
             </p>

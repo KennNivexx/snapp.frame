@@ -172,7 +172,7 @@ export function GalleryPreview() {
             <h2
               id="gallery-preview-heading"
               className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               Karya Terbaik Kami
             </h2>

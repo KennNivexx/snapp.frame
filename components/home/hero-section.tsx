@@ -33,7 +33,7 @@ export function HeroSection() {
     <section
       id="hero"
       className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden"
-      aria-label="Hero — Snappeachy Studio"
+      aria-label="Hero — Snapp.frame Studio"
     >
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
@@ -66,7 +66,7 @@ export function HeroSection() {
         <motion.h1
           variants={fadeUpVariants}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-[4rem] font-bold text-white mb-10 tracking-[0.1em] leading-[1.3] uppercase"
-          style={{ fontFamily: "var(--font-montserrat)" }}
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           Simpan Kenangan
           <br />

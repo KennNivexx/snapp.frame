@@ -36,7 +36,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
       <div className="mb-6">
         <h2
           className="text-xl font-semibold text-[#1A1A1A] mb-2"
-          style={{ fontFamily: "var(--font-syne)" }}
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           {pkg.name}
         </h2>
@@ -44,7 +44,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
           {/* Harga — hitam bukan gold */}
           <span
             className="text-xl sm:text-4xl font-bold text-[#1A1A1A]"
-            style={{ fontFamily: "var(--font-syne)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             {formatPrice(pkg.price)}
           </span>
@@ -121,7 +121,7 @@ export default function PackagesPage() {
         </p>
         <h1
           className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-[#1A1A1A] mb-4"
-          style={{ fontFamily: "var(--font-syne)" }}
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           Paket Foto
         </h1>
@@ -151,7 +151,7 @@ export default function PackagesPage() {
               </p>
               <h2
                 className="text-3xl sm:text-4xl font-semibold text-[#1A1A1A]"
-                style={{ fontFamily: "var(--font-syne)" }}
+                style={{ fontFamily: "var(--font-heading)" }}
               >
                 Pertanyaan Umum
               </h2>
@@ -173,7 +173,7 @@ export default function PackagesPage() {
           <div className="rounded-3xl border border-[#E0E0DA] bg-[#F0EFE9] px-8 py-12 lg:px-16 lg:py-16 text-center">
             <h2
               className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#1A1A1A] mb-3"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               Masih ada pertanyaan?
             </h2>

@@ -45,7 +45,7 @@ export function AboutSection() {
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#E8E8E4]">
               <Image
                 src="/photos/hero-001.png"
-                alt="Suasana studio Snappeachy"
+                alt="Suasana studio Snapp.frame"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
@@ -64,7 +64,7 @@ export function AboutSection() {
                 <div key={s.label} className="text-center flex-1">
                   <p
                     className="text-xl font-semibold text-[#1A1A1A]"
-                    style={{ fontFamily: "var(--font-syne)" }}
+                    style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {s.value}
                   </p>
@@ -89,7 +89,7 @@ export function AboutSection() {
               className="text-[80px] lg:text-[100px] font-bold leading-none tracking-tight
                          text-[#1A1A1A]/[0.04] select-none mb-0 -mt-4"
               aria-hidden="true"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
               Studio
             </p>
@@ -97,9 +97,9 @@ export function AboutSection() {
             <h2
               id="about-heading"
               className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight -mt-4"
-              style={{ fontFamily: "var(--font-syne)" }}
+              style={{ fontFamily: "var(--font-heading)" }}
             >
-              Tentang Snappeachy Studio
+              Tentang Snapp.frame Studio
             </h2>
 
             <p className="text-[#5A5A5A] text-base leading-relaxed mb-8">
@@ -114,7 +114,7 @@ export function AboutSection() {
                   <div className="flex-shrink-0 w-8 h-8 rounded-full border border-[#E0E0DA] flex items-center justify-center mt-0.5">
                     <span
                       className="text-xs font-bold text-[#888888]"
-                      style={{ fontFamily: "var(--font-syne)" }}
+                      style={{ fontFamily: "var(--font-heading)" }}
                     >
                       0{i + 1}
                     </span>

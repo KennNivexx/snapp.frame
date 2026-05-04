@@ -27,7 +27,7 @@ export function getWhatsAppUrl(
   if (!WA || WA.length < 10) {
     if (process.env.NODE_ENV === "development") {
       console.warn(
-        "[Snappeachy] Nomor WhatsApp belum dikonfigurasi di data/site.ts"
+        "[Snapp.frame] Nomor WhatsApp belum dikonfigurasi di data/site.ts"
       );
     }
     return "#";
@@ -35,10 +35,10 @@ export function getWhatsAppUrl(
 
   const messages: Record<WaContext, string> = {
     general:
-      "Halo Snappeachy Studio! Saya tertarik untuk sesi foto. Boleh tanya-tanya dulu?",
+      "Halo Snapp.frame Studio! Saya tertarik untuk sesi foto. Boleh tanya-tanya dulu?",
     gallery:
-      "Halo Snappeachy Studio! Saya lihat galeri fotonya dan tertarik. Bisa info lebih lanjut?",
-    package: `Halo Snappeachy Studio! Saya tertarik dengan ${
+      "Halo Snapp.frame Studio! Saya lihat galeri fotonya dan tertarik. Bisa info lebih lanjut?",
+    package: `Halo Snapp.frame Studio! Saya tertarik dengan ${
       packageName ?? "paket foto"
     } yang ada di website. Bisa info lebih lanjut?`,
   };

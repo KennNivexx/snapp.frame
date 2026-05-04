@@ -78,7 +78,7 @@ export const testimonials: Testimonial[] = [
     id: "t-009",
     name: "Ibu Hendra",
     rating: 5,
-    text: "Foto ulang tahun ke-50 suami saya jadi sangat spesial. Tim Snappeachy sangat membantu dan sabar. Kami bawa 8 orang dan semuanya teratur.",
+    text: "Foto ulang tahun ke-50 suami saya jadi sangat spesial. Tim Snapp.frame sangat membantu dan sabar. Kami bawa 8 orang dan semuanya teratur.",
     sessionType: "Family",
     date: "April 2024",
   },

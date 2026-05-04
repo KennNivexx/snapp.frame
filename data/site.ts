@@ -1,11 +1,11 @@
 // data/site.ts — Info studio, kontak, jam operasional
 
 export const site = {
-  name: "Snappeachy Studio",
+  name: "Snapp.frame Studio",
   tagline: "Abadikan Momen, Rayakan Diri.",
   subTagline: "Studio foto minimalis untuk momen yang tak terlupakan.",
   description:
-    "Snappeachy Studio adalah studio foto minimalis yang menghadirkan pengalaman sesi foto premium dengan konsep photobooth modern. Kami membantu Anda mengabadikan momen berharga dengan hasil foto berkualitas tinggi.",
+    "Snapp.frame Studio adalah studio foto minimalis yang menghadirkan pengalaman sesi foto premium dengan konsep photobooth modern. Kami membantu Anda mengabadikan momen berharga dengan hasil foto berkualitas tinggi.",
   heroDescription:
     "Sesi foto premium dengan latar minimalis yang bersih. Hasil foto siap share dan siap cetak.",
   stats: {
@@ -14,11 +14,11 @@ export const site = {
     yearsActive: "3",
   },
   contact: {
-    address: "Jl. Snappeachy No. 1, Kota",
-    email: "hello@snappeachystudio.id",
-    whatsapp: "6281234567890", // Update with real Snappeachy Studio WA number when ready
-    instagram: "https://instagram.com/snappeachystudio",
-    tiktok: "https://tiktok.com/@snappeachystudio",
+    address: "Jl. Snapp.frame No. 1, Kota",
+    email: "hello@snappframe.id",
+    whatsapp: "6281234567890", // Update with real Snapp.frame Studio WA number when ready
+    instagram: "https://instagram.com/snapp.frame",
+    tiktok: "https://tiktok.com/@snapp.frame",
   },
   operatingHours: [
     { day: "Senin–Jumat", hours: "10.00–20.00" },

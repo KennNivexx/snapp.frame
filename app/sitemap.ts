@@ -5,7 +5,7 @@ import type { MetadataRoute } from "next";
 
 export const dynamic = "force-static";
 
-const BASE_URL = "https://snappeachystudio.id";
+const BASE_URL = "https://snappframe.id";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

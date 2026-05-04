@@ -53,7 +53,7 @@ export function HowItWorksSection() {
           <h2
             id="how-it-works-heading"
             className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
-            style={{ fontFamily: "var(--font-syne)" }}
+            style={{ fontFamily: "var(--font-heading)" }}
           >
             Cara Memesan
           </h2>
@@ -102,14 +102,14 @@ export function HowItWorksSection() {
                 {/* Number — dekoratif, sangat subtle */}
                 <span
                   className="text-xs font-bold text-[#E0E0DA] tracking-[0.2em] mb-2"
-                  style={{ fontFamily: "var(--font-syne)" }}
+                  style={{ fontFamily: "var(--font-heading)" }}
                 >
                   {step.number}
                 </span>
 
                 <h3
                   className="text-base font-semibold text-[#1A1A1A] mb-2"
-                  style={{ fontFamily: "var(--font-syne)" }}
+                  style={{ fontFamily: "var(--font-heading)" }}
                 >
                   {step.title}
                 </h3>
@@ -162,13 +162,13 @@ export function HowItWorksSection() {
                 <div className="pt-4">
                   <span
                     className="text-xs font-bold text-[#E0E0DA] tracking-[0.2em]"
-                    style={{ fontFamily: "var(--font-syne)" }}
+                    style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {step.number}
                   </span>
                   <h3
                     className="text-base font-semibold text-[#1A1A1A] mt-1 mb-1.5"
-                    style={{ fontFamily: "var(--font-syne)" }}
+                    style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {step.title}
                   </h3>

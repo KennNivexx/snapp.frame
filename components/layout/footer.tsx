@@ -64,7 +64,7 @@ export function Footer() {
             <Link
               href="/"
               className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded mb-6"
-              aria-label="Snappeachy Studio — Beranda"
+              aria-label="Snapp.frame Studio — Beranda"
             >
               <Logo height={40} textColor="#F5F5F5" />
             </Link>
@@ -140,7 +140,7 @@ export function Footer() {
                 href={site.contact.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Instagram Snappeachy Studio"
+                aria-label="Instagram Snapp.frame Studio"
                 className="flex items-center gap-3 group"
               >
                 {/* Sosmed icon container — hapus hover gold */}
@@ -148,7 +148,7 @@ export function Footer() {
                   <InstagramIcon size={16} />
                 </span>
                 <span className="text-sm text-[#6B6B6B] group-hover:text-[#F5F5F5] transition-colors duration-200">
-                  @snappeachystudio
+                  @snapp.frame
                 </span>
               </a>
 
@@ -157,14 +157,14 @@ export function Footer() {
                 href={site.contact.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="TikTok Snappeachy Studio"
+                aria-label="TikTok Snapp.frame Studio"
                 className="flex items-center gap-3 group"
               >
                 <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/5 border border-white/10 text-[#6B6B6B] group-hover:text-[#F5F5F5] group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-200">
                   <TikTokIcon size={16} />
                 </span>
                 <span className="text-sm text-[#6B6B6B] group-hover:text-[#F5F5F5] transition-colors duration-200">
-                  @snappeachystudio
+                  @snapp.frame
                 </span>
               </a>
             </div>

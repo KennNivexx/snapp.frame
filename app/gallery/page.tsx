@@ -17,7 +17,7 @@ export default function GalleryPage() {
         </p>
         <h1
           className="text-4xl sm:text-5xl font-semibold text-[#1A1A1A] mb-4"
-          style={{ fontFamily: "var(--font-syne)" }}
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           Galeri Foto
         </h1>

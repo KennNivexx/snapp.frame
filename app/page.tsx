@@ -15,10 +15,10 @@ export const metadata: Metadata = {
   title: `${site.name} — Studio Foto Minimalis Modern`,
   description: site.description,
   openGraph: {
-    url: "https://snappeachystudio.id",
+    url: "https://snappframe.id",
   },
   alternates: {
-    canonical: "https://snappeachystudio.id",
+    canonical: "https://snappframe.id",
   },
 };
 
@@ -27,12 +27,12 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "@id": "https://snappeachystudio.id",
+  "@id": "https://snappframe.id",
   name: site.name,
   description: site.description,
-  url: "https://snappeachystudio.id",
-  image: "https://snappeachystudio.id/og-image.png",
-  logo: "https://snappeachystudio.id/logo.svg",
+  url: "https://snappframe.id",
+  image: "https://snappframe.id/og-image.png",
+  logo: "https://snappframe.id/logo.svg",
   telephone: `+${site.contact.whatsapp}`,
   email: site.contact.email,
   address: {
