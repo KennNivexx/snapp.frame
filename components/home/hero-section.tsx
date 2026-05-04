@@ -271,7 +271,7 @@ export function HeroSection() {
         className="absolute pointer-events-none rounded-full z-[1]"
         style={{
           width: "65vw", height: "65vw",
-          background: "radial-gradient(circle, rgba(255,200,100,0.06) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(255,200,100,0.12) 0%, transparent 70%)",
           x: glowX, y: glowY, left: "17%", top: "5%",
         }}
       />
@@ -285,7 +285,7 @@ export function HeroSection() {
 
       {/* ── Konten 3D ── */}
       <motion.div
-        className="relative z-20 text-center px-6 sm:px-10 max-w-3xl w-full"
+        className="relative z-20 text-center px-6 sm:px-10 max-w-3xl w-full group"
         style={{ rotateX: tiltX, rotateY: tiltY, transformStyle: "preserve-3d" }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -298,7 +298,7 @@ export function HeroSection() {
         >
           <div style={{ width: 32, height: 1, background: "rgba(255,240,220,0.3)" }} />
           <span className="text-[10px] sm:text-xs font-semibold tracking-[0.35em] uppercase"
-            style={{ color: "rgba(255,240,220,0.7)", fontFamily: "var(--font-heading)" }}>
+            style={{ color: "rgba(255,240,220,0.7)", fontFamily: "var(--font-playfair), serif" }}>
             Studio Foto Minimalis
           </span>
           <div style={{ width: 32, height: 1, background: "rgba(255,240,220,0.3)" }} />
@@ -306,9 +306,9 @@ export function HeroSection() {
 
         {/* Heading */}
         <motion.h1
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-5"
+          className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5"
           style={{
-            fontFamily: "var(--font-heading)",
+            fontFamily: "var(--font-playfair), serif",
             color: "#FFF",
             letterSpacing: "-0.015em",
             textShadow: "0 8px 30px rgba(0,0,0,0.7)",
@@ -319,40 +319,26 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
         >
-          Abadikan Momen,
-          <br />
-          <span style={{
-            background: "linear-gradient(90deg, #FFE082 0%, #FFB74D 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}>
-            Rayakan Diri.
+          {/* Watermark Quote Tipis di Belakang Teks */}
+          <span className="absolute -top-12 sm:-top-16 -left-4 sm:-left-10 text-[100px] sm:text-[140px] text-white/[0.04] pointer-events-none select-none font-serif leading-none">
+            &ldquo;
           </span>
+          
+          Yang Kamu Lihat <em className="italic font-normal">Hari Ini</em>,
+          <br />
+          Akan Kamu Rindukan <em className="italic font-normal">Di Masa Depan Nanti</em>
         </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          className="text-sm sm:text-base max-w-sm mx-auto mb-10 leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-body)", transform: "translateZ(20px)" }}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.95 }}
-        >
-          Sesi foto premium dengan latar minimalis yang bersih.
-          Hasil foto siap share dan siap cetak.
-        </motion.p>
 
         {/* CTA */}
         <motion.div
-          className="flex flex-col sm:flex-row items-center justify-center gap-3"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10"
           style={{ transform: "translateZ(28px)" }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 1.1 }}
         >
           <Link href="/packages"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
+            className="group/btn inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
             style={{
               background: "linear-gradient(135deg, #FFE082, #FFB74D)",
               color: "#1A0E00",
@@ -360,6 +346,7 @@ export function HeroSection() {
             }}
           >
             Lihat Paket
+            <span className="transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
           </Link>
           <Link href="/gallery"
             className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 hover:bg-white/10 active:scale-95"
@@ -381,7 +368,7 @@ export function HeroSection() {
         transition={{ duration: 1, delay: 1.8 }}
       >
         <span className="text-[9px] tracking-[0.35em] uppercase"
-          style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-heading)" }}>
+          style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-playfair), serif" }}>
           Scroll
         </span>
         <motion.div

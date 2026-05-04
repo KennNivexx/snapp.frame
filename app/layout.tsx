@@ -1,7 +1,7 @@
 // app/layout.tsx — Root layout dengan font, metadata, navbar, footer, WA button
 
 import type { Metadata } from "next";
-import { Outfit, Inter } from "next/font/google";
+import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
 import { Navbar } from "@/components/layout/navbar";
@@ -10,17 +10,17 @@ import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 
 /* ─── Fonts ─────────────────────────────────────────────── */
 
-const outfit = Outfit({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-outfit",
+  variable: "--font-playfair",
   display: "swap",
 });
 
-const inter = Inter({
+const lato = Lato({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  weight: ["300", "400", "700", "900"],
+  variable: "--font-lato",
   display: "swap",
 });
 
@@ -67,8 +67,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${outfit.variable} ${inter.variable}`}>
-      <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-inter)] antialiased">
+    <html lang="id" className={`${playfair.variable} ${lato.variable}`}>
+      <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-lato)] antialiased">
         {/* Global Navbar */}
         <Navbar />
 

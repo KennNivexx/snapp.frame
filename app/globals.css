@@ -23,9 +23,9 @@
   --color-foreground: #1A1A1A;
 
   /* Fonts */
-  --font-heading: var(--font-outfit);
-  --font-body:    var(--font-inter);
-  --font-sans:    var(--font-inter);
+  --font-heading: var(--font-playfair);
+  --font-body:    var(--font-lato);
+  --font-sans:    var(--font-lato);
 }
 
 /* =============================================
@@ -39,14 +39,14 @@ html {
 body {
   background-color: #FAFAF8;
   color: #1A1A1A;
-  font-family: var(--font-body), system-ui, sans-serif;
+  font-family: var(--font-lato), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), system-ui, sans-serif;
+  font-family: var(--font-playfair), serif;
   font-weight: 600;
   line-height: 1.15;
 }
