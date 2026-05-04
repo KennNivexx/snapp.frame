@@ -68,7 +68,12 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         href={getWhatsAppUrl("package", pkg.name)}
         target="_blank"
         rel="noopener noreferrer"
-        className={["w-full justify-center text-xs sm:text-sm py-2.5 sm:py-3", pkg.isPopular ? btn.whatsapp : btn.secondary].join(" ")}
+        className={[
+          "w-full inline-flex items-center justify-center gap-2 text-xs sm:text-sm py-2.5 sm:py-3 rounded tracking-wide transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]",
+          pkg.isPopular
+            ? "bg-[#25D366] text-white font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+            : "border border-[#1A1A1A] text-[#1A1A1A] bg-transparent font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A] focus-visible:ring-offset-2"
+        ].join(" ")}
       >
         Tanya via WhatsApp
       </a>
