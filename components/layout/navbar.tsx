@@ -43,6 +43,15 @@ export function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
+  // Remove URL hash after initial load to prevent refresh jumps
+  useEffect(() => {
+    if (window.location.hash) {
+      setTimeout(() => {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }, 100);
+    }
+  }, []);
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     const root = document.documentElement;
@@ -74,6 +83,19 @@ export function Navbar() {
   const isDarkBg = pathname === "/" && !scrolled;
   const headerTextColor = isDarkBg ? "text-white" : "text-[#1A1A1A]";
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // If clicking a hash link on the home page, scroll smoothly without updating the URL hash
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault();
+      const targetId = href.substring(2);
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    setMobileOpen(false);
+  };
+
   return (
     <>
       {/* ── Navbar Bar ─────────────────────────────────────── */}
@@ -101,6 +123,7 @@ export function Navbar() {
             {/* ── Logo ─────────────────────────────────────── */}
             <Link
               href="/"
+              onClick={(e) => handleNavClick(e, "/")}
               className="flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded"
               aria-label="Snapp.frame Studio — Beranda"
             >
@@ -114,6 +137,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     role="menuitem"
+                    onClick={(e) => handleNavClick(e, link.href)}
                     className={[
                       "relative text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-200",
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded-sm",
@@ -210,7 +234,7 @@ export function Navbar() {
             <div className="flex items-center justify-between px-6 py-5 border-b border-[#E0E0DA]">
               <Link
                 href="/"
-                onClick={() => setMobileOpen(false)}
+                onClick={(e) => handleNavClick(e, "/")}
                 aria-label="Snapp.frame Studio — Beranda"
               >
                 <Logo height={32} />
@@ -237,7 +261,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     role="menuitem"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={(e) => handleNavClick(e, link.href)}
                     className={[
                       "flex items-center gap-3 px-4 py-3.5 rounded-lg text-sm font-bold tracking-[0.1em] uppercase",
                       "font-[family-name:var(--font-heading)]",
