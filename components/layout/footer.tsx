@@ -40,7 +40,7 @@ export function Footer() {
     <footer style={{ backgroundColor: "#141414", borderTop: "1px solid rgba(255,255,255,0.07)" }} role="contentinfo">
 
       {/* ── Main Grid ── */}
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pt-10 pb-8 sm:pt-14 sm:pb-10">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-10 pb-8 sm:pt-14 sm:pb-10">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
 
           {/* Col 1: Brand */}
@@ -143,7 +143,7 @@ export function Footer() {
 
       {/* ── Copyright ── */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-3.5">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
             <p className="text-[10px]" style={{ color: "#666666" }}>
               © {currentYear} {site.name}. All rights reserved.

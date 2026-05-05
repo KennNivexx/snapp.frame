@@ -27,10 +27,10 @@ export function AboutSection() {
   return (
     <section
       id="about"
-      className="relative bg-[#FAFAF8] py-24 lg:py-32"
+      className="relative bg-[#FAFAF8] py-24 lg:py-32 overflow-hidden"
       aria-labelledby="about-heading"
     >
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* ── Kolom Kiri: Foto ── */}
@@ -85,14 +85,16 @@ export function AboutSection() {
             transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           >
             {/* Kata besar dekoratif — bukan eyebrow standar */}
-            <p
-              className="text-[80px] lg:text-[100px] font-bold leading-none tracking-tight
-                         text-[#1A1A1A]/[0.04] select-none mb-0 -mt-4"
-              aria-hidden="true"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Studio
-            </p>
+            <div className="overflow-hidden">
+              <p
+                className="text-[80px] lg:text-[100px] font-bold leading-none tracking-tight
+                           text-[#1A1A1A]/[0.04] select-none mb-0 -mt-4"
+                aria-hidden="true"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Studio
+              </p>
+            </div>
 
             <h2
               id="about-heading"

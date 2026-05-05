@@ -266,17 +266,19 @@ export function HeroSection() {
       </motion.div>
 
       {/* ── Warm glow ikut mouse ── */}
-      <motion.div aria-hidden="true"
-        className="absolute pointer-events-none rounded-full z-[1]"
-        style={{
-          width: "65vw", height: "65vw",
-          background: "radial-gradient(circle, rgba(255,200,100,0.12) 0%, transparent 70%)",
-          x: glowX, y: glowY, left: "17%", top: "5%",
-        }}
-      />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
+        <motion.div aria-hidden="true"
+          className="absolute rounded-full"
+          style={{
+            width: "55vw", height: "55vw",
+            background: "radial-gradient(circle, rgba(255,200,100,0.1) 0%, transparent 70%)",
+            x: glowX, y: glowY, left: "22%", top: "10%",
+          }}
+        />
+      </div>
 
       {/* ── Floating studio elements ── */}
-      <div aria-hidden="true" className="absolute inset-0 z-[5] pointer-events-none">
+      <div aria-hidden="true" className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
         {ELEMENTS.map((el) => (
           <FloatingEl key={el.id} el={el} mx={mx} my={my} scrollY={scrollY} />
         ))}

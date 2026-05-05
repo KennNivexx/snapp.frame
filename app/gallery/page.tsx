@@ -7,7 +7,7 @@ export default function GalleryPage() {
   return (
     <main className="min-h-screen bg-[#FAFAF8]">
       {/* ── Page Header ── */}
-      <div className="pt-36 pb-14 lg:pt-44 lg:pb-16 bg-[#F0EFE9] relative overflow-hidden">
+      <div className="pt-36 pb-14 lg:pt-44 lg:pb-16 bg-[#F0EFE9] relative overflow-hidden w-full">
         {/* Dekoratif teks besar */}
         <div className="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none overflow-hidden select-none">
           <span
@@ -19,7 +19,7 @@ export default function GalleryPage() {
           </span>
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
           <p
             className="text-[10px] font-semibold tracking-[0.3em] text-[#888888] uppercase mb-4"
             style={{ fontFamily: "var(--font-heading)" }}

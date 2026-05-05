@@ -7,6 +7,7 @@ import { site } from "@/data/site";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
+import { CustomCursor } from "@/components/ui/custom-cursor";
 
 /* ─── Fonts ─────────────────────────────────────────────── */
 
@@ -45,7 +46,14 @@ export const metadata: Metadata = {
     url: "https://snappframe.id",
     title: `${site.name} — Studio Foto Minimalis Modern`,
     description: site.description,
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${site.name} — Studio Foto Minimalis Modern` }],
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: `${site.name} — Studio Foto Minimalis Modern`,
+      },
+    ],
     siteName: site.name,
     locale: "id_ID",
   },
@@ -68,18 +76,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${playfair.variable} ${lato.variable}`}>
-      <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-lato)] antialiased">
-        {/* Global Navbar */}
-        <Navbar />
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </head>
+      <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-lato)] antialiased cursor-default min-h-screen overflow-x-hidden w-full">
+        {/* Viewport lock wrapper */}
+        <div className="relative flex min-h-screen flex-col w-full">
+          <CustomCursor />
+          {/* Global Navbar */}
+          <Navbar />
 
-        {/* Page Content */}
-        <main>{children}</main>
+          {/* Page Content */}
+          <main className="flex-grow w-full max-w-full">{children}</main>
 
-        {/* Global Footer */}
-        <Footer />
+          {/* Global Footer */}
+          <Footer />
 
-        {/* Floating WhatsApp Button — tampil di semua halaman */}
-        <WhatsAppButton />
+          {/* Floating WhatsApp Button — tampil di semua halaman */}
+          <WhatsAppButton />
+        </div>
       </body>
     </html>
   );

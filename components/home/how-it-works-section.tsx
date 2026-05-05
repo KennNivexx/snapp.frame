@@ -41,7 +41,7 @@ export function HowItWorksSection() {
       className="relative bg-[#FAFAF8] py-24 lg:py-32"
       aria-labelledby="how-it-works-heading"
     >
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Header — tanpa eyebrow */}
         <motion.div
           className="mb-14 lg:mb-16 text-center"

@@ -9,23 +9,23 @@
 
 @theme {
   /* Brand Colors */
-  --color-warm-white:  #FAFAF8;
-  --color-warm-light:  #F0EFE9;
-  --color-near-black:  #1A1A1A;
-  --color-dark-gray:   #2C2C2C;
-  --color-mid-gray:    #5A5A5A;
-  --color-muted:       #888888;
-  --color-border:      #E0E0DA;
-  --color-gold:        #C9A84C;
+  --color-warm-white: #fafaf8;
+  --color-warm-light: #f0efe9;
+  --color-near-black: #1a1a1a;
+  --color-dark-gray: #2c2c2c;
+  --color-mid-gray: #5a5a5a;
+  --color-muted: #888888;
+  --color-border: #e0e0da;
+  --color-gold: #c9a84c;
 
   /* Background/Foreground */
-  --color-background: #FAFAF8;
-  --color-foreground: #1A1A1A;
+  --color-background: #fafaf8;
+  --color-foreground: #1a1a1a;
 
   /* Fonts */
   --font-heading: var(--font-playfair);
-  --font-body:    var(--font-lato);
-  --font-sans:    var(--font-lato);
+  --font-body: var(--font-lato);
+  --font-sans: var(--font-lato);
 }
 
 /* =============================================
@@ -34,43 +34,107 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #1c1917;
+  -webkit-text-size-adjust: 100%;
+  /* Hide scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 body {
-  background-color: #FAFAF8;
-  color: #1A1A1A;
+  background-color: #fafaf8;
+  color: #1a1a1a;
   font-family: var(--font-lato), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  overflow-x: hidden;
+  width: 100vw;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-h1, h2, h3, h4, h5, h6 {
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Force prevent horizontal scroll on all direct children of body */
+body > * {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-playfair), serif;
   font-weight: 600;
   line-height: 1.15;
 }
 
-a { color: inherit; text-decoration: none; }
-img { max-width: 100%; height: auto; display: block; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 
 /* =============================================
    Scrollbar Styling
    ============================================= */
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #F0EFE9; }
-::-webkit-scrollbar-thumb { background: #D0CFC9; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #5A5A5A; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0efe9;
+}
+::-webkit-scrollbar-thumb {
+  background: #d0cfc9;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
 
 /* =============================================
    Selection Highlight
    ============================================= */
 
-::selection { background: #1A1A1A; color: #FAFAF8; }
+::selection {
+  background: #1a1a1a;
+  color: #fafaf8;
+}
 
 /* =============================================
    Focus visible outline
    ============================================= */
 
-:focus-visible { outline: 2px solid #1A1A1A; outline-offset: 2px; }
+:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 2px;
+}

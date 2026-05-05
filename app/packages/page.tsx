@@ -106,7 +106,7 @@ export default function PackagesPage() {
     <main className="min-h-screen bg-[#FAFAF8]">
       {/* ── Page Header ── */}
       <div className="pt-32 pb-16 lg:pt-40 lg:pb-20
-                      max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+                      max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Eyebrow: muted tanpa gold */}
         <p className="text-xs font-medium tracking-[0.15em] text-[#888888] uppercase mb-4">
           Harga &amp; Paket
@@ -124,7 +124,7 @@ export default function PackagesPage() {
       </div>
 
       {/* ── Packages Grid — 2 kolom (bukan 4) ── */}
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
           {sortedPackages.map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />
@@ -134,7 +134,7 @@ export default function PackagesPage() {
 
       {/* ── FAQ Section ── */}
       <div className="bg-[#F0EFE9] border-t border-[#E0E0DA]">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20 lg:py-28">
           <div className="max-w-3xl mx-auto">
             {/* FAQ Header */}
             <div className="text-center mb-12">
@@ -160,7 +160,7 @@ export default function PackagesPage() {
 
       {/* ── Bottom CTA Banner ── */}
       <div className="bg-[#FAFAF8] border-t border-[#E0E0DA]">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 lg:py-20">
           {/* Container — warm light, tanpa gold glow */}
           <div className="rounded-3xl border border-[#E0E0DA] bg-[#F0EFE9] px-8 py-12 lg:px-16 lg:py-16 text-center">
             <h2

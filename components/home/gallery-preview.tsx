@@ -177,13 +177,13 @@ export function GalleryPreview() {
   return (
     <section
       id="gallery-preview"
-      className="relative bg-[#F0EFE9] py-24 lg:py-32 overflow-hidden"
+      className="relative bg-[#F0EFE9] py-24 lg:py-32 overflow-hidden w-full max-w-full"
       aria-labelledby="gallery-preview-heading"
     >
       {/* Dekoratif teks besar di background */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
         <span
-          className="text-[18vw] font-black text-[#1A1A1A]/[0.025] leading-none whitespace-nowrap"
+          className="text-[18vw] sm:text-[15vw] font-black text-[#1A1A1A]/[0.02] leading-none whitespace-nowrap block"
           style={{ fontFamily: "var(--font-heading)" }}
           aria-hidden="true"
         >
@@ -191,7 +191,7 @@ export function GalleryPreview() {
         </span>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
 
         {/* ── Section Header ── */}
         <motion.div

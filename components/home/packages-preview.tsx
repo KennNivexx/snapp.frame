@@ -90,7 +90,7 @@ export function PackagesPreview() {
       className="relative bg-[#FAFAF8] py-20 lg:py-28"
       aria-labelledby="packages-heading"
     >
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         {/* Header */}
         <div className="mb-10 lg:mb-12">
           <p className="text-[10px] sm:text-xs font-semibold text-[#888888] tracking-[0.25em] uppercase mb-3"

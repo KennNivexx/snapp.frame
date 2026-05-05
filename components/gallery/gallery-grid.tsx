@@ -153,7 +153,7 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
   return (
     <>
       {/* ── Filter Tabs ── */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 mb-10">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 mb-10">
         <div
           className="flex gap-2 overflow-x-auto pb-2"
           style={{ scrollbarWidth: "none" }}
@@ -192,7 +192,7 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
       </div>
 
       {/* ── Masonry Grid ── */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pb-28">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-28">
         <AnimatePresence mode="wait">
           {filtered.length > 0 ? (
             <motion.div
