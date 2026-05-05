@@ -18,8 +18,7 @@ export const btn = {
     "inline-flex items-center justify-center gap-2",
     "px-7 py-3.5 border border-[#1A1A1A] text-[#1A1A1A]",
     "text-sm font-medium rounded tracking-wide bg-transparent",
-    "transition-all duration-200",
-    "hover:bg-[#1A1A1A] hover:text-[#FAFAF8]",
+    "transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]",
     "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A] focus-visible:ring-offset-2",
   ].join(" "),
 
