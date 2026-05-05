@@ -95,10 +95,9 @@ export function AboutSection() {
                 Studio
               </p>
             </div>
-
             <h2
               id="about-heading"
-              className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight -mt-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Tentang Snapp.frame Studio
