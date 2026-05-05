@@ -84,17 +84,7 @@ export function AboutSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           >
-            {/* Kata besar dekoratif — bukan eyebrow standar */}
-            <div className="overflow-hidden">
-              <p
-                className="text-[80px] lg:text-[100px] font-bold leading-none tracking-tight
-                           text-[#1A1A1A]/[0.04] select-none mb-0 -mt-4"
-                aria-hidden="true"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                Studio
-              </p>
-            </div>
+
             <h2
               id="about-heading"
               className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight"
