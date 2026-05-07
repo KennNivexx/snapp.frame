@@ -44,5 +44,5 @@ export function getWhatsAppUrl(
   };
 
   const msg = encodeURIComponent(messages[context]);
-  return `https://wa.me/${WA}?text=${msg}`;
+  return `https://wa.me/${+6287778059221}?text=${msg}`;
 }

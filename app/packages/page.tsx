@@ -2,7 +2,7 @@
 // Data packages dan FAQ di-fetch saat build time
 // Accordion FAQ ada di FaqAccordion (client component)
 
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, CalendarCheck } from "lucide-react";
 import { packages } from "@/data/packages";
 import { faqs } from "@/data/faq";
 import { formatPrice } from "@/lib/utils";
@@ -71,30 +71,36 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         <ExpandableFeatures features={pkg.features} collapseAt={3} />
       </div>
 
-      {/* CTA */}
-      <a
-        href={getWhatsAppUrl("package", pkg.name)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={
-          pkg.isPopular
-            ? [
-                "inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-lg",
-                "text-sm font-semibold tracking-wide transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]",
-                "bg-[#F5F5F5] text-[#0A0A0A]",
-              ].join(" ")
-            : [
-                "inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-lg",
-                "text-sm font-semibold tracking-wide transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A84C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]",
-                "border border-[#C9A84C]/50 text-[#C9A84C]",
-              ].join(" ")
-        }
-      >
-        <MessageCircle size={16} />
-        Tanya via WhatsApp
-      </a>
+      {/* CTA — dua tombol vertikal */}
+      <div className="flex flex-col gap-2">
+        {/* Tombol primer: langsung ke halaman booking */}
+        <a
+          href={`/booking?pkg=${pkg.id}`}
+          className={[
+            btn.primary,
+            "w-full justify-center rounded-lg py-3.5",
+          ].join(" ")}
+        >
+          <CalendarCheck size={16} />
+          Pesan Sekarang
+        </a>
+
+        {/* Tombol sekunder: tanya via WhatsApp dulu */}
+        <a
+          href={getWhatsAppUrl("package", pkg.name)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={[
+            "inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg",
+            "text-xs font-medium text-[#888888] tracking-wide",
+            "border border-[#E0E0DA] bg-transparent hover:border-[#1A1A1A]/30",
+            "transition-colors duration-200",
+          ].join(" ")}
+        >
+          <MessageCircle size={14} />
+          Tanya via WhatsApp
+        </a>
+      </div>
     </div>
   );
 }

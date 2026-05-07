@@ -16,7 +16,7 @@ export const site = {
   contact: {
     address: "Jl. Snapp.frame No. 1, Kota",
     email: "hello@snappframe.id",
-    whatsapp: "6281234567890", // Update with real Snapp.frame Studio WA number when ready
+    whatsapp: "6287778059221", // Update with real Snapp.frame Studio WA number when ready
     instagram: "https://instagram.com/snapp.frame",
     tiktok: "https://tiktok.com/@snapp.frame",
   },
