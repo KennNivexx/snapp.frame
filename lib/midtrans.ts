@@ -2,6 +2,8 @@
 // Menggunakan fetch langsung ke Midtrans API — tidak ada extra dependency.
 // ⚠️  Jangan import file ini di "use client" komponen manapun.
 
+import { env } from "@/lib/env";
+
 export type SnapPaymentGroup = "qris" | "bank_transfer" | "all";
 
 export interface SnapTransactionParams {
@@ -28,10 +30,8 @@ const PAYMENT_MAP: Record<SnapPaymentGroup, string[]> = {
  * @returns snap_token string untuk dikirim ke client
  */
 export async function createSnapToken(params: SnapTransactionParams): Promise<string> {
-  const serverKey = process.env.MIDTRANS_SERVER_KEY;
-  if (!serverKey) throw new Error("MIDTRANS_SERVER_KEY tidak dikonfigurasi.");
-
-  const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true";
+  const serverKey = env.MIDTRANS_SERVER_KEY;
+  const isProduction = env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
   const baseUrl = isProduction
     ? "https://app.midtrans.com/snap/v1/transactions"
     : "https://app.sandbox.midtrans.com/snap/v1/transactions";
@@ -92,7 +92,7 @@ export async function verifyMidtransSignature(
   grossAmount: string,
   incomingHash: string
 ): Promise<boolean> {
-  const serverKey = process.env.MIDTRANS_SERVER_KEY ?? "";
+  const serverKey = env.MIDTRANS_SERVER_KEY;
   const raw = `${orderId}${statusCode}${grossAmount}${serverKey}`;
 
   // Use Web Crypto API (available in Next.js Edge & Node 18+)

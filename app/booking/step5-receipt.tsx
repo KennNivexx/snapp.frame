@@ -11,6 +11,7 @@ import { PaymentMethod } from "./step4-payment";
 import { site } from "@/data/site";
 import { btn } from "@/lib/button-classes";
 import { createClient } from "@/lib/supabase/client";
+import { env } from "@/lib/env";
 
 /* ─── Helpers ─────────────────────────── */
 
@@ -50,8 +51,8 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   const hasSaved = useRef(false);
 
   // Environment variables Midtrans client
-  const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-  const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true";
+  const midtransClientKey = env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+  const isProd = env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
   const snapSrc = isProd ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
 
   // Insert booking to Supabase exactly once when Step 5 mounts
@@ -62,7 +63,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
     async function saveBooking() {
       setSaveState("saving");
       try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
         // Skip DB insert if Supabase not configured
         if (!supabaseUrl || supabaseUrl.includes("your-project-ref")) {
           await new Promise((r) => setTimeout(r, 400)); // simulate

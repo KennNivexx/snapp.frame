@@ -3,12 +3,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 
 function isAuthorized(req: NextRequest): boolean {
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.replace("Bearer ", "").trim();
-  return token === process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return token === env.SUPABASE_SERVICE_ROLE_KEY;
 }
+
 
 /**
  * GET /api/bookings

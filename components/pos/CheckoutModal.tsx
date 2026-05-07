@@ -33,48 +33,44 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-lg bg-neutral-900 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Complete Payment</h2>
-          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+      <div className="relative w-full max-w-lg bg-white border border-[#E0E0DA] rounded-[40px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+        <div className="p-8 border-b border-[#E0E0DA] flex items-center justify-between bg-[#FAFAF8]">
+          <h2 className="text-xl font-bold text-[#1A1A1A]" style={{ fontFamily: "var(--font-playfair)" }}>Selesaikan Pembayaran</h2>
+          <button onClick={onClose} className="p-2 hover:bg-[#F0EFE9] rounded-full transition-colors text-[#888888]">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-8 space-y-8">
+        <div className="p-10 space-y-10">
           {/* Summary */}
-          <div className="bg-white/5 rounded-2xl p-6 border border-white/5 flex justify-between items-center">
+          <div className="bg-[#F0EFE9] rounded-3xl p-8 border border-[#E0E0DA] flex justify-between items-center shadow-inner">
             <div>
-              <p className="text-xs font-bold text-white/30 uppercase tracking-widest">Total Payable</p>
-              <h3 className="text-3xl font-bold mt-1">Rp {total.toLocaleString("id-ID")}</h3>
-            </div>
-            <div className="text-right text-xs text-white/40 space-y-1">
-              <p>Items: {items.length}</p>
-              <p>Tax Incl.</p>
+              <p className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.2em]">Total yang harus dibayar</p>
+              <h3 className="text-4xl font-bold mt-2 text-[#1A1A1A]">Rp {total.toLocaleString("id-ID")}</h3>
             </div>
           </div>
 
           {/* Payment Methods */}
-          <div className="space-y-4">
-            <p className="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Select Payment Method</p>
-            <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-6">
+            <p className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.2em] ml-1">Metode Pembayaran</p>
+            <div className="grid grid-cols-3 gap-4">
               {[
-                { id: "CASH", label: "Cash", icon: Banknote },
+                { id: "CASH", label: "Tunai", icon: Banknote },
                 { id: "TRANSFER", label: "Transfer", icon: CreditCard },
                 { id: "QRIS", label: "QRIS", icon: QrCode },
               ].map((method) => (
                 <button
                   key={method.id}
                   onClick={() => setPaymentMethod(method.id as any)}
-                  className={`flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all ${
+                  className={`flex flex-col items-center justify-center gap-4 p-6 rounded-[24px] border transition-all ${
                     paymentMethod === method.id 
-                    ? "bg-purple-600/20 border-purple-500 shadow-lg shadow-purple-500/10 text-purple-400" 
-                    : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
+                    ? "bg-[#1A1A1A] border-[#1A1A1A] shadow-xl shadow-black/10 text-white translate-y-[-4px]" 
+                    : "bg-white border-[#E0E0DA] text-[#888888] hover:bg-[#F0EFE9] hover:text-[#1A1A1A]"
                   }`}
                 >
-                  <method.icon className="w-6 h-6" />
+                  <method.icon className="w-8 h-8" />
                   <span className="text-xs font-bold">{method.label}</span>
                 </button>
               ))}
@@ -84,14 +80,14 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
           <button
             onClick={handleConfirm}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 py-4 rounded-2xl font-bold text-white shadow-xl shadow-purple-500/20 flex items-center justify-center gap-2 group transition-all"
+            className="w-full bg-[#1A1A1A] hover:bg-[#333333] py-6 rounded-[24px] font-bold text-white shadow-xl shadow-black/5 flex items-center justify-center gap-3 group transition-all"
           >
             {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-6 h-6 animate-spin" />
             ) : (
               <>
-                <CheckCircle2 className="w-5 h-5" />
-                <span>Confirm & Finalize Transaction</span>
+                <CheckCircle2 className="w-6 h-6" />
+                <span className="text-lg">Konfirmasi & Simpan</span>
               </>
             )}
           </button>
@@ -100,3 +96,4 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
     </div>
   );
 }
+

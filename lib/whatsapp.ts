@@ -1,6 +1,5 @@
-// lib/whatsapp.ts — Helper untuk generate WhatsApp URL dengan pesan template
-
 import { site } from "@/data/site";
+import { env } from "@/lib/env";
 
 export type WaContext = "general" | "package" | "gallery";
 
@@ -44,5 +43,5 @@ export function getWhatsAppUrl(
   };
 
   const msg = encodeURIComponent(messages[context]);
-  return `https://wa.me/${+6287778059221}?text=${msg}`;
+  return `https://wa.me/${env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${msg}`;
 }
