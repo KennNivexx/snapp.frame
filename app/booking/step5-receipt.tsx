@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Copy, Check, RotateCcw, AlertCircle, Loader2 } from "lucide-react";
+import Script from "next/script";
+import { MessageCircle, Copy, Check, RotateCcw, AlertCircle, Loader2, CreditCard } from "lucide-react";
 import { Package } from "@/data/packages";
 import { formatPrice } from "@/lib/utils";
 import { applyDiscount, ReferralCode } from "@/lib/referral";
@@ -24,96 +25,7 @@ function generateInvoice(): string {
   return "SNF-" + ts.slice(-6);
 }
 
-/* ─── QRIS SVG ─────────────────────────── */
-
-function QRCodeSVG({ size = 200 }: { size?: number }) {
-  const cell = Math.floor(size / 25);
-  const S = cell * 25;
-
-  const pattern: number[][] = [];
-  for (let r = 0; r < 25; r++) {
-    pattern.push([]);
-    for (let c = 0; c < 25; c++) {
-      if (r <= 6 && c <= 6) {
-        const onBorder = r === 0 || r === 6 || c === 0 || c === 6;
-        const onInner = r >= 2 && r <= 4 && c >= 2 && c <= 4;
-        pattern[r].push(onBorder || onInner ? 1 : 0);
-      } else if (r <= 6 && c >= 18) {
-        const cc = c - 18;
-        const onBorder = r === 0 || r === 6 || cc === 0 || cc === 6;
-        const onInner = r >= 2 && r <= 4 && cc >= 2 && cc <= 4;
-        pattern[r].push(onBorder || onInner ? 1 : 0);
-      } else if (r >= 18 && c <= 6) {
-        const rr = r - 18;
-        const onBorder = rr === 0 || rr === 6 || c === 0 || c === 6;
-        const onInner = rr >= 2 && rr <= 4 && c >= 2 && c <= 4;
-        pattern[r].push(onBorder || onInner ? 1 : 0);
-      } else if (r === 6) {
-        pattern[r].push(c % 2 === 0 ? 1 : 0);
-      } else if (c === 6) {
-        pattern[r].push(r % 2 === 0 ? 1 : 0);
-      } else {
-        const seed = (r * 31 + c * 17 + r * c * 7) % 100;
-        pattern[r].push(seed < 48 ? 1 : 0);
-      }
-    }
-  }
-
-  return (
-    <svg
-      width={S} height={S} viewBox={`0 0 ${S} ${S}`}
-      xmlns="http://www.w3.org/2000/svg"
-      className="rounded-xl border-4 border-white shadow-md"
-      style={{ background: "white" }}
-      aria-label="QRIS Payment Code"
-    >
-      {pattern.map((row, r) =>
-        row.map((val, c) =>
-          val ? <rect key={`${r}-${c}`} x={c * cell} y={r * cell} width={cell} height={cell} fill="#1A1A1A" /> : null
-        )
-      )}
-    </svg>
-  );
-}
-
-/* ─── Bank Transfer ──────────────────── */
-
-const BANK_ACCOUNTS = [
-  { bank: "BCA",     number: "1234567890", name: "Snapp.frame Studio" },
-  { bank: "Mandiri", number: "0987654321", name: "Snapp.frame Studio" },
-  { bank: "BRI",     number: "1122334455", name: "Snapp.frame Studio" },
-];
-
-function BankCard({ account, total }: { account: typeof BANK_ACCOUNTS[0]; total: number }) {
-  const [copied, setCopied] = useState(false);
-  function copy() {
-    navigator.clipboard.writeText(account.number).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-  return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-[#E0E0DA] bg-[#F0EFE9]">
-      <div>
-        <p className="text-xs font-bold text-[#888888] uppercase tracking-wider">{account.bank}</p>
-        <p className="text-base font-bold text-[#1A1A1A] font-mono tracking-widest mt-0.5">{account.number}</p>
-        <p className="text-xs text-[#5A5A5A] mt-0.5">a.n. {account.name}</p>
-      </div>
-      <div className="flex flex-col items-end gap-2">
-        <button
-          onClick={copy}
-          className={["flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-            copied ? "bg-[#1A1A1A] text-[#FAFAF8]" : "bg-white border border-[#E0E0DA] text-[#1A1A1A] hover:border-[#1A1A1A]/40"
-          ].join(" ")}
-        >
-          {copied ? <Check size={12} /> : <Copy size={12} />}
-          {copied ? "Disalin!" : "Salin"}
-        </button>
-        <p className="text-xs text-[#888888]">Total: <span className="font-semibold text-[#1A1A1A]">{formatPrice(total)}</span></p>
-      </div>
-    </div>
-  );
-}
+/* ─── Removed Fake SVG & Bank List ─── */
 
 /* ─── Main Component ─────────────────── */
 
@@ -133,7 +45,14 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   const [invoice] = useState(generateInvoice);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [saveError, setSaveError] = useState("");
+  const [isPaying, setIsPaying] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "failed">("pending");
   const hasSaved = useRef(false);
+
+  // Environment variables Midtrans client
+  const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+  const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true";
+  const snapSrc = isProd ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
 
   // Insert booking to Supabase exactly once when Step 5 mounts
   useEffect(() => {
@@ -191,6 +110,51 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  async function handlePayment() {
+    setIsPaying(true);
+    try {
+      const res = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: invoice,
+          grossAmount: finalPrice,
+          customerName: formData.name,
+          customerPhone: formData.whatsapp,
+          itemName: pkg.name,
+          itemId: pkg.id,
+          paymentGroup: paymentMethod === "qris" ? "qris" : "bank_transfer",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mendapatkan token pembayaran");
+
+      // @ts-expect-error snap is injected by midtrans script
+      window.snap.pay(data.snapToken, {
+        onSuccess: function (result: any) {
+          setPaymentStatus("success");
+          console.log("payment success!", result);
+        },
+        onPending: function (result: any) {
+          setPaymentStatus("pending");
+          console.log("wating your payment!", result);
+        },
+        onError: function (result: any) {
+          setPaymentStatus("failed");
+          console.log("payment failed!", result);
+        },
+        onClose: function () {
+          setIsPaying(false);
+          console.log("you closed the popup without finishing the payment");
+        },
+      });
+    } catch (err: any) {
+      alert("Error memproses pembayaran: " + err.message);
+      setIsPaying(false);
+    }
+  }
+
   function buildWhatsAppMsg(): string {
     const date = formatDate(formData.date);
     const lines = [
@@ -224,6 +188,8 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
 
   return (
     <div>
+      <Script src={snapSrc} data-client-key={midtransClientKey} strategy="lazyOnload" />
+
       <div className="mb-8 text-center">
         <div className={["w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4",
           saveState === "saving" ? "bg-[#E0E0DA]" : "bg-[#1A1A1A]"
@@ -319,18 +285,18 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           </p>
 
           {paymentMethod === "qris" ? (
-            <div className="flex flex-col items-center py-4">
-              <QRCodeSVG size={180} />
-              <p className="text-base font-bold text-[#1A1A1A] mt-4" style={{ fontFamily: "var(--font-heading)" }}>
-                {formatPrice(finalPrice)}
+            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3">
+              <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Pembayaran via QRIS</p>
+              <p className="text-xs text-[#5A5A5A] text-center max-w-[200px]">
+                Mendukung Gopay, ShopeePay, Dana, LinkAja, dan bank transfer scan.
               </p>
-              <p className="text-xs text-[#888888] mt-1">Berlaku 15 menit · Semua bank &amp; e-wallet</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {BANK_ACCOUNTS.map((acc) => (
-                <BankCard key={acc.bank} account={acc} total={finalPrice} />
-              ))}
+            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3">
+              <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Pembayaran via Transfer Bank</p>
+              <p className="text-xs text-[#5A5A5A] text-center max-w-[200px]">
+                Mendukung Virtual Account BCA, BNI, BRI, Permata, Mandiri, dll.
+              </p>
             </div>
           )}
 
@@ -341,6 +307,29 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
 
       {/* Actions */}
       <div className="max-w-md mx-auto space-y-3">
+        {paymentStatus === "success" ? (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center mb-4">
+            <p className="text-green-800 font-semibold mb-2">Pembayaran Berhasil!</p>
+            <p className="text-sm text-green-700">Terima kasih, invoice Anda sudah lunas.</p>
+          </div>
+        ) : (
+          <button
+            onClick={handlePayment}
+            disabled={saveState !== "saved" || isPaying}
+            className={[
+              btn.primary, 
+              "w-full rounded-xl justify-center font-bold tracking-wider",
+              saveState !== "saved" || isPaying ? "opacity-50 cursor-not-allowed" : ""
+            ].join(" ")}
+          >
+            {isPaying ? (
+              <><Loader2 size={18} className="animate-spin" /> Membuka Pembayaran...</>
+            ) : (
+              <><CreditCard size={18} /> Bayar Sekarang</>
+            )}
+          </button>
+        )}
+
         <a
           href={buildWhatsAppMsg()}
           target="_blank"
@@ -348,7 +337,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           className={[btn.whatsapp, "w-full rounded-xl justify-center"].join(" ")}
         >
           <MessageCircle size={18} />
-          Konfirmasi via WhatsApp
+          Hubungi Admin via WhatsApp
         </a>
         <button
           onClick={onReset}
