@@ -238,7 +238,7 @@ export function HeroSection() {
       ref={sectionRef}
       id="hero"
       className="relative min-h-svh flex items-center justify-center overflow-hidden"
-      style={{ perspective: "1100px", backgroundColor: "#1C1917" }}
+      style={{ perspective: "1100px", backgroundColor: "#3B2211" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       aria-label="Hero — Snapp.frame Studio"
@@ -257,7 +257,7 @@ export function HeroSection() {
         )}
         {/* Dark overlay yang elegan & ramah mata */}
         <div className="absolute inset-0"
-          style={{ background: "linear-gradient(160deg, rgba(28,25,23,0.85) 0%, rgba(28,25,23,0.6) 45%, rgba(28,25,23,0.95) 100%)" }}
+          style={{ background: "linear-gradient(160deg, rgba(59,34,17,0.85) 0%, rgba(59,34,17,0.6) 45%, rgba(59,34,17,0.95) 100%)" }}
         />
         {/* Soft Vignette */}
         <div className="absolute inset-0"
@@ -379,10 +379,10 @@ export function HeroSection() {
         />
       </motion.div>
 
-      {/* ── Soft Fade Overlay ke Section Bawah (#FAFAF8) ── */}
+      {/* ── Soft Fade Overlay ke Section Bawah (#FCF9F6) ── */}
       <div 
         className="absolute bottom-0 left-0 right-0 h-48 z-10 pointer-events-none"
-        style={{ background: "linear-gradient(to top, #FAFAF8 0%, transparent 100%)" }}
+        style={{ background: "linear-gradient(to top, #FCF9F6 0%, transparent 100%)" }}
       />
     </section>
   );

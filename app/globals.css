@@ -8,19 +8,19 @@
    ============================================= */
 
 @theme {
-  /* Brand Colors */
-  --color-warm-white: #fafaf8;
-  --color-warm-light: #f0efe9;
-  --color-near-black: #1a1a1a;
-  --color-dark-gray: #2c2c2c;
-  --color-mid-gray: #5a5a5a;
-  --color-muted: #888888;
-  --color-border: #e0e0da;
-  --color-gold: #c9a84c;
+  /* Brand Colors (Brown/Sepia to match logo) */
+  --color-warm-white: #FCF9F6;
+  --color-warm-light: #F3EBE3;
+  --color-near-black: #3B2211;
+  --color-dark-gray: #5A371F;
+  --color-mid-gray: #8B6145;
+  --color-muted: #A7846A;
+  --color-border: #DBC0AC;
+  --color-gold: #C88A58;
 
   /* Background/Foreground */
-  --color-background: #fafaf8;
-  --color-foreground: #1a1a1a;
+  --color-background: var(--color-warm-white);
+  --color-foreground: var(--color-near-black);
 
   /* Fonts */
   --font-heading: var(--font-playfair);
@@ -38,7 +38,7 @@ html {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #1c1917;
+  background-color: var(--color-background);
   -webkit-text-size-adjust: 100%;
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
@@ -52,8 +52,8 @@ html::-webkit-scrollbar {
 }
 
 body {
-  background-color: #fafaf8;
-  color: #1a1a1a;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-lato), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -126,8 +126,8 @@ img {
    ============================================= */
 
 ::selection {
-  background: #1a1a1a;
-  color: #fafaf8;
+  background: var(--color-foreground);
+  color: var(--color-background);
 }
 
 /* =============================================
@@ -135,6 +135,6 @@ img {
    ============================================= */
 
 :focus-visible {
-  outline: 2px solid #1a1a1a;
+  outline: 2px solid var(--color-foreground);
   outline-offset: 2px;
 }

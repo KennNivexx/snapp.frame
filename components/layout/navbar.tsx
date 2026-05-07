@@ -27,9 +27,10 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  // Track scroll position
+  // Track scroll — berubah saat melewati batas bawah hero
   const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 80);
+    const heroBottom = window.innerHeight - 100;
+    setScrolled(window.scrollY > heroBottom);
   }, []);
 
   useEffect(() => {
@@ -47,7 +48,11 @@ export function Navbar() {
   useEffect(() => {
     if (window.location.hash) {
       setTimeout(() => {
-        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search,
+        );
       }, 100);
     }
   }, []);
@@ -79,11 +84,13 @@ export function Navbar() {
     return pathname === href;
   };
 
-  // Determine if we are on a transparent navbar over a dark hero section
-  const isDarkBg = pathname === "/" && !scrolled;
-  const headerTextColor = isDarkBg ? "text-white" : "text-[#1A1A1A]";
+  // Transparan di hero, solid saat scroll
+  const headerTextColor = scrolled ? "text-[#3B2211]" : "text-white";
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
     // If clicking a hash link on the home page, scroll smoothly without updating the URL hash
     if (href.startsWith("/#") && pathname === "/") {
       e.preventDefault();
@@ -100,34 +107,44 @@ export function Navbar() {
     <>
       {/* ── Navbar Bar ─────────────────────────────────────── */}
       <header className={`fixed top-0 left-0 right-0 z-50 ${headerTextColor}`}>
-        {/* Animated background overlay — terpisah dari elemen interaktif */}
+        {/* Gradient overlay — visible saat di hero */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
-          animate={{
-            backgroundColor: scrolled
-              ? "rgba(250, 250, 248, 0.97)"
-              : "rgba(250, 250, 248, 0)",
-            backdropFilter: scrolled ? "blur(12px)" : "blur(0px)",
-            boxShadow: scrolled
-              ? "0 1px 0 0 rgba(26, 26, 26, 0.08)"
-              : "none",
+          style={{
+            background: "linear-gradient(to bottom, rgba(252,246,240,0.95) 0%, rgba(252,246,240,0.4) 100%)",
           }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          animate={{
+            opacity: scrolled ? 0 : 1,
+          }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          aria-hidden="true"
+        />
+        {/* Solid overlay — visible saat scroll */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundColor: "rgba(252, 246, 240, 0.97)",
+          }}
+          animate={{
+            opacity: scrolled ? 1 : 0,
+            backdropFilter: scrolled ? "blur(14px)" : "blur(0px)",
+            boxShadow: scrolled ? "0 1px 12px 0 rgba(59, 34, 17, 0.1)" : "0 0 0 0 transparent",
+          }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
           aria-hidden="true"
         />
 
         {/* Nav content di atas overlay, pointer-events tetap normal */}
         <nav className="relative z-10 max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="flex items-center justify-between h-20 lg:h-28">
-
-            {/* ── Logo ─────────────────────────────────────── */}
+            {/* ── Logo (desktop only) ─────────────────────── */}
             <Link
               href="/"
               onClick={(e) => handleNavClick(e, "/")}
-              className="flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded"
+              className="hidden lg:block flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded"
               aria-label="Snapp.frame Studio — Beranda"
             >
-              <Logo height={42} textColor="currentColor" />
+              <Logo height={300} textColor="currentColor" />
             </Link>
 
             {/* ── Desktop Menu ─────────────────────────────── */}
@@ -151,9 +168,7 @@ export function Navbar() {
                     {link.label}
                     {/* Animated underline */}
                     {!isActive(link.href) && (
-                      <span
-                        className="absolute -bottom-1 left-0 h-px bg-current w-0 group-hover:w-full transition-all duration-300 ease-out"
-                      />
+                      <span className="absolute -bottom-1 left-0 h-px bg-current w-0 group-hover:w-full transition-all duration-300 ease-out" />
                     )}
                   </Link>
                 </li>
@@ -237,7 +252,7 @@ export function Navbar() {
                 onClick={(e) => handleNavClick(e, "/")}
                 aria-label="Snapp.frame Studio — Beranda"
               >
-                <Logo height={32} />
+                <Logo height={120} />
               </Link>
               <button
                 onClick={() => setMobileOpen(false)}
