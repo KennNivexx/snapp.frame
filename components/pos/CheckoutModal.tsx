@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, CreditCard, Banknote, QrCode, CheckCircle2, Printer, Loader2 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -24,11 +25,22 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
 
   const handleConfirm = async () => {
     setLoading(true);
-    // Mock API Call
+    
+    const transactionId = "TRX-" + Math.random().toString(36).substring(7).toUpperCase();
+    
+    // Generate WA URL
+    const waUrl = getWhatsAppUrl("checkout", {
+      id: transactionId,
+      total,
+      method: paymentMethod,
+      items: items
+    });
+
     setTimeout(() => {
       setLoading(false);
-      onSuccess("TRX-" + Math.random().toString(36).substring(7).toUpperCase());
-    }, 1500);
+      window.open(waUrl, "_blank");
+      onSuccess(transactionId);
+    }, 1000);
   };
 
   return (
@@ -87,7 +99,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
             ) : (
               <>
                 <CheckCircle2 className="w-6 h-6" />
-                <span className="text-lg">Konfirmasi & Simpan</span>
+                <span className="text-lg">Konfirmasi via WhatsApp</span>
               </>
             )}
           </button>

@@ -28,7 +28,7 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
   const [error, setError] = useState("");
   const [checking, setChecking] = useState(false);
 
-  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct) : pkg.price;
+  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.type) : pkg.price;
   const discount = pkg.price - finalPrice;
 
   async function applyCode() {
@@ -114,7 +114,12 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
               <CheckCircle size={16} className="text-[#5A371F] flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-[#3B2211]">{referral.code}</p>
-                <p className="text-xs text-[#8B6145]">Dari {referral.ownerName} — diskon {referral.discountPct}%</p>
+                <p className="text-xs text-[#8B6145]">
+                  {referral.type === "PERCENTAGE" 
+                    ? `Diskon ${referral.discountPct}%` 
+                    : `Diskon Rp ${referral.discountPct.toLocaleString("id-ID")}`
+                  }
+                </p>
               </div>
             </div>
             <button onClick={removeCode} className="text-xs text-[#8B6145] underline hover:text-[#3B2211]">Hapus</button>
@@ -157,7 +162,9 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
           </div>
           {referral && (
             <div className="flex justify-between text-sm">
-              <span className="text-[#5A371F]">Diskon {referral.discountPct}% ({referral.code})</span>
+              <span className="text-[#5A371F]">
+                Diskon {referral.type === "PERCENTAGE" ? `${referral.discountPct}%` : "Nominal"} ({referral.code})
+              </span>
               <span className="text-[#5A371F] font-medium">- {formatPrice(discount)}</span>
             </div>
           )}

@@ -20,8 +20,9 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
   { label: "Jadwal Booking", icon: Calendar, href: "/admin/bookings" },
-  { label: "Pelanggan & Pendapatan", icon: Users, href: "/admin/customers" },
-  { label: "Buat Referral", icon: Ticket, href: "/admin/referrals" },
+  { label: "Pendapatan", icon: Users, href: "/admin/customers" },
+  { label: "Kode Referral", icon: Ticket, href: "/admin/referrals" },
+  { label: "Kasir POS", icon: ShoppingCart, href: "/kasir" },
 ];
 
 export default function POSLayout({

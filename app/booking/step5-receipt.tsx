@@ -12,6 +12,7 @@ import { site } from "@/data/site";
 import { btn } from "@/lib/button-classes";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/lib/env";
+import { createBooking } from "@/app/actions/bookings";
 
 /* ─── Helpers ─────────────────────────── */
 
@@ -41,7 +42,7 @@ interface Step5Props {
 type SaveState = "idle" | "saving" | "saved" | "error";
 
 export default function Step5Receipt({ pkg, formData, referral, paymentMethod, onReset }: Step5Props) {
-  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct) : pkg.price;
+  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.type) : pkg.price;
   const discount = pkg.price - finalPrice;
   const [invoice] = useState(generateInvoice);
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -55,7 +56,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   const isProd = env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
   const snapSrc = isProd ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
 
-  // Insert booking to Supabase exactly once when Step 5 mounts
+  // Insert booking to database exactly once when Step 5 mounts
   useEffect(() => {
     if (hasSaved.current) return;
     hasSaved.current = true;
@@ -63,17 +64,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
     async function saveBooking() {
       setSaveState("saving");
       try {
-        const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
-        // Skip DB insert if Supabase not configured
-        if (!supabaseUrl || supabaseUrl.includes("your-project-ref")) {
-          await new Promise((r) => setTimeout(r, 400)); // simulate
-          setSaveState("saved");
-          return;
-        }
-
-        const supabase = createClient();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase.from("bookings") as any).insert({
+        const payload = {
           invoice_no: invoice,
           package_id: pkg.id,
           package_name: pkg.name,
@@ -88,21 +79,18 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           final_price: finalPrice,
           payment_method: paymentMethod,
           status: "pending",
-        });
+        };
 
-        if (error) throw error;
+        const result = await createBooking(payload);
 
-        // Increment referral usage_count if a code was used
-        if (referral?.code) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any).rpc("increment_referral_usage", { p_code: referral.code }).maybeSingle();
-          // rpc failure is non-critical — booking already saved
+        if (!result.success) {
+          throw new Error(result.error);
         }
 
         setSaveState("saved");
-      } catch (err) {
+      } catch (err: any) {
         console.error("[Snapp.frame] Booking save failed:", err);
-        setSaveError("Booking gagal disimpan ke database. Silakan konfirmasi manual via WhatsApp.");
+        setSaveError(err.message || "Booking gagal disimpan ke database. Silakan konfirmasi manual via WhatsApp.");
         setSaveState("error");
       }
     }
@@ -269,7 +257,9 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
             </div>
             {referral && (
               <div className="flex justify-between text-xs">
-                <span className="text-[#5A371F]">Diskon {referral.discountPct}%</span>
+                <span className="text-[#5A371F]">
+                  Diskon {referral.type === "PERCENTAGE" ? `${referral.discountPct}%` : "Nominal"} ({referral.code})
+                </span>
                 <span className="text-[#5A371F]">- {formatPrice(discount)}</span>
               </div>
             )}
@@ -308,38 +298,46 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
 
       {/* Actions */}
       <div className="max-w-md mx-auto space-y-3">
+        <a
+          href={buildWhatsAppMsg()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={[btn.whatsapp, "w-full rounded-xl justify-center py-4 text-base"].join(" ")}
+        >
+          <MessageCircle size={20} />
+          Konfirmasi via WhatsApp
+        </a>
+
+        <div className="relative py-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-[#E0E0DA]"></span>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase tracking-widest text-[#888888]">
+            <span className="bg-[#FAFAF8] px-2 font-black">Atau Bayar Sekarang</span>
+          </div>
+        </div>
+
         {paymentStatus === "success" ? (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center mb-4">
-            <p className="text-green-800 font-semibold mb-2">Pembayaran Berhasil!</p>
-            <p className="text-sm text-green-700">Terima kasih, invoice Anda sudah lunas.</p>
+          <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
+            <p className="text-green-800 font-semibold">Lunas via Midtrans ✓</p>
           </div>
         ) : (
           <button
             onClick={handlePayment}
             disabled={saveState !== "saved" || isPaying}
             className={[
-              btn.primary, 
-              "w-full rounded-xl justify-center font-bold tracking-wider",
-              saveState !== "saved" || isPaying ? "opacity-50 cursor-not-allowed" : ""
+              btn.secondary, 
+              "w-full rounded-xl justify-center font-bold text-sm",
+              (saveState !== "saved" || isPaying) ? "opacity-50 cursor-not-allowed" : ""
             ].join(" ")}
           >
             {isPaying ? (
-              <><Loader2 size={18} className="animate-spin" /> Membuka Pembayaran...</>
+              <><Loader2 size={16} className="animate-spin" /> Membuka Snap...</>
             ) : (
-              <><CreditCard size={18} /> Bayar Sekarang</>
+              <><CreditCard size={16} /> Bayar Digital (Midtrans)</>
             )}
           </button>
         )}
-
-        <a
-          href={buildWhatsAppMsg()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={[btn.whatsapp, "w-full rounded-xl justify-center"].join(" ")}
-        >
-          <MessageCircle size={18} />
-          Hubungi Admin via WhatsApp
-        </a>
         <button
           onClick={onReset}
           className={[btn.secondary, "w-full rounded-xl justify-center gap-2"].join(" ")}

@@ -103,6 +103,11 @@ export function Navbar() {
     setMobileOpen(false);
   };
 
+  // Hide navbar on POS routes
+  if (pathname.startsWith("/admin") || pathname.startsWith("/kasir")) {
+    return null;
+  }
+
   return (
     <>
       {/* ── Navbar Bar ─────────────────────────────────────── */}

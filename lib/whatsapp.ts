@@ -1,7 +1,7 @@
 import { site } from "@/data/site";
 import { env } from "@/lib/env";
 
-export type WaContext = "general" | "package" | "gallery";
+export type WaContext = "general" | "package" | "gallery" | "checkout";
 
 /**
  * Generate WhatsApp URL dengan pesan template sesuai konteks.
@@ -18,7 +18,7 @@ export type WaContext = "general" | "package" | "gallery";
  */
 export function getWhatsAppUrl(
   context: WaContext,
-  packageName?: string
+  data?: any
 ): string {
   const WA = site.contact.whatsapp;
 
@@ -32,16 +32,26 @@ export function getWhatsAppUrl(
     return "#";
   }
 
-  const messages: Record<WaContext, string> = {
-    general:
-      "Halo Snapp.frame Studio! Saya tertarik untuk sesi foto. Boleh tanya-tanya dulu?",
-    gallery:
-      "Halo Snapp.frame Studio! Saya lihat galeri fotonya dan tertarik. Bisa info lebih lanjut?",
-    package: `Halo Snapp.frame Studio! Saya tertarik dengan ${
-      packageName ?? "paket foto"
-    } yang ada di website. Bisa info lebih lanjut?`,
-  };
+  let message = "";
+  switch (context) {
+    case "general":
+      message = "Halo Snapp.frame Studio! Saya tertarik untuk sesi foto. Boleh tanya-tanya dulu?";
+      break;
+    case "gallery":
+      message = "Halo Snapp.frame Studio! Saya lihat galeri fotonya dan tertarik. Bisa info lebih lanjut?";
+      break;
+    case "package":
+      message = `Halo Snapp.frame Studio! Saya tertarik dengan ${data ?? "paket foto"} yang ada di website. Bisa info lebih lanjut?`;
+      break;
+    case "checkout":
+      if (data) {
+        message = `Halo Snapp.frame Studio! Saya ingin konfirmasi pembayaran untuk pesanan:\n\n*ID Pesanan:* ${data.id}\n*Total:* Rp ${data.total?.toLocaleString("id-ID")}\n*Metode:* ${data.method}\n\n*Item:* \n${data.items?.map((item: any) => `- ${item.name} x${item.qty}`).join("\n")}\n\nTerima kasih!`;
+      } else {
+        message = "Halo Snapp.frame Studio! Saya ingin konfirmasi pembayaran.";
+      }
+      break;
+  }
 
-  const msg = encodeURIComponent(messages[context]);
+  const msg = encodeURIComponent(message);
   return `https://wa.me/${env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${msg}`;
 }

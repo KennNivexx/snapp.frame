@@ -9,7 +9,8 @@ export async function POST(req: Request) {
     
     const referralSchema = z.object({
       code: z.string().min(3).toUpperCase(),
-      type: z.enum(["DISCOUNT_PERCENT", "CASHBACK", "FREE_ITEM"]),
+      label: z.string().optional().default(""),
+      type: z.enum(["PERCENTAGE", "FIXED"]),
       value: z.number().min(0),
       usageLimit: z.number().optional(),
       expiryDate: z.string().optional(),
@@ -20,6 +21,7 @@ export async function POST(req: Request) {
     const referral = await prisma.referralCode.create({
       data: {
         code: validatedData.code,
+        label: validatedData.label,
         type: validatedData.type,
         value: validatedData.value,
         usageLimit: validatedData.usageLimit,

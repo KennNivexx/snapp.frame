@@ -62,9 +62,8 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 
 export const ReferralType: {
-  DISCOUNT_PERCENT: 'DISCOUNT_PERCENT',
-  CASHBACK: 'CASHBACK',
-  FREE_ITEM: 'FREE_ITEM'
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED'
 };
 
 export type ReferralType = (typeof ReferralType)[keyof typeof ReferralType]
@@ -7430,6 +7429,7 @@ export namespace Prisma {
   export type ReferralCodeMinAggregateOutputType = {
     id: string | null
     code: string | null
+    label: string | null
     type: $Enums.ReferralType | null
     value: number | null
     expiryDate: Date | null
@@ -7443,6 +7443,7 @@ export namespace Prisma {
   export type ReferralCodeMaxAggregateOutputType = {
     id: string | null
     code: string | null
+    label: string | null
     type: $Enums.ReferralType | null
     value: number | null
     expiryDate: Date | null
@@ -7456,6 +7457,7 @@ export namespace Prisma {
   export type ReferralCodeCountAggregateOutputType = {
     id: number
     code: number
+    label: number
     type: number
     value: number
     expiryDate: number
@@ -7483,6 +7485,7 @@ export namespace Prisma {
   export type ReferralCodeMinAggregateInputType = {
     id?: true
     code?: true
+    label?: true
     type?: true
     value?: true
     expiryDate?: true
@@ -7496,6 +7499,7 @@ export namespace Prisma {
   export type ReferralCodeMaxAggregateInputType = {
     id?: true
     code?: true
+    label?: true
     type?: true
     value?: true
     expiryDate?: true
@@ -7509,6 +7513,7 @@ export namespace Prisma {
   export type ReferralCodeCountAggregateInputType = {
     id?: true
     code?: true
+    label?: true
     type?: true
     value?: true
     expiryDate?: true
@@ -7609,6 +7614,7 @@ export namespace Prisma {
   export type ReferralCodeGroupByOutputType = {
     id: string
     code: string
+    label: string
     type: $Enums.ReferralType
     value: number
     expiryDate: Date | null
@@ -7641,6 +7647,7 @@ export namespace Prisma {
   export type ReferralCodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     code?: boolean
+    label?: boolean
     type?: boolean
     value?: boolean
     expiryDate?: boolean
@@ -7657,6 +7664,7 @@ export namespace Prisma {
   export type ReferralCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     code?: boolean
+    label?: boolean
     type?: boolean
     value?: boolean
     expiryDate?: boolean
@@ -7670,6 +7678,7 @@ export namespace Prisma {
   export type ReferralCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     code?: boolean
+    label?: boolean
     type?: boolean
     value?: boolean
     expiryDate?: boolean
@@ -7683,6 +7692,7 @@ export namespace Prisma {
   export type ReferralCodeSelectScalar = {
     id?: boolean
     code?: boolean
+    label?: boolean
     type?: boolean
     value?: boolean
     expiryDate?: boolean
@@ -7693,7 +7703,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ReferralCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "type" | "value" | "expiryDate" | "usageLimit" | "usageCount" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["referralCode"]>
+  export type ReferralCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "label" | "type" | "value" | "expiryDate" | "usageLimit" | "usageCount" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["referralCode"]>
   export type ReferralCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | ReferralCode$transactionsArgs<ExtArgs>
     usages?: boolean | ReferralCode$usagesArgs<ExtArgs>
@@ -7711,6 +7721,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       code: string
+      label: string
       type: $Enums.ReferralType
       value: number
       expiryDate: Date | null
@@ -8146,6 +8157,7 @@ export namespace Prisma {
   interface ReferralCodeFieldRefs {
     readonly id: FieldRef<"ReferralCode", 'String'>
     readonly code: FieldRef<"ReferralCode", 'String'>
+    readonly label: FieldRef<"ReferralCode", 'String'>
     readonly type: FieldRef<"ReferralCode", 'ReferralType'>
     readonly value: FieldRef<"ReferralCode", 'Float'>
     readonly expiryDate: FieldRef<"ReferralCode", 'DateTime'>
@@ -9776,6 +9788,7 @@ export namespace Prisma {
   export const ReferralCodeScalarFieldEnum: {
     id: 'id',
     code: 'code',
+    label: 'label',
     type: 'type',
     value: 'value',
     expiryDate: 'expiryDate',
@@ -10316,6 +10329,7 @@ export namespace Prisma {
     NOT?: ReferralCodeWhereInput | ReferralCodeWhereInput[]
     id?: StringFilter<"ReferralCode"> | string
     code?: StringFilter<"ReferralCode"> | string
+    label?: StringFilter<"ReferralCode"> | string
     type?: EnumReferralTypeFilter<"ReferralCode"> | $Enums.ReferralType
     value?: FloatFilter<"ReferralCode"> | number
     expiryDate?: DateTimeNullableFilter<"ReferralCode"> | Date | string | null
@@ -10331,6 +10345,7 @@ export namespace Prisma {
   export type ReferralCodeOrderByWithRelationInput = {
     id?: SortOrder
     code?: SortOrder
+    label?: SortOrder
     type?: SortOrder
     value?: SortOrder
     expiryDate?: SortOrderInput | SortOrder
@@ -10349,6 +10364,7 @@ export namespace Prisma {
     AND?: ReferralCodeWhereInput | ReferralCodeWhereInput[]
     OR?: ReferralCodeWhereInput[]
     NOT?: ReferralCodeWhereInput | ReferralCodeWhereInput[]
+    label?: StringFilter<"ReferralCode"> | string
     type?: EnumReferralTypeFilter<"ReferralCode"> | $Enums.ReferralType
     value?: FloatFilter<"ReferralCode"> | number
     expiryDate?: DateTimeNullableFilter<"ReferralCode"> | Date | string | null
@@ -10364,6 +10380,7 @@ export namespace Prisma {
   export type ReferralCodeOrderByWithAggregationInput = {
     id?: SortOrder
     code?: SortOrder
+    label?: SortOrder
     type?: SortOrder
     value?: SortOrder
     expiryDate?: SortOrderInput | SortOrder
@@ -10385,6 +10402,7 @@ export namespace Prisma {
     NOT?: ReferralCodeScalarWhereWithAggregatesInput | ReferralCodeScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ReferralCode"> | string
     code?: StringWithAggregatesFilter<"ReferralCode"> | string
+    label?: StringWithAggregatesFilter<"ReferralCode"> | string
     type?: EnumReferralTypeWithAggregatesFilter<"ReferralCode"> | $Enums.ReferralType
     value?: FloatWithAggregatesFilter<"ReferralCode"> | number
     expiryDate?: DateTimeNullableWithAggregatesFilter<"ReferralCode"> | Date | string | null
@@ -10842,7 +10860,8 @@ export namespace Prisma {
   export type ReferralCodeCreateInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -10857,7 +10876,8 @@ export namespace Prisma {
   export type ReferralCodeUncheckedCreateInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -10872,6 +10892,7 @@ export namespace Prisma {
   export type ReferralCodeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10887,6 +10908,7 @@ export namespace Prisma {
   export type ReferralCodeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10902,7 +10924,8 @@ export namespace Prisma {
   export type ReferralCodeCreateManyInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -10915,6 +10938,7 @@ export namespace Prisma {
   export type ReferralCodeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10928,6 +10952,7 @@ export namespace Prisma {
   export type ReferralCodeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11497,6 +11522,7 @@ export namespace Prisma {
   export type ReferralCodeCountOrderByAggregateInput = {
     id?: SortOrder
     code?: SortOrder
+    label?: SortOrder
     type?: SortOrder
     value?: SortOrder
     expiryDate?: SortOrder
@@ -11516,6 +11542,7 @@ export namespace Prisma {
   export type ReferralCodeMaxOrderByAggregateInput = {
     id?: SortOrder
     code?: SortOrder
+    label?: SortOrder
     type?: SortOrder
     value?: SortOrder
     expiryDate?: SortOrder
@@ -11529,6 +11556,7 @@ export namespace Prisma {
   export type ReferralCodeMinOrderByAggregateInput = {
     id?: SortOrder
     code?: SortOrder
+    label?: SortOrder
     type?: SortOrder
     value?: SortOrder
     expiryDate?: SortOrder
@@ -12715,7 +12743,8 @@ export namespace Prisma {
   export type ReferralCodeCreateWithoutTransactionsInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -12729,7 +12758,8 @@ export namespace Prisma {
   export type ReferralCodeUncheckedCreateWithoutTransactionsInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -12837,6 +12867,7 @@ export namespace Prisma {
   export type ReferralCodeUpdateWithoutTransactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12851,6 +12882,7 @@ export namespace Prisma {
   export type ReferralCodeUncheckedUpdateWithoutTransactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -13146,7 +13178,8 @@ export namespace Prisma {
   export type ReferralCodeCreateWithoutUsagesInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -13160,7 +13193,8 @@ export namespace Prisma {
   export type ReferralCodeUncheckedCreateWithoutUsagesInput = {
     id?: string
     code: string
-    type: $Enums.ReferralType
+    label?: string
+    type?: $Enums.ReferralType
     value: number
     expiryDate?: Date | string | null
     usageLimit?: number | null
@@ -13252,6 +13286,7 @@ export namespace Prisma {
   export type ReferralCodeUpdateWithoutUsagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -13266,6 +13301,7 @@ export namespace Prisma {
   export type ReferralCodeUncheckedUpdateWithoutUsagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
     type?: EnumReferralTypeFieldUpdateOperationsInput | $Enums.ReferralType
     value?: FloatFieldUpdateOperationsInput | number
     expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

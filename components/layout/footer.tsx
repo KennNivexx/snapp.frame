@@ -1,5 +1,5 @@
-// components/layout/footer.tsx
-
+"use client";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { site } from "@/data/site";
 import { Logo } from "@/components/ui/logo";
@@ -34,7 +34,13 @@ const normal = { color: "#5A371F" } as const;
 const bright = { color: "#3B2211" } as const;
 
 export function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+
+  // Hide footer on POS routes
+  if (pathname.startsWith("/admin") || pathname.startsWith("/kasir")) {
+    return null;
+  }
 
   return (
     <footer style={{ backgroundColor: "#F3EBE3", borderTop: "1px solid rgba(59,34,17,0.1)" }} role="contentinfo">

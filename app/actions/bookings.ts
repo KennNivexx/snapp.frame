@@ -49,3 +49,32 @@ export async function updateBookingStatus(id: string, status: string) {
   }
   return { success: true };
 }
+export async function createBooking(data: any) {
+  const supabase = createAdminClient();
+  const { data: booking, error } = await supabase
+    .from("bookings")
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating booking:", error);
+    return { success: false, error: error.message };
+  }
+  
+  // Increment referral usage if applicable
+  if (data.referral_code) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      await prisma.referralCode.update({
+        where: { code: data.referral_code },
+        data: { usageCount: { increment: 1 } }
+      });
+    } catch (err) {
+      console.error("Failed to increment referral usage:", err);
+      // Don't fail the booking if only referral increment fails
+    }
+  }
+
+  return { success: true, data: booking };
+}

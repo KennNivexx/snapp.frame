@@ -5,71 +5,54 @@
 export type ReferralCode = {
   code: string;
   discountPct: number;
+  type: "PERCENTAGE" | "FIXED";
   ownerName: string;
   isActive: boolean;
 };
 
 // ─── Fallback data lokal ──────────────────────────────────────────────────────
-// Admin dapat menambah kode di sini sebagai fallback, atau lewat tabel Supabase.
 const FALLBACK_CODES: ReferralCode[] = [
-  { code: "SNAPP10",   discountPct: 10, ownerName: "Snapp.frame Official",  isActive: true },
-  { code: "TEMAN15",   discountPct: 15, ownerName: "Partner Referral",      isActive: true },
-  { code: "SPESIAL20", discountPct: 20, ownerName: "VIP Member",            isActive: true },
-  { code: "FOTO10",    discountPct: 10, ownerName: "Influencer Kolaborasi", isActive: true },
+  { code: "SNAPP10",   type: "PERCENTAGE", discountPct: 10, ownerName: "Snapp.frame Official",  isActive: true },
+  { code: "TEMAN15",   type: "PERCENTAGE", discountPct: 15, ownerName: "Partner Referral",      isActive: true },
+  { code: "SPESIAL20", type: "PERCENTAGE", discountPct: 20, ownerName: "VIP Member",            isActive: true },
+  { code: "FOTO10",    type: "PERCENTAGE", discountPct: 10, ownerName: "Influencer Kolaborasi", isActive: true },
 ];
 
 /**
- * Validasi kode referral — async, mengambil dari Supabase jika dikonfigurasi.
- * Fallback ke array lokal jika Supabase belum di-set.
- * Case-insensitive.
+ * Validasi kode referral — memanggil API route /api/referrals/validate.
  */
 export async function validateReferral(input: string): Promise<ReferralCode | null> {
   if (!input?.trim()) return null;
-
   const normalized = input.trim().toUpperCase();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-
-  // Jika Supabase belum dikonfigurasi, pakai fallback
-  if (!supabaseUrl || supabaseUrl.includes("your-project-ref")) {
-    return FALLBACK_CODES.find((rc) => rc.code.toUpperCase() === normalized && rc.isActive) ?? null;
-  }
 
   try {
-    // Dynamic import agar file ini tidak menarik browser client di saat tidak diperlukan
-    const { createClient } = await import("@/lib/supabase/client");
-    const supabase = createClient();
-
-    const { data, error } = await supabase
-      .from("referral_codes")
-      .select("code, discount_pct, owner_name, is_active")
-      .ilike("code", normalized)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (error || !data) return null;
-
-    // Cast to known shape
-    const row = data as { code: string; discount_pct: number; owner_name: string; is_active: boolean };
-
-    return {
-      code: row.code,
-      discountPct: row.discount_pct,
-      ownerName: row.owner_name,
-      isActive: row.is_active,
-    };
-  } catch {
-    // Fallback jika query gagal
+    const res = await fetch(`/api/referrals/validate?code=${encodeURIComponent(normalized)}`);
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        code: data.code,
+        type: data.type as "PERCENTAGE" | "FIXED",
+        discountPct: data.value, // value bisa % atau nominal
+        ownerName: "Referral Partner",
+        isActive: true,
+      };
+    }
+    return FALLBACK_CODES.find((rc) => rc.code.toUpperCase() === normalized && rc.isActive) ?? null;
+  } catch (error) {
     return FALLBACK_CODES.find((rc) => rc.code.toUpperCase() === normalized && rc.isActive) ?? null;
   }
 }
 
 /**
  * Hitung harga setelah diskon.
- * @param originalPrice - Harga asli dalam Rupiah
- * @param discountPct   - Persentase diskon (0–100)
  */
-export function applyDiscount(originalPrice: number, discountPct: number): number {
-  if (discountPct <= 0) return originalPrice;
-  if (discountPct >= 100) return 0;
-  return Math.floor(originalPrice * (1 - discountPct / 100));
+export function applyDiscount(originalPrice: number, discountValue: number, type: "PERCENTAGE" | "FIXED" = "PERCENTAGE"): number {
+  if (type === "PERCENTAGE") {
+    if (discountValue <= 0) return originalPrice;
+    if (discountValue >= 100) return 0;
+    return Math.floor(originalPrice * (1 - discountValue / 100));
+  } else {
+    // Nominal discount
+    return Math.max(0, originalPrice - discountValue);
+  }
 }

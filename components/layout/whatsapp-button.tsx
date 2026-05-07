@@ -4,6 +4,7 @@
 // Floating WhatsApp button — fixed bottom-right, tampil di semua halaman
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 /* ─── WhatsApp Icon ─────────────────────────────────────────── */
@@ -24,7 +25,13 @@ function WhatsAppIcon({ size = 28 }: { size?: number }) {
 /* ─── Component ─────────────────────────────────────────────── */
 
 export function WhatsAppButton() {
+  const pathname = usePathname();
   const waUrl = getWhatsAppUrl("general");
+
+  // Hide button on POS routes
+  if (pathname.startsWith("/admin") || pathname.startsWith("/kasir")) {
+    return null;
+  }
 
   return (
     <motion.a

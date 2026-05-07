@@ -175,6 +175,7 @@ exports.Prisma.TransactionItemScalarFieldEnum = {
 exports.Prisma.ReferralCodeScalarFieldEnum = {
   id: 'id',
   code: 'code',
+  label: 'label',
   type: 'type',
   value: 'value',
   expiryDate: 'expiryDate',
@@ -225,9 +226,8 @@ exports.TransactionStatus = exports.$Enums.TransactionStatus = {
 };
 
 exports.ReferralType = exports.$Enums.ReferralType = {
-  DISCOUNT_PERCENT: 'DISCOUNT_PERCENT',
-  CASHBACK: 'CASHBACK',
-  FREE_ITEM: 'FREE_ITEM'
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED'
 };
 
 exports.Prisma.ModelName = {

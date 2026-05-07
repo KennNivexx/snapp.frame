@@ -27,7 +27,7 @@ export default function LoginPage() {
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/cashier");
+        router.push("/kasir");
       }
     } catch (err) {
       setError("An unexpected error occurred");

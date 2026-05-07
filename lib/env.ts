@@ -51,5 +51,5 @@ if (!parsed.success) {
   }
 }
 
-export const env = (parsed.success ? parsed.data : { ...process.env, ...parsed.data }) as any;
+export const env = (parsed.success ? parsed.data : { ...process.env }) as any;
 // In a real project, you'd want better types for client/server separation
