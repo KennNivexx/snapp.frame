@@ -4,7 +4,7 @@ const isServer = typeof window === "undefined";
 
 const envSchema = z.object({
   // Database (Server Only)
-  DATABASE_URL: isServer ? z.string().url() : z.string().optional(),
+  DATABASE_URL: isServer ? z.string().url().or(z.literal("")) : z.string().optional(),
 
   // Auth (Server Only)
   AUTH_SECRET: isServer ? z.string().min(1) : z.string().optional(),
@@ -46,6 +46,9 @@ const parsed = envSchema.safeParse({
 if (!parsed.success) {
   const errors = parsed.error.flatten().fieldErrors;
   console.error("❌ Invalid environment variables:", errors);
+  if (Object.keys(errors).length === 0) {
+    console.error("Full Zod Error:", parsed.error.format());
+  }
   if (isServer && process.env.NODE_ENV === "production") {
     throw new Error("Invalid environment variables: " + JSON.stringify(errors));
   }

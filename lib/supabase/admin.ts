@@ -11,8 +11,8 @@ import type { Database } from "./types";
  * Bypass Row Level Security — gunakan hanya untuk operasi admin.
  */
 export const supabaseAdmin = createClient<Database>(
-  env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_ROLE_KEY,
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder-key",
   {
     auth: {
       autoRefreshToken: false,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Filter, ShoppingCart, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { motion } from "framer-motion";
@@ -14,23 +14,47 @@ interface Product {
   category: string;
 }
 
-const mockProducts: Product[] = [
-  { id: "1", name: "Premium Portrait", sku: "SKU-001", price: 150000, category: "Studio", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" },
-  { id: "2", name: "Group Session", sku: "SKU-002", price: 250000, category: "Studio", image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=200&auto=format&fit=crop" },
-  { id: "3", name: "Digital Prints 4x6", sku: "SKU-003", price: 5000, category: "Prints" },
-  { id: "4", name: "Classic Frame 8x10", sku: "SKU-004", price: 85000, category: "Frames" },
-  { id: "5", name: "Wedding Package A", sku: "SKU-005", price: 1500000, category: "Wedding" },
-  { id: "6", name: "Polaroid Pack", sku: "SKU-006", price: 45000, category: "Prints" },
-];
+import { getProducts } from "@/app/actions/products";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ProductGrid() {
   const addItem = useCartStore((state) => state.addItem);
+  const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
 
-  const categories = ["All", ...Array.from(new Set(mockProducts.map(p => p.category)))];
+  const supabase = createClient();
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    const res = await getProducts();
+    if (res.success) {
+      setProducts(res.data as any[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+
+    const channel = supabase
+      .channel("product-updates")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Product" },
+        () => fetchProducts()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
   
-  const filteredProducts = mockProducts.filter(p => {
+  const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = activeCategory === "All" || p.category === activeCategory;
     return matchesSearch && matchesCategory;

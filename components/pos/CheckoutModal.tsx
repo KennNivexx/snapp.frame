@@ -78,8 +78,8 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
                   onClick={() => setPaymentMethod(method.id as any)}
                   className={`flex flex-col items-center justify-center gap-4 p-6 rounded-[24px] border transition-all ${
                     paymentMethod === method.id 
-                    ? "bg-[#1A1A1A] border-[#1A1A1A] shadow-xl shadow-black/10 text-white translate-y-[-4px]" 
-                    : "bg-white border-[#E0E0DA] text-[#888888] hover:bg-[#F0EFE9] hover:text-[#1A1A1A]"
+                    ? "bg-[#3B2211] border-[#3B2211] shadow-xl shadow-black/10 !text-white translate-y-[-4px]" 
+                    : "bg-white border-[#E0E0DA] text-[#888888] hover:bg-[#F0EFE9] hover:text-[#3B2211]"
                   }`}
                 >
                   <method.icon className="w-8 h-8" />
@@ -92,7 +92,7 @@ export default function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutMo
           <button
             onClick={handleConfirm}
             disabled={loading}
-            className="w-full bg-[#1A1A1A] hover:bg-[#333333] py-6 rounded-[24px] font-bold text-white shadow-xl shadow-black/5 flex items-center justify-center gap-3 group transition-all"
+            className="w-full bg-[#3B2211] hover:bg-[#4d2d16] py-6 rounded-[24px] font-bold !text-white shadow-xl shadow-black/5 flex items-center justify-center gap-3 group transition-all"
           >
             {loading ? (
               <Loader2 className="w-6 h-6 animate-spin" />

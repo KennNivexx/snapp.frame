@@ -62,17 +62,76 @@ const recentBookings = [
   { id: "SNF-882195", customer: "Rina Kartika", package: "Pre-Wedding", date: "6 Mei, 09:00", status: "Selesai", referral: "-" },
 ];
 
+import { getDashboardStats, getRecentTransactions, getChartData } from "@/app/actions/dashboard";
+import { createClient } from "@/lib/supabase/client";
+
 export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
+  const [statsData, setStatsData] = useState({
+    bookingsToday: 0,
+    revenue: 0,
+    customers: 0,
+    referrals: 0
+  });
+  const [recentTrx, setRecentTrx] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{trends: any[], services: any[], hasTrendData?: boolean}>({
+    trends: [],
+    services: [],
+    hasTrendData: false
+  });
+  const [loading, setLoading] = useState(true);
+
+  const supabase = createClient();
+
+  const fetchData = async () => {
+    setLoading(true);
+    const [statsRes, trxRes, chartRes] = await Promise.all([
+      getDashboardStats(),
+      getRecentTransactions(),
+      getChartData()
+    ]);
+
+    if (statsRes.success) setStatsData(statsRes.data as any);
+    if (trxRes.success) setRecentTrx(trxRes.data as any);
+    if (chartRes.success) setChartData(chartRes.data as any);
+    setLoading(false);
+  };
 
   useEffect(() => {
     setMounted(true);
+    fetchData();
+
+    // Set up Realtime for Dashboard
+    const channel = supabase
+      .channel("dashboard-updates")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "transactions" },
+        () => fetchData()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "referral_codes" },
+        () => fetchData()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   if (!mounted) return null;
 
+  const stats = [
+    { label: "Booking Hari Ini", value: statsData.bookingsToday.toString(), icon: CalendarIcon, trend: "+0", color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Total Pendapatan", value: `Rp ${statsData.revenue.toLocaleString("id-ID")}`, icon: TrendingUp, trend: "+0", color: "text-green-600", bg: "bg-green-50" },
+    { label: "Staff Aktif", value: statsData.customers.toString(), icon: Users, trend: "+0", color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "Referral Aktif", value: statsData.referrals.toString(), icon: Ticket, trend: "0", color: "text-orange-600", bg: "bg-orange-50" },
+  ];
+
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="p-10 space-y-10 animate-in fade-in duration-700">
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -86,7 +145,7 @@ export default function AdminDashboard() {
              <CalendarIcon size={16} />
              Jadwal
            </Link>
-           <Link href="/admin/referrals" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1A1A1A] rounded-2xl text-xs font-bold text-white hover:bg-[#333333] transition-all shadow-md uppercase tracking-widest">
+           <Link href="/admin/referrals" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#3B2211] rounded-2xl text-xs font-bold !text-white hover:bg-[#4d2d16] transition-all shadow-md uppercase tracking-widest">
              <Plus size={16} />
              Referral Baru
            </Link>
@@ -125,18 +184,17 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold text-[#1A1A1A]" style={{ fontFamily: "var(--font-playfair)" }}>Tren Pemesanan</h3>
             <select className="bg-[#F0EFE9] border-none text-[10px] font-bold uppercase tracking-widest rounded-xl px-4 py-2 outline-none">
-              <dt>7 Hari Terakhir</dt>
               <option>7 Hari Terakhir</option>
               <option>30 Hari Terakhir</option>
             </select>
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={bookingData}>
+              <AreaChart data={chartData.trends}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1A1A1A" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#1A1A1A" stopOpacity={0}/>
+                    <stop offset="5%" stopColor={chartData.hasTrendData ? "#3B2211" : "#E0E0DA"} stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor={chartData.hasTrendData ? "#3B2211" : "#E0E0DA"} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F0EFE9" />
@@ -164,7 +222,7 @@ export default function AdminDashboard() {
                 <Area 
                   type="monotone" 
                   dataKey="value" 
-                  stroke="#1A1A1A" 
+                  stroke={chartData.hasTrendData ? "#3B2211" : "#E0E0DA"} 
                   strokeWidth={3}
                   fillOpacity={1} 
                   fill="url(#colorValue)" 
@@ -180,7 +238,7 @@ export default function AdminDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={serviceData}
+                  data={chartData.services}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -188,7 +246,7 @@ export default function AdminDashboard() {
                   paddingAngle={8}
                   dataKey="value"
                 >
-                  {serviceData.map((entry, index) => (
+                  {chartData.services.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -197,17 +255,21 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-[10px] font-bold text-[#888888] uppercase tracking-widest">Total</span>
-              <span className="text-2xl font-bold text-[#1A1A1A]">100%</span>
+              <span className="text-2xl font-bold text-[#1A1A1A]">
+                {chartData.services.length > 0 && chartData.services[0].name === "Belum Ada Data" ? "0%" : "100%"}
+              </span>
             </div>
           </div>
           <div className="mt-6 space-y-3">
-            {serviceData.map((item) => (
+            {chartData.services.map((item) => (
               <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
                   <span className="text-[10px] font-bold text-[#5A5A5A] uppercase tracking-wider">{item.name}</span>
                 </div>
-                <span className="text-[10px] font-black text-[#1A1A1A]">{item.value}%</span>
+                <span className="text-[10px] font-black text-[#1A1A1A]">
+                  {item.name === "Belum Ada Data" ? "0%" : `${item.value}%`}
+                </span>
               </div>
             ))}
           </div>
@@ -236,40 +298,38 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0EFE9]">
-              {recentBookings.map((booking) => (
-                <tr key={booking.id} className="group hover:bg-[#FAFAF8] transition-all duration-300">
-                  <td className="px-10 py-6 text-xs font-bold text-[#888888]">{booking.id}</td>
+              {recentTrx.map((trx) => (
+                <tr key={trx.id} className="group hover:bg-[#FAFAF8] transition-all duration-300">
+                  <td className="px-10 py-6 text-xs font-bold text-[#888888]">{trx.invoiceNumber}</td>
                   <td className="px-10 py-6">
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-[#1A1A1A]">{booking.customer}</span>
+                      <span className="text-sm font-bold text-[#1A1A1A]">{trx.cashier?.name || "Kasir"}</span>
                       <span className="text-[10px] text-[#888888] flex items-center gap-1 font-bold">
-                        <Clock size={10} /> {booking.date}
+                        <Clock size={10} /> {new Date(trx.createdAt).toLocaleString("id-ID")}
                       </span>
                     </div>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-2">
                       <Package size={14} className="text-[#888888]" />
-                      <span className="text-xs font-bold text-[#5A5A5A]">{booking.package}</span>
+                      <span className="text-xs font-bold text-[#5A5A5A]">Transaksi {trx.paymentMethod}</span>
                     </div>
                   </td>
                   <td className="px-10 py-6">
                     <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${
-                      booking.referral !== "-" ? "bg-purple-50 text-purple-600 border border-purple-100" : "text-[#888888]"
+                      trx.referralCode ? "bg-purple-50 text-purple-600 border border-purple-100" : "text-[#888888]"
                     }`}>
-                      {booking.referral}
+                      {trx.referralCode?.code || "-"}
                     </span>
                   </td>
                   <td className="px-10 py-6">
                     <span className={`text-[10px] font-black uppercase tracking-[0.1em] px-4 py-1.5 rounded-full inline-flex items-center gap-2 ${
-                      booking.status === "Selesai" ? "bg-green-50 text-green-600" : 
-                      booking.status === "Konfirmasi" ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"
+                      trx.status === "COMPLETED" ? "bg-green-50 text-green-600" : "bg-orange-50 text-orange-600"
                     }`}>
                       <div className={`w-1.5 h-1.5 rounded-full ${
-                        booking.status === "Selesai" ? "bg-green-600" : 
-                        booking.status === "Konfirmasi" ? "bg-blue-600" : "bg-orange-600"
+                        trx.status === "COMPLETED" ? "bg-green-600" : "bg-orange-600"
                       }`} />
-                      {booking.status}
+                      {trx.status}
                     </span>
                   </td>
                   <td className="px-10 py-6 text-right">

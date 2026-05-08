@@ -171,20 +171,20 @@ export default function CustomersAndRevenue() {
            <div className="flex bg-white border border-[#E0E0DA] p-1 rounded-2xl shadow-sm">
              <button 
                onClick={() => setView("revenue")}
-               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${view === "revenue" ? "bg-[#1A1A1A] text-white" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
+               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${view === "revenue" ? "bg-[#3B2211] !text-white" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
              >
                Pendapatan
              </button>
              <button 
                onClick={() => setView("customers")}
-               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${view === "customers" ? "bg-[#1A1A1A] text-white" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
+               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${view === "customers" ? "bg-[#3B2211] !text-white" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
              >
                Pelanggan
              </button>
            </div>
            <button 
              onClick={exportToExcel}
-             className="inline-flex items-center gap-3 px-8 py-4 bg-[#1A1A1A] rounded-2xl text-[10px] font-black text-white hover:bg-[#333333] transition-all shadow-xl uppercase tracking-widest"
+             className="inline-flex items-center gap-3 px-8 py-4 bg-[#3B2211] rounded-2xl text-[10px] font-black !text-white hover:bg-[#4d2d16] transition-all shadow-xl uppercase tracking-widest"
            >
              <Download size={18} />
              Export XLSX

@@ -4,9 +4,6 @@ import type { Metadata } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { CustomCursor } from "@/components/ui/custom-cursor";
 
 /* ─── Fonts ─────────────────────────────────────────────── */
@@ -83,17 +80,7 @@ export default function RootLayout({
         {/* Viewport lock wrapper */}
         <div className="relative flex min-h-screen flex-col w-full">
           <CustomCursor />
-          {/* Global Navbar */}
-          <Navbar />
-
-          {/* Page Content */}
-          <main className="flex-grow w-full max-w-full">{children}</main>
-
-          {/* Global Footer */}
-          <Footer />
-
-          {/* Floating WhatsApp Button — tampil di semua halaman */}
-          <WhatsAppButton />
+          {children}
         </div>
       </body>
     </html>

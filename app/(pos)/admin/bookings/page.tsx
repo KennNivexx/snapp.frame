@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getBookings, updateBookingStatus } from "@/app/actions/bookings";
+import { createClient } from "@/lib/supabase/client";
 
 interface Booking {
   id: string;
@@ -46,8 +47,23 @@ export default function BookingManagement() {
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 4, 1)); // Mei 2026
   const [selectedDate, setSelectedDate] = useState<string>(new Date(2026, 4, 7).toISOString().split('T')[0]);
 
+  const supabase = createClient();
+
   useEffect(() => {
     fetchBookings();
+
+    const channel = supabase
+      .channel("booking-updates")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => fetchBookings()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   async function fetchBookings() {
@@ -170,13 +186,13 @@ export default function BookingManagement() {
           <div className="flex bg-white border border-[#E0E0DA] p-1 rounded-2xl shadow-sm">
             <button 
               onClick={() => setViewMode("calendar")}
-              className={`p-3 rounded-xl transition-all ${viewMode === "calendar" ? "bg-[#1A1A1A] text-white shadow-md" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
+              className={`p-3 rounded-xl transition-all ${viewMode === "calendar" ? "bg-[#3B2211] !text-white shadow-md" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
             >
               <LayoutGrid size={20} />
             </button>
             <button 
               onClick={() => setViewMode("table")}
-              className={`p-3 rounded-xl transition-all ${viewMode === "table" ? "bg-[#1A1A1A] text-white shadow-md" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
+              className={`p-3 rounded-xl transition-all ${viewMode === "table" ? "bg-[#3B2211] !text-white shadow-md" : "text-[#888888] hover:bg-[#F0EFE9]"}`}
             >
               <List size={20} />
             </button>
@@ -267,8 +283,8 @@ export default function BookingManagement() {
                    onClick={() => setFilter(f)}
                    className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                      filter === f 
-                     ? "bg-[#1A1A1A] text-white shadow-lg" 
-                     : "bg-white text-[#888888] border border-[#E0E0DA] hover:border-[#1A1A1A]"
+                     ? "bg-[#3B2211] !text-white shadow-lg" 
+                     : "bg-white text-[#888888] border border-[#E0E0DA] hover:border-[#3B2211]"
                    }`}
                  >
                    {f === "all" ? "Semua" : f}

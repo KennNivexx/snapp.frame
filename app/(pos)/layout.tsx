@@ -37,12 +37,8 @@ export default function POSLayout({
       {/* ── Sidebar ── */}
       <aside className="w-80 bg-white border-r border-[#E0E0DA] flex flex-col z-50">
         {/* Logo Section */}
-        <div className="p-10 border-b border-[#E0E0DA] bg-white">
-           <Logo height={160} />
-           <div className="mt-4 flex items-center gap-2">
-             <div className="w-2 h-2 bg-green-500 rounded-full" />
-             <span className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.2em]">Management System</span>
-           </div>
+        <div className="px-2 py-6 border-b border-[#E0E0DA] bg-white flex items-center justify-center">
+           <Logo height={100} />
         </div>
 
         {/* Navigation */}
@@ -61,8 +57,8 @@ export default function POSLayout({
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <item.icon size={20} className={isActive ? "text-white" : "text-[#888888] group-hover:text-[#1A1A1A]"} />
-                  <span className="text-sm font-bold">{item.label}</span>
+                  <item.icon size={20} className={isActive ? "!text-white" : "text-[#888888] group-hover:text-[#1A1A1A]"} />
+                  <span className={`text-sm font-bold ${isActive ? "!text-white" : ""}`}>{item.label}</span>
                 </div>
                 {isActive && <ChevronRight size={14} />}
               </Link>
@@ -107,7 +103,7 @@ export default function POSLayout({
            </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-10 bg-[#FAFAF8] custom-scrollbar">
+        <main className="flex-1 overflow-y-auto bg-[#FAFAF8] custom-scrollbar">
           {children}
         </main>
       </div>

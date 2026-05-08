@@ -18,6 +18,7 @@ const NAV_LINKS = [
   { label: "Paket", href: "/packages" },
   { label: "Tentang", href: "/#about" },
   { label: "Kontak", href: "/#contact" },
+  { label: "Kasir", href: "/kasir" },
 ] as const;
 
 /* ─── Component ────────────────────────────────────────────── */

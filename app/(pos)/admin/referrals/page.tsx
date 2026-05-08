@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getReferrals, createReferral, toggleReferralStatus, deleteReferral } from "@/app/actions/referrals";
+import { createClient } from "@/lib/supabase/client";
 
 interface ReferralCode {
   id: string;
@@ -49,8 +50,27 @@ export default function ReferralManagement() {
     expiry: ""
   });
 
+  const supabase = createClient();
+
   useEffect(() => {
     fetchReferrals();
+
+    // Set up Realtime Subscription
+    const channel = supabase
+      .channel("referral-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "referral_codes" },
+        () => {
+          console.log("Realtime update: Referral codes changed!");
+          fetchReferrals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchReferrals = async () => {
@@ -135,7 +155,7 @@ export default function ReferralManagement() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-500">
+    <div className="p-10 max-w-7xl mx-auto space-y-10 animate-in fade-in duration-500">
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -149,7 +169,7 @@ export default function ReferralManagement() {
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-3 px-8 py-4 bg-[#1A1A1A] rounded-2xl text-xs font-black text-white hover:bg-[#333333] transition-all shadow-xl uppercase tracking-widest"
+          className="inline-flex items-center gap-3 px-8 py-4 bg-[#3B2211] rounded-2xl text-xs font-black !text-white hover:bg-[#4d2d16] transition-all shadow-xl uppercase tracking-widest"
         >
           <Plus size={18} />
           Buat Kode Promo
@@ -404,7 +424,7 @@ export default function ReferralManagement() {
                       </div>
 
                       <div className="pt-4">
-                        <button type="submit" className="w-full py-6 bg-[#1A1A1A] text-white font-black text-xs uppercase tracking-[0.3em] rounded-[24px] hover:bg-[#333333] transition-all shadow-2xl shadow-black/20 hover:-translate-y-1">
+                        <button type="submit" className="w-full py-6 bg-[#3B2211] !text-white font-black text-xs uppercase tracking-[0.3em] rounded-[24px] hover:bg-[#4d2d16] transition-all shadow-2xl shadow-black/20 hover:-translate-y-1">
                           Simpan & Aktifkan Kode
                         </button>
                       </div>

@@ -12,6 +12,7 @@ export default function Cart() {
   const { items, removeItem, updateQty, referralCode, discount, setReferral, clearCart } = useCartStore();
   const [promoInput, setPromoInput] = useState("");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [lastTransaction, setLastTransaction] = useState<any>(null);
 
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -44,26 +45,63 @@ export default function Cart() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-l border-[#E0E0DA] w-[400px] hidden lg:flex shadow-2xl">
-      <div className="p-8 border-b border-[#E0E0DA] flex items-center justify-between bg-[#FAFAF8]">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Ticket className="w-5 h-5 text-[#1A1A1A]" />
-            {items.length > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#1A1A1A] text-white text-[10px] flex items-center justify-center rounded-full font-bold">
-                {items.length}
-              </span>
-            )}
-          </div>
-          <h2 className="font-bold text-lg text-[#1A1A1A]" style={{ fontFamily: "var(--font-playfair)" }}>Current Order</h2>
+    <>
+      {/* Floating Action Button */}
+      <button 
+        onClick={() => setIsCartOpen(true)}
+        className={`absolute bottom-10 right-10 w-20 h-20 bg-[#3B2211] !text-white rounded-[32px] shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group ${isCartOpen ? 'opacity-0 scale-50 pointer-events-none' : 'opacity-100 scale-100'}`}
+      >
+        <div className="relative">
+          <Ticket className="w-8 h-8 group-hover:-rotate-12 transition-transform" />
+          {items.length > 0 && (
+            <span className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full font-bold shadow-lg border-2 border-[#1A1A1A]">
+              {items.length}
+            </span>
+          )}
         </div>
-        <button 
-          onClick={clearCart}
-          className="text-[10px] text-[#888888] hover:text-red-500 transition-colors uppercase tracking-[0.2em] font-bold"
-        >
-          Clear
-        </button>
-      </div>
+      </button>
+
+      {/* Backdrop */}
+      {isCartOpen && (
+        <div 
+          className="absolute inset-0 bg-black/20 backdrop-blur-sm z-40 rounded-[40px]"
+          onClick={() => setIsCartOpen(false)}
+        />
+      )}
+
+      {/* Slide-over Cart Panel */}
+      <div 
+        className={`absolute top-0 right-0 h-full bg-white border-l border-[#E0E0DA] w-[400px] flex flex-col shadow-2xl z-50 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          isCartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-8 border-b border-[#E0E0DA] flex items-center justify-between bg-[#FAFAF8]">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Ticket className="w-5 h-5 text-[#1A1A1A]" />
+              {items.length > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#1A1A1A] text-white text-[10px] flex items-center justify-center rounded-full font-bold">
+                  {items.length}
+                </span>
+              )}
+            </div>
+            <h2 className="font-bold text-lg text-[#1A1A1A]" style={{ fontFamily: "var(--font-playfair)" }}>Current Order</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={clearCart}
+              className="text-[10px] text-[#888888] hover:text-red-500 transition-colors uppercase tracking-[0.2em] font-bold"
+            >
+              Clear
+            </button>
+            <button 
+              onClick={() => setIsCartOpen(false)}
+              className="p-2 text-[#888888] hover:bg-[#E0E0DA] hover:text-[#1A1A1A] rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
 
       {/* Items List */}
       <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-thin scrollbar-thumb-[#E0E0DA]">
@@ -76,42 +114,45 @@ export default function Cart() {
           </div>
         ) : (
           items.map((item) => (
-            <div key={item.id} className="flex gap-4 items-center group">
-              <div className="w-20 h-20 bg-[#F0EFE9] rounded-2xl overflow-hidden border border-[#E0E0DA] flex-shrink-0">
+            <div key={item.id} className="flex gap-5 items-center group p-3 hover:bg-white hover:shadow-lg hover:shadow-black/5 rounded-3xl transition-all border border-transparent hover:border-[#E0E0DA]">
+              <div className="w-24 h-24 bg-[#F0EFE9] rounded-2xl overflow-hidden flex-shrink-0 relative">
                 {item.image ? (
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[#888888]">
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-6 h-6" />
                   </div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-[#1A1A1A] truncate">{item.name}</h4>
-                <p className="text-xs font-bold text-[#5A5A5A] mb-3">Rp {item.price.toLocaleString("id-ID")}</p>
+              <div className="flex-1 min-w-0 flex flex-col justify-between h-24 py-1">
+                <div className="space-y-1">
+                  <h4 className="text-sm font-black text-[#1A1A1A] leading-tight line-clamp-2">{item.name}</h4>
+                  <p className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">Rp {item.price.toLocaleString("id-ID")}</p>
+                </div>
+                
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center bg-[#F0EFE9] rounded-xl border border-[#E0E0DA] p-1">
+                  <div className="flex items-center bg-[#F0EFE9] rounded-xl p-1 border border-[#E0E0DA]">
                     <button 
                       onClick={() => updateQty(item.id, item.qty - 1)}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-white rounded-lg transition-all text-[#1A1A1A]"
+                      className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all text-[#1A1A1A] shadow-sm"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="w-10 text-center text-xs font-bold text-[#1A1A1A]">{item.qty}</span>
+                    <span className="w-10 text-center text-xs font-black text-[#1A1A1A]">{item.qty}</span>
                     <button 
                       onClick={() => updateQty(item.id, item.qty + 1)}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-white rounded-lg transition-all text-[#1A1A1A]"
+                      className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all text-[#1A1A1A] shadow-sm"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-bold text-[#1A1A1A]">Rp {(item.price * item.qty).toLocaleString("id-ID")}</p>
+              <div className="text-right h-24 flex flex-col justify-between items-end py-1">
+                <p className="text-sm font-black text-[#3B2211]">Rp {(item.price * item.qty).toLocaleString("id-ID")}</p>
                 <button 
                   onClick={() => removeItem(item.id)}
-                  className="p-2 text-[#888888] hover:text-red-500 transition-colors"
+                  className="p-2.5 text-[#C0C0BB] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -136,7 +177,7 @@ export default function Cart() {
           </div>
           <button 
             onClick={handleApplyPromo}
-            className="px-6 py-2 bg-[#1A1A1A] text-white rounded-xl text-xs font-bold hover:bg-[#333333] transition-all shadow-md"
+            className="px-6 py-2 bg-[#3B2211] !text-white rounded-xl text-xs font-bold hover:bg-[#4d2d16] transition-all shadow-md"
           >
             Apply
           </button>
@@ -183,7 +224,7 @@ export default function Cart() {
         <button 
           onClick={() => setIsCheckoutOpen(true)}
           disabled={items.length === 0}
-          className="w-full bg-[#1A1A1A] hover:bg-[#333333] disabled:opacity-30 disabled:grayscale py-5 rounded-2xl font-bold text-white shadow-xl shadow-black/5 flex items-center justify-center gap-3 group transition-all"
+          className="w-full bg-[#3B2211] hover:bg-[#4d2d16] disabled:opacity-30 disabled:grayscale py-5 rounded-2xl font-bold !text-white shadow-xl shadow-black/5 flex items-center justify-center gap-3 group transition-all"
         >
           <span>Konfirmasi Pembayaran</span>
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -226,6 +267,7 @@ export default function Cart() {
           />
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
