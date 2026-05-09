@@ -7,31 +7,92 @@ export async function getDashboardStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [transactionsToday, totalRevenue, totalCustomers, activeReferrals] = await Promise.all([
+    const [
+      transactionsToday,
+      bookingsToday,
+      activeProducts,
+      activeReferrals,
+      posRevenue,
+      bookingRevenue
+    ] = await Promise.all([
+      // Transactions count today (POS)
       prisma.transaction.count({
-        where: { createdAt: { gte: today } }
+        where: { 
+          createdAt: { gte: today },
+          status: "COMPLETED"
+        }
       }),
-      prisma.transaction.aggregate({
-        _sum: { total: true },
-        where: { status: "COMPLETED" }
+      // Bookings count today (Online)
+      prisma.booking.count({
+        where: {
+          sessionDate: today.toISOString().split("T")[0],
+          status: { in: ["confirmed", "completed", "success"] }
+        }
       }),
-      prisma.user.count({
-        where: { role: "CASHIER" } // Just a placeholder for customers if we don't have a separate table
+      // Active products
+      prisma.product.count({
+        where: { isActive: true }
       }),
+      // Active referrals
       prisma.referralCode.count({
         where: { isActive: true }
+      }),
+      // POS Revenue today
+      prisma.transaction.aggregate({
+        _sum: { total: true },
+        where: { 
+          createdAt: { gte: today },
+          status: "COMPLETED"
+        }
+      }),
+      // Booking Revenue today
+      prisma.booking.aggregate({
+        _sum: { finalPrice: true },
+        where: {
+          sessionDate: today.toISOString().split("T")[0],
+          status: { in: ["confirmed", "completed", "success"] }
+        }
       })
     ]);
+
+    const totalRevenueToday = (posRevenue._sum.total || 0) + (bookingRevenue._sum.finalPrice || 0);
 
     return {
       success: true,
       data: {
-        bookingsToday: transactionsToday,
-        revenue: totalRevenue._sum.total || 0,
-        customers: totalCustomers,
+        posToday: transactionsToday,
+        bookingsToday: bookingsToday,
+        revenue: totalRevenueToday,
+        activeProducts,
         referrals: activeReferrals
       }
     };
+  } catch (error: any) {
+    console.error("Dashboard Stats Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getBookingCategoryStats() {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: {
+        status: { in: ["confirmed", "completed", "success"] }
+      },
+      select: { packageName: true }
+    });
+
+    const categoryCounts: Record<string, number> = {};
+    bookings.forEach(b => {
+      categoryCounts[b.packageName] = (categoryCounts[b.packageName] || 0) + 1;
+    });
+
+    const data = Object.entries(categoryCounts).map(([name, value]) => ({
+      name,
+      value
+    })).sort((a, b) => b.value - a.value).slice(0, 5);
+
+    return { success: true, data };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
@@ -39,79 +100,143 @@ export async function getDashboardStats() {
 
 export async function getRecentTransactions() {
   try {
-    const transactions = await prisma.transaction.findMany({
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      include: {
-        cashier: { select: { name: true } },
-        referralCode: { select: { code: true } }
-      }
-    });
-    return { success: true, data: transactions };
+    const [transactions, bookings] = await Promise.all([
+      prisma.transaction.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: {
+          cashier: { select: { name: true } },
+          referralCode: { select: { code: true } }
+        }
+      }),
+      prisma.booking.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" }
+      })
+    ]);
+
+    const normalizedBookings = bookings.map(b => ({
+      id: b.id,
+      invoiceNumber: b.invoiceNo,
+      total: b.finalPrice,
+      status: b.status.toUpperCase(),
+      paymentMethod: b.paymentMethod.toUpperCase(),
+      createdAt: b.createdAt.toISOString(),
+      subject: b.customerName,
+      referralCode: b.referralCode ? { code: b.referralCode } : null,
+      type: "BOOKING"
+    }));
+
+    const normalizedPos = transactions.map(t => ({ 
+      id: t.id,
+      invoiceNumber: t.invoiceNumber,
+      total: t.total,
+      status: t.status,
+      paymentMethod: t.paymentMethod,
+      createdAt: t.createdAt.toISOString(),
+      subject: t.cashier?.name || "Admin",
+      referralCode: t.referralCode,
+      type: "POS" 
+    }));
+
+    const combined = [...normalizedPos, ...normalizedBookings]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10);
+
+    return { success: true, data: combined };
   } catch (error: any) {
+    console.error("Recent Transactions Error:", error);
     return { success: false, error: error.message };
   }
 }
 
-export async function getChartData() {
+export async function getUpcomingBookings() {
   try {
-    // 1. Transaction Trends (Last 7 days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const today = new Date().toISOString().split("T")[0];
     
-    const transactions = await prisma.transaction.findMany({
-      where: { createdAt: { gte: sevenDaysAgo }, status: "COMPLETED" },
-      select: { createdAt: true, total: true }
+    const bookings = await prisma.booking.findMany({
+      where: {
+        sessionDate: { gte: today },
+        status: { in: ["pending", "confirmed"] }
+      },
+      orderBy: [
+        { sessionDate: "asc" },
+        { sessionTime: "asc" }
+      ],
+      take: 10
     });
 
-    const dailyTrends = Array.from({ length: 7 }).map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (6 - i));
-      const dateStr = date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
-      const dailyTotal = transactions
-        .filter(t => new Date(t.createdAt).toDateString() === date.toDateString())
-        .reduce((sum, t) => sum + 1, 0); 
-      return { name: dateStr, value: dailyTotal };
-    });
+    return { success: true, data: bookings };
+  } catch (error: any) {
+    console.error("Upcoming Bookings Error:", error);
+    return { success: false, error: error.message };
+  }
+}
 
-    const hasTrendData = dailyTrends.some(t => t.value > 0);
-    const finalTrends = hasTrendData ? dailyTrends : dailyTrends.map(t => ({ ...t, value: 0.1 })); // Small value to show a flat gray line
+export async function getChartData(period: "daily" | "weekly" | "monthly" = "daily") {
+  try {
+    const now = new Date();
+    let startDate = new Date();
+    let days = 7;
 
-    // 2. Service/Category Popularity
-    const items = await prisma.transactionItem.findMany({
-      include: { product: { include: { category: true } } }
-    });
-
-    const categoryCounts: Record<string, number> = {};
-    items.forEach(item => {
-      const catName = item.product.category.name;
-      categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
-    });
-
-    const totalItems = items.length;
-    const colors = ["#3B2211", "#10b981", "#f59e0b", "#3b82f6", "#ef4444"];
-    
-    let popularServices = [];
-    if (totalItems > 0) {
-      popularServices = Object.entries(categoryCounts).map(([name, count], i) => ({
-        name,
-        value: Math.round((count / totalItems) * 100),
-        color: colors[i % colors.length]
-      }));
+    if (period === "weekly") {
+      startDate.setDate(now.getDate() - 28); // 4 weeks
+      days = 28;
+    } else if (period === "monthly") {
+      startDate.setMonth(now.getMonth() - 6); // 6 months
+      days = 180;
     } else {
-      popularServices = [{ name: "Belum Ada Data", value: 100, color: "#F0EFE9" }];
+      startDate.setDate(now.getDate() - 7);
+      days = 7;
+    }
+
+    const [transactions, bookings] = await Promise.all([
+      prisma.transaction.findMany({
+        where: { createdAt: { gte: startDate }, status: "COMPLETED" },
+        select: { createdAt: true, total: true }
+      }),
+      prisma.booking.findMany({
+        where: { createdAt: { gte: startDate }, status: { in: ["confirmed", "completed", "success"] } },
+        select: { createdAt: true, finalPrice: true }
+      })
+    ]);
+
+    const dailyTrends = Array.from({ length: days }).map((_, i) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i + 1);
+      const dateKey = date.toISOString().split("T")[0];
+      const label = date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+      
+      const posTotal = transactions
+        .filter(t => t.createdAt.toISOString().split("T")[0] === dateKey)
+        .reduce((sum, t) => sum + t.total, 0);
+      
+      const bookingTotal = bookings
+        .filter(b => b.createdAt.toISOString().split("T")[0] === dateKey)
+        .reduce((sum, b) => sum + b.finalPrice, 0);
+
+      return { name: label, value: posTotal + bookingTotal };
+    });
+
+    // Group by period if needed
+    let finalTrends = dailyTrends;
+    if (period === "weekly") {
+      // Logic to group by week
+    } else if (period === "monthly") {
+      // Logic to group by month
     }
 
     return {
       success: true,
       data: {
         trends: finalTrends,
-        services: popularServices,
-        hasTrendData
+        hasTrendData: finalTrends.some(t => t.value > 0)
       }
     };
   } catch (error: any) {
+    console.error("Chart Data Error:", error);
     return { success: false, error: error.message };
   }
 }
+
 

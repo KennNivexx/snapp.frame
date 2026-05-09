@@ -1,273 +1,262 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { Trash2, Minus, Plus, Ticket, ArrowRight, X, Printer } from "lucide-react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Trash2, 
+  Plus, 
+  Minus, 
+  CreditCard, 
+  User, 
+  Phone, 
+  Ticket,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle2,
+  X,
+  ShoppingCart,
+  Calendar,
+  Clock
+} from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import CheckoutModal from "./CheckoutModal";
-import { Receipt } from "./Receipt";
-import { useReactToPrint } from "react-to-print";
-import { motion } from "framer-motion";
+import { validateReferral } from "@/app/actions/referrals";
 
 export default function Cart() {
-  const { items, removeItem, updateQty, referralCode, discount, setReferral, clearCart } = useCartStore();
-  const [promoInput, setPromoInput] = useState("");
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [lastTransaction, setLastTransaction] = useState<any>(null);
-
-  const receiptRef = useRef<HTMLDivElement>(null);
+  const { 
+    items, 
+    removeItem, 
+    updateQty, 
+    clearCart, 
+    customerName, 
+    customerPhone, 
+    bookingDate,
+    bookingTime,
+    setCustomerInfo,
+    referralCode, 
+    setReferral 
+  } = useCartStore();
   
-  const handlePrint = useReactToPrint({
-    contentRef: receiptRef,
-    documentTitle: "Receipt",
-  });
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isCheckingReferral, setIsCheckingReferral] = useState(false);
+  const [referralMessage, setReferralMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const tax = subtotal * 0.11;
-  const totalDiscount = (subtotal * discount) / 100;
-  const total = subtotal + tax - totalDiscount;
+  const subtotal = items.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  const handleApplyPromo = async () => {
-    if (!promoInput) return;
+  const handleCheckReferral = async () => {
+    if (!referralCode) return;
+    setIsCheckingReferral(true);
+    setReferralMessage(null);
     
     try {
-      const res = await fetch(`/api/referrals/validate?code=${promoInput.toUpperCase()}`);
-      if (res.ok) {
-        const data = await res.json();
-        setReferral(data.code, data.value);
-        setPromoInput("");
+      const res = await validateReferral(referralCode);
+      if (res.success && res.data) {
+        let disc = 0;
+        if (res.data.type === "PERCENTAGE") {
+          disc = Math.floor(subtotal * (res.data.value / 100));
+        } else {
+          disc = res.data.value;
+        }
+        setDiscountAmount(disc);
+        setReferral(res.data.code, res.data.value, res.data.type as any);
+        setReferralMessage({ type: "success", text: `Diskon Rp ${disc.toLocaleString()} berhasil dipasang` });
       } else {
-        alert("Kode promo tidak valid atau sudah kadaluarsa");
+        setDiscountAmount(0);
+        setReferral(null, 0);
+        setReferralMessage({ type: "error", text: res.error || "Kode tidak valid" });
       }
     } catch (err) {
-      alert("Gagal memvalidasi kode promo");
+      setReferralMessage({ type: "error", text: "Terjadi kesalahan" });
+    } finally {
+      setIsCheckingReferral(false);
     }
   };
 
+  const finalTotal = Math.max(0, subtotal - discountAmount);
+
   return (
-    <>
-      {/* Floating Action Button */}
-      <button 
-        onClick={() => setIsCartOpen(true)}
-        className={`absolute bottom-10 right-10 w-20 h-20 bg-[#3B2211] !text-white rounded-[32px] shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group ${isCartOpen ? 'opacity-0 scale-50 pointer-events-none' : 'opacity-100 scale-100'}`}
-      >
-        <div className="relative">
-          <Ticket className="w-8 h-8 group-hover:-rotate-12 transition-transform" />
-          {items.length > 0 && (
-            <span className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full font-bold shadow-lg border-2 border-[#1A1A1A]">
-              {items.length}
-            </span>
-          )}
-        </div>
-      </button>
-
-      {/* Backdrop */}
-      {isCartOpen && (
-        <div 
-          className="absolute inset-0 bg-black/20 backdrop-blur-sm z-40 rounded-[40px]"
-          onClick={() => setIsCartOpen(false)}
-        />
-      )}
-
-      {/* Slide-over Cart Panel */}
-      <div 
-        className={`absolute top-0 right-0 h-full bg-white border-l border-[#E0E0DA] w-[400px] flex flex-col shadow-2xl z-50 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-          isCartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="p-8 border-b border-[#E0E0DA] flex items-center justify-between bg-[#FAFAF8]">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Ticket className="w-5 h-5 text-[#1A1A1A]" />
-              {items.length > 0 && (
-                <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#1A1A1A] text-white text-[10px] flex items-center justify-center rounded-full font-bold">
-                  {items.length}
-                </span>
-              )}
-            </div>
-            <h2 className="font-bold text-lg text-[#1A1A1A]" style={{ fontFamily: "var(--font-playfair)" }}>Current Order</h2>
+    <div className="flex flex-col h-full bg-white border-l border-gray-100">
+      {/* Header Keranjang */}
+      <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-white shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[#3B2211]">
+            <ShoppingCart size={20} />
           </div>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={clearCart}
-              className="text-[10px] text-[#888888] hover:text-red-500 transition-colors uppercase tracking-[0.2em] font-bold"
-            >
-              Clear
-            </button>
-            <button 
-              onClick={() => setIsCartOpen(false)}
-              className="p-2 text-[#888888] hover:bg-[#E0E0DA] hover:text-[#1A1A1A] rounded-full transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          <div>
+            <h2 className="text-base font-bold text-gray-900">Pesanan</h2>
+            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">{items.length} Item terpilih</p>
           </div>
         </div>
-
-      {/* Items List */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-thin scrollbar-thumb-[#E0E0DA]">
-        {items.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-40">
-            <div className="w-16 h-16 bg-[#F0EFE9] rounded-3xl flex items-center justify-center">
-              <Plus className="w-8 h-8 rotate-45 text-[#888888]" />
-            </div>
-            <p className="text-sm font-bold text-[#5A5A5A]">Keranjang masih kosong.<br/>Pilih produk untuk memulai.</p>
-          </div>
-        ) : (
-          items.map((item) => (
-            <div key={item.id} className="flex gap-5 items-center group p-3 hover:bg-white hover:shadow-lg hover:shadow-black/5 rounded-3xl transition-all border border-transparent hover:border-[#E0E0DA]">
-              <div className="w-24 h-24 bg-[#F0EFE9] rounded-2xl overflow-hidden flex-shrink-0 relative">
-                {item.image ? (
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[#888888]">
-                    <Plus className="w-6 h-6" />
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0 flex flex-col justify-between h-24 py-1">
-                <div className="space-y-1">
-                  <h4 className="text-sm font-black text-[#1A1A1A] leading-tight line-clamp-2">{item.name}</h4>
-                  <p className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">Rp {item.price.toLocaleString("id-ID")}</p>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center bg-[#F0EFE9] rounded-xl p-1 border border-[#E0E0DA]">
-                    <button 
-                      onClick={() => updateQty(item.id, item.qty - 1)}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all text-[#1A1A1A] shadow-sm"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="w-10 text-center text-xs font-black text-[#1A1A1A]">{item.qty}</span>
-                    <button 
-                      onClick={() => updateQty(item.id, item.qty + 1)}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all text-[#1A1A1A] shadow-sm"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="text-right h-24 flex flex-col justify-between items-end py-1">
-                <p className="text-sm font-black text-[#3B2211]">Rp {(item.price * item.qty).toLocaleString("id-ID")}</p>
-                <button 
-                  onClick={() => removeItem(item.id)}
-                  className="p-2.5 text-[#C0C0BB] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))
+        {items.length > 0 && (
+          <button 
+            onClick={clearCart}
+            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+            title="Kosongkan Keranjang"
+          >
+            <Trash2 size={18} />
+          </button>
         )}
       </div>
 
-      {/* Summary */}
-      <div className="p-8 bg-[#FAFAF8] border-t border-[#E0E0DA] space-y-6">
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <Ticket className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#888888]" />
+      {/* List Item */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
+        {items.length > 0 ? (
+          <AnimatePresence mode="popLayout">
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex items-center gap-4 group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 shrink-0">
+                  <span className="text-xs font-black text-[#3B2211]">{item.name.slice(0, 1)}</span>
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold text-gray-900 truncate">{item.name}</h4>
+                  <p className="text-xs font-black text-[#3B2211]">Rp {item.price.toLocaleString('id-ID')}</p>
+                </div>
+
+                <div className="flex items-center bg-gray-50 rounded-lg border border-gray-100 p-1">
+                  <button 
+                    onClick={() => updateQty(item.id, item.qty - 1)}
+                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-[#3B2211] transition-colors"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className="w-8 text-center text-xs font-black text-[#3B2211]">{item.qty}</span>
+                  <button 
+                    onClick={() => updateQty(item.id, item.qty + 1)}
+                    className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-[#3B2211] transition-colors"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        ) : (
+          <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-30 py-20">
+             <ShoppingCart size={48} />
+             <p className="text-sm font-bold">Keranjang Kosong</p>
+          </div>
+        )}
+      </div>
+
+      {/* Input Pelanggan & Promo */}
+      <div className="p-6 border-t border-gray-50 bg-gray-50/50 space-y-3 shrink-0">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Informasi Pelanggan</p>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
             <input 
               type="text" 
-              placeholder="KODE PROMO"
-              className="w-full bg-white border border-[#E0E0DA] rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] transition-all placeholder:text-[#C0C0BB]"
-              value={promoInput}
-              onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+              placeholder="Pelanggan"
+              value={customerName}
+              onChange={(e) => setCustomerInfo({ customerName: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
             />
           </div>
-          <button 
-            onClick={handleApplyPromo}
-            className="px-6 py-2 bg-[#3B2211] !text-white rounded-xl text-xs font-bold hover:bg-[#4d2d16] transition-all shadow-md"
-          >
-            Apply
-          </button>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <input 
+              type="text" 
+              placeholder="No. HP"
+              value={customerPhone}
+              onChange={(e) => setCustomerInfo({ customerPhone: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
+            />
+          </div>
         </div>
 
-        {referralCode && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between bg-green-50 border border-green-100 rounded-xl p-4"
-          >
-             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-xs font-bold text-green-700">Promo Berhasil: {referralCode}</span>
-             </div>
-             <button onClick={() => setReferral(null, 0)}>
-                <X className="w-4 h-4 text-green-700/50 hover:text-green-700" />
-             </button>
-          </motion.div>
-        )}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <input 
+              type="date" 
+              value={bookingDate}
+              onChange={(e) => setCustomerInfo({ bookingDate: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
+            />
+          </div>
+          <div className="relative">
+            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <input 
+              type="time" 
+              value={bookingTime}
+              onChange={(e) => setCustomerInfo({ bookingTime: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
+            />
+          </div>
+        </div>
 
-        <div className="space-y-3 border-b border-[#E0E0DA] pb-6">
-          <div className="flex justify-between text-xs font-bold text-[#5A5A5A]">
-            <span>Subtotal</span>
-            <span>Rp {subtotal.toLocaleString("id-ID")}</span>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+              <input 
+                type="text" 
+                placeholder="Kode Promo / Referral"
+                value={referralCode || ""}
+                onChange={(e) => setReferral(e.target.value, 0)}
+                className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
+              />
+            </div>
+            <button 
+              onClick={handleCheckReferral}
+              disabled={isCheckingReferral || !referralCode}
+              className="px-4 bg-[#3B2211] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest disabled:opacity-50"
+            >
+              Cek
+            </button>
           </div>
-          <div className="flex justify-between text-xs font-bold text-[#5A5A5A]">
-            <span>Pajak (11%)</span>
-            <span>Rp {tax.toLocaleString("id-ID")}</span>
-          </div>
-          {discount > 0 && (
-            <div className="flex justify-between text-xs font-bold text-green-600">
-              <span>Diskon ({discount}%)</span>
-              <span>- Rp {totalDiscount.toLocaleString("id-ID")}</span>
+          {referralMessage && (
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold ${referralMessage.type === "success" ? "bg-green-50 text-green-600 border border-green-100" : "bg-red-50 text-red-600 border border-red-100"}`}>
+              {referralMessage.type === "success" ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
+              {referralMessage.text}
             </div>
           )}
         </div>
+      </div>
 
-        <div className="flex justify-between items-center py-2">
-          <span className="font-bold text-[#5A5A5A] uppercase text-[10px] tracking-widest">Total Bayar</span>
-          <span className="text-3xl font-bold text-[#1A1A1A]">Rp {total.toLocaleString("id-ID")}</span>
+      {/* Ringkasan & Tombol Bayar */}
+      <div className="p-6 border-t border-gray-100 bg-white shrink-0">
+        <div className="space-y-2 mb-6">
+          <div className="flex justify-between text-xs text-gray-500">
+            <span>Subtotal</span>
+            <span className="font-bold text-gray-900">Rp {subtotal.toLocaleString('id-ID')}</span>
+          </div>
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-xs text-green-600">
+              <span>Diskon</span>
+              <span className="font-bold">- Rp {discountAmount.toLocaleString('id-ID')}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+            <span className="text-sm font-bold text-gray-900">Total Akhir</span>
+            <span className="text-xl font-black text-[#3B2211]">Rp {finalTotal.toLocaleString('id-ID')}</span>
+          </div>
         </div>
 
         <button 
           onClick={() => setIsCheckoutOpen(true)}
           disabled={items.length === 0}
-          className="w-full bg-[#3B2211] hover:bg-[#4d2d16] disabled:opacity-30 disabled:grayscale py-5 rounded-2xl font-bold !text-white shadow-xl shadow-black/5 flex items-center justify-center gap-3 group transition-all"
+          className="w-full py-4 bg-[#3B2211] text-white rounded-2xl font-bold text-sm shadow-xl shadow-[#3B2211]/10 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
         >
-          <span>Konfirmasi Pembayaran</span>
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <CreditCard size={18} />
+          Bayar Sekarang
         </button>
       </div>
 
-
       <CheckoutModal 
         isOpen={isCheckoutOpen} 
-        onClose={() => setIsCheckoutOpen(false)}
-        onSuccess={(id) => {
-          setLastTransaction({
-            id,
-            items: [...items],
-            subtotal,
-            tax,
-            discount: totalDiscount,
-            total,
-            paymentMethod: "CASH" // Default or passed from modal
-          });
-          setIsCheckoutOpen(false);
-          // Wait for state update then print
-          setTimeout(() => handlePrint(), 500);
-          clearCart();
-        }}
+        onClose={() => setIsCheckoutOpen(false)} 
+        discount={discountAmount}
       />
-
-      {/* Hidden Receipt for Printing */}
-      <div className="hidden">
-        {lastTransaction && (
-          <Receipt 
-            ref={receiptRef}
-            transactionId={lastTransaction.id}
-            items={lastTransaction.items}
-            subtotal={lastTransaction.subtotal}
-            tax={lastTransaction.tax}
-            discount={lastTransaction.discount}
-            total={lastTransaction.total}
-            paymentMethod={lastTransaction.paymentMethod}
-          />
-        )}
-      </div>
-      </div>
-    </>
+    </div>
   );
 }

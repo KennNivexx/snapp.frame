@@ -194,6 +194,26 @@ exports.Prisma.ReferralUsageScalarFieldEnum = {
   usedAt: 'usedAt'
 };
 
+exports.Prisma.BookingScalarFieldEnum = {
+  id: 'id',
+  invoiceNo: 'invoiceNo',
+  packageId: 'packageId',
+  packageName: 'packageName',
+  customerName: 'customerName',
+  customerPhone: 'customerPhone',
+  sessionDate: 'sessionDate',
+  sessionTime: 'sessionTime',
+  notes: 'notes',
+  referralCode: 'referralCode',
+  discountPct: 'discountPct',
+  originalPrice: 'originalPrice',
+  finalPrice: 'finalPrice',
+  paymentMethod: 'paymentMethod',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -237,7 +257,8 @@ exports.Prisma.ModelName = {
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   ReferralCode: 'ReferralCode',
-  ReferralUsage: 'ReferralUsage'
+  ReferralUsage: 'ReferralUsage',
+  Booking: 'Booking'
 };
 
 /**

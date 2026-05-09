@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { site } from "@/data/site";
 import { Logo } from "@/components/ui/logo";
 import { 
@@ -12,17 +12,25 @@ import {
   Users,
   ChevronRight,
   Calendar,
-  ShoppingCart
+  ShoppingCart,
+  Menu,
+  X,
+  Package,
+  History
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { label: "Jadwal Booking", icon: Calendar, href: "/admin/bookings" },
-  { label: "Pendapatan", icon: Users, href: "/admin/customers" },
-  { label: "Kode Referral", icon: Ticket, href: "/admin/referrals" },
   { label: "Kasir POS", icon: ShoppingCart, href: "/kasir" },
+  { label: "Manajemen Produk", icon: Package, href: "/admin/products" },
+  { label: "Booking", icon: Calendar, href: "/admin/bookings" },
+  { label: "Pelanggan", icon: Users, href: "/admin/customers" },
+  { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
+  { label: "Laporan", icon: History, href: "/admin/reports" },
 ];
 
 export default function POSLayout({
@@ -31,84 +39,146 @@ export default function POSLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [isPOSPage, setIsPOSPage] = useState(false);
+  
+  useEffect(() => {
+    setIsPOSPage(!!pathname && /kasir|katalog/.test(pathname));
+    setIsSidebarOpen(false);
+  }, [pathname]);
+
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-white border-r border-gray-100">
+      {/* Logo Section */}
+      <div className="px-6 py-8 flex items-center justify-center border-b border-gray-50">
+         <Logo height={60} />
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Menu Utama</p>
+        
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+          return (
+            <Link 
+              key={item.href} 
+              href={item.href}
+              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                isActive 
+                ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/10" 
+                : "text-gray-500 hover:bg-gray-50 hover:text-[#3B2211]"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon size={18} />
+                <span className="text-sm font-semibold">{item.label}</span>
+              </div>
+              {isActive && <ChevronRight size={14} className="opacity-50" />}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Profile Section */}
+      <div className="p-4 border-t border-gray-50 space-y-4">
+        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+           <div className="w-10 h-10 rounded-lg bg-[#3B2211] flex items-center justify-center font-bold text-xs text-white">
+             AD
+           </div>
+           <div className="flex-1 min-w-0">
+             <p className="text-xs font-bold text-gray-900 truncate">Administrator</p>
+             <p className="text-[10px] text-gray-500 uppercase font-medium">Sneapici Studio</p>
+           </div>
+        </div>
+        
+        <button 
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-semibold text-xs"
+        >
+          <LogOut size={16} />
+          Keluar
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] text-[#1A1A1A] font-sans selection:bg-[#E0E0DA] flex overflow-hidden h-screen">
-      {/* ── Sidebar ── */}
-      <aside className="w-80 bg-white border-r border-[#E0E0DA] flex flex-col z-50">
-        {/* Logo Section */}
-        <div className="px-2 py-6 border-b border-[#E0E0DA] bg-white flex items-center justify-center">
-           <Logo height={100} />
-        </div>
+    <div className="min-h-screen bg-[#FAFAF8] text-gray-900 font-sans flex overflow-hidden h-screen">
+      {/* Desktop Sidebar - Sembunyikan di halaman POS */}
+      {!isPOSPage && (
+        <aside className="hidden lg:flex w-64 flex-col z-50">
+          <SidebarContent />
+        </aside>
+      )}
 
-        {/* Navigation */}
-        <nav className="flex-1 p-6 space-y-2 overflow-y-auto scrollbar-hide">
-          <p className="px-4 text-[10px] font-bold text-[#C0C0BB] uppercase tracking-[0.3em] mb-4">Main Menu</p>
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link 
-                key={item.href} 
-                href={item.href}
-                className={`group flex items-center justify-between p-4 rounded-[20px] transition-all duration-300 ${
-                  isActive 
-                  ? "bg-[#1A1A1A] text-white shadow-xl shadow-black/10 translate-x-2" 
-                  : "text-[#5A5A5A] hover:bg-[#F0EFE9] hover:text-[#1A1A1A]"
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <item.icon size={20} className={isActive ? "!text-white" : "text-[#888888] group-hover:text-[#1A1A1A]"} />
-                  <span className={`text-sm font-bold ${isActive ? "!text-white" : ""}`}>{item.label}</span>
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] lg:hidden"
+            />
+            <motion.aside 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-64 bg-white z-[70] lg:hidden shadow-2xl"
+            >
+              <div className="absolute right-4 top-4">
+                <button onClick={() => setIsSidebarOpen(false)} className="p-2 text-gray-400">
+                  <X size={20} />
+                </button>
+              </div>
+              <SidebarContent />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 relative h-full">
+        {/* Header - Tampilkan di semua halaman kecuali Kasir karena Kasir punya Header custom */}
+        {!isPOSPage && (
+          <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 lg:px-8 sticky top-0 z-40">
+             <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="lg:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-50 rounded-lg"
+                >
+                  <Menu size={20} />
+                </button>
+                <div className="flex flex-col">
+                  <h1 className="text-sm font-bold text-gray-900">
+                    {navItems.find(i => i.href === pathname)?.label || "Dashboard"}
+                  </h1>
                 </div>
-                {isActive && <ChevronRight size={14} />}
-              </Link>
-            );
-          })}
-        </nav>
+             </div>
+             
+             <div className="flex items-center gap-4">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-[10px] font-bold text-green-700 uppercase">Sistem Online</span>
+                </div>
+                <div className="p-2 text-gray-400 hover:text-gray-600 cursor-pointer">
+                  <Settings size={18} />
+                </div>
+             </div>
+          </header>
+        )}
 
-        {/* Bottom Section */}
-        <div className="p-8 border-t border-[#E0E0DA] space-y-4 bg-[#FAFAF8]/50">
-          <div className="flex items-center gap-4 px-4 py-3 bg-white border border-[#E0E0DA] rounded-2xl shadow-sm">
-             <div className="w-10 h-10 rounded-xl bg-[#F0EFE9] flex items-center justify-center font-bold text-sm text-[#1A1A1A]">
-               AD
-             </div>
-             <div className="flex-1 min-w-0">
-               <p className="text-sm font-bold text-[#1A1A1A] truncate">Admin Studio</p>
-               <p className="text-[10px] text-[#888888] uppercase tracking-widest">Administrator</p>
-             </div>
+        <main className="flex-1 overflow-hidden relative">
+          <div className="h-full overflow-y-auto custom-scrollbar">
+            {children}
           </div>
-          <button className="w-full flex items-center gap-3 p-4 text-[#5A5A5A] hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all font-bold text-sm">
-            <LogOut size={18} />
-            Keluar Sistem
-          </button>
-        </div>
-      </aside>
-
-      {/* ── Main Content ── */}
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        <header className="h-20 bg-white/50 backdrop-blur-md border-b border-[#E0E0DA] flex items-center justify-between px-10 sticky top-0 z-40">
-           <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-[#888888] uppercase tracking-widest">
-                {pathname.split("/").filter(Boolean).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" / ")}
-              </span>
-           </div>
-           <div className="flex items-center gap-6">
-              <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-white rounded-full border border-[#E0E0DA] shadow-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-[10px] font-bold tracking-wider text-[#5A5A5A] uppercase">System Live</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm font-bold text-[#1A1A1A]">
-                <Settings size={18} className="text-[#888888]" />
-              </div>
-           </div>
-        </header>
-
-        <main className="flex-1 overflow-y-auto bg-[#FAFAF8] custom-scrollbar">
-          {children}
         </main>
       </div>
     </div>
   );
 }
-
-

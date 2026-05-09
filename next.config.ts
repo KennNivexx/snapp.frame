@@ -27,14 +27,12 @@ const securityHeaders = [
   },
 ];
 
-const nextConfig: NextConfig = {
+const nextConfig: any = {
   // output: "export",
   images: {
     unoptimized: true,
   },
-  experimental: {
-    cpus: 1,
-  },
+  productionBrowserSourceMaps: false,
   async headers() {
     return [
       {

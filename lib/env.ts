@@ -27,6 +27,14 @@ const envSchema = z.object({
 
   // Node Environment
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+}).refine((data) => {
+  if (data.DATABASE_URL && data.DATABASE_URL.includes("[PASSWORD]")) {
+    return false;
+  }
+  return true;
+}, {
+  message: "DATABASE_URL masih berisi placeholder '[PASSWORD]'. Silakan ganti dengan password database Anda.",
+  path: ["DATABASE_URL"],
 });
 
 // Validation

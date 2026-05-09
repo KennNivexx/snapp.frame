@@ -18,7 +18,15 @@ interface CartState {
   clearCart: () => void;
   referralCode: string | null;
   discount: number;
-  setReferral: (code: string | null, discount: number) => void;
+  discountType: "PERCENTAGE" | "FIXED";
+  setReferral: (code: string | null, discount: number, type?: "PERCENTAGE" | "FIXED") => void;
+  
+  // New Booking Fields
+  customerName: string;
+  customerPhone: string;
+  bookingDate: string;
+  bookingTime: string;
+  setCustomerInfo: (info: Partial<{ customerName: string; customerPhone: string; bookingDate: string; bookingTime: string }>) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -27,6 +35,12 @@ export const useCartStore = create<CartState>()(
       items: [],
       referralCode: null,
       discount: 0,
+      discountType: "PERCENTAGE",
+      customerName: "",
+      customerPhone: "",
+      bookingDate: "",
+      bookingTime: "",
+      setCustomerInfo: (info) => set((state) => ({ ...state, ...info })),
       addItem: (product) =>
         set((state) => {
           const existingItem = state.items.find((item) => item.id === product.id);
@@ -49,8 +63,17 @@ export const useCartStore = create<CartState>()(
             item.id === productId ? { ...item, qty: Math.max(0, qty) } : item
           ).filter(item => item.qty > 0),
         })),
-      clearCart: () => set({ items: [], referralCode: null, discount: 0 }),
-      setReferral: (code, discount) => set({ referralCode: code, discount }),
+      clearCart: () => set({ 
+        items: [], 
+        referralCode: null, 
+        discount: 0, 
+        discountType: "PERCENTAGE",
+        customerName: "",
+        customerPhone: "",
+        bookingDate: "",
+        bookingTime: ""
+      }),
+      setReferral: (code, discount, type = "PERCENTAGE") => set({ referralCode: code, discount, discountType: type }),
     }),
     {
       name: "pos-cart-storage",

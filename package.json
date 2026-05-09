@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "prisma:studio": "prisma studio",
-    "build": "cross-env EXPERIMENTAL_CPUS=1 NODE_OPTIONS=--max-old-space-size=8192 next build --webpack",
+    "build": "cross-env EXPERIMENTAL_CPUS=1 NODE_OPTIONS=\"--max-old-space-size=4096\" next build",
     "start": "next start"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "react-to-print": "^3.3.0",
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.5.0",
+    "xlsx": "^0.18.5",
     "yet-another-react-lightbox": "^3.31.0",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"

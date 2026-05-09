@@ -4,15 +4,10 @@ import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
-
 export default auth((req) => {
-  // Bypass login untuk sementara
+  // Login dimatikan sementara sesuai permintaan
   return null;
-  
-  const isLoggedIn = !!req.auth;
-  // ... rest of the code is effectively disabled
 });
-
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
