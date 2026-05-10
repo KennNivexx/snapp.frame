@@ -24,14 +24,14 @@ export default function Receipt({
   const componentRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    contentRef: componentRef,
     documentTitle: `Struk_${new Date().getTime()}`,
   });
 
   return (
     <>
       <button
-        onClick={handlePrint}
+        onClick={() => handlePrint()}
         className="flex-1 py-4 bg-gray-100 text-gray-700 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-3"
       >
         <Printer size={18} />
