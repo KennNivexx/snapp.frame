@@ -5,6 +5,7 @@ import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
 import { CustomCursor } from "@/components/ui/custom-cursor";
+import { Toaster } from "sonner";
 
 /* ─── Fonts ─────────────────────────────────────────────── */
 
@@ -81,6 +82,7 @@ export default function RootLayout({
         <div className="relative flex min-h-screen flex-col w-full">
           <CustomCursor />
           {children}
+          <Toaster position="top-center" richColors />
         </div>
       </body>
     </html>

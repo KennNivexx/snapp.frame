@@ -7,6 +7,136 @@ datasource db {
   provider = "postgresql"
 }
 
+model ReferralCode {
+  id              String          @id @default(uuid())
+  code            String          @unique
+  label           String          @default("")
+  type            ReferralType    @default(PERCENTAGE)
+  value           Float           @map("discount_pct")
+  expiryDate      DateTime?       @map("expiry_date")
+  usageLimit      Int?            @map("usage_limit")
+  usageCount      Int             @default(0) @map("usage_count")
+  isActive        Boolean         @default(true) @map("is_active")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  referral_usages ReferralUsage[]
+  transactions    Transaction[]
+
+  @@map("referral_codes")
+}
+
+model Booking {
+  id            String   @id @default(uuid())
+  invoiceNo     String   @unique @map("invoice_no")
+  packageId     String   @map("package_id")
+  packageName   String   @map("package_name")
+  customerName  String   @map("customer_name")
+  customerPhone String   @map("customer_phone")
+  sessionDate   String   @map("session_date")
+  sessionTime   String   @map("session_time")
+  notes         String?
+  referralCode  String?  @map("referral_code")
+  discountPct   Float    @default(0) @map("discount_pct")
+  originalPrice Float    @map("original_price")
+  finalPrice    Float    @map("final_price")
+  paymentMethod String   @map("payment_method")
+  status        String   @default("pending")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("bookings")
+}
+
+model Category {
+  id       String    @id(map: "Category_pkey") @default(uuid())
+  name     String
+  slug     String     @unique(map: "Category_slug_key")
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                String            @id(map: "Product_pkey") @default(uuid())
+  name              String
+  sku               String            @unique(map: "Product_sku_key")
+  price             Float
+  stock             Int
+  image             String?
+  duration          String?           // e.g. "60 menit"
+  photoCount        String?           // e.g. "30 foto soft file"
+  features          String[]          @default([])
+  isPopular         Boolean           @default(false)
+  sortOrder         Int               @default(0)
+  categoryId        String
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  category          Category          @relation(fields: [categoryId], references: [id], map: "Product_categoryId_fkey")
+  transaction_items TransactionItem[]
+
+  @@map("products")
+}
+
+model ReferralUsage {
+  id             String       @id(map: "ReferralUsage_pkey") @default(uuid())
+  referralCodeId String
+  transactionId  String       @unique(map: "ReferralUsage_transactionId_key")
+  userId         String
+  usedAt         DateTime     @default(now())
+  referralCode   ReferralCode @relation(fields: [referralCodeId], references: [id], map: "ReferralUsage_referralCodeId_fkey")
+  transaction    Transaction  @relation(fields: [transactionId], references: [id], map: "ReferralUsage_transactionId_fkey")
+  user           User         @relation(fields: [userId], references: [id], map: "ReferralUsage_userId_fkey")
+
+  @@map("referral_usages")
+}
+
+model TransactionItem {
+  id            String      @id(map: "TransactionItem_pkey") @default(uuid())
+  transactionId String
+  productId     String
+  qty           Int
+  price         Float
+  subtotal      Float
+  product       Product     @relation(fields: [productId], references: [id], map: "TransactionItem_productId_fkey")
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, map: "TransactionItem_transactionId_fkey")
+
+  @@map("transaction_items")
+}
+
+model Transaction {
+  id                String            @id(map: "Transaction_pkey") @default(uuid())
+  invoiceNumber     String            @unique(map: "Transaction_invoiceNumber_key")
+  cashierId         String
+  total             Float
+  tax               Float
+  discount          Float             @default(0)
+  paymentMethod     PaymentMethod
+  referralCodeId    String?
+  status            TransactionStatus @default(COMPLETED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  referralUsage     ReferralUsage?
+  items             TransactionItem[]
+  cashier           User              @relation(fields: [cashierId], references: [id], map: "Transaction_cashierId_fkey")
+  referralCode      ReferralCode?     @relation(fields: [referralCodeId], references: [id], map: "Transaction_referralCodeId_fkey")
+
+  @@map("transactions")
+}
+
+model User {
+  id              String          @id(map: "User_pkey") @default(uuid())
+  name            String
+  email           String          @unique(map: "User_email_key")
+  password        String
+  role            Role            @default(CASHIER)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  referral_usages ReferralUsage[]
+  transactions    Transaction[]
+
+  @@map("users")
+}
 
 enum Role {
   ADMIN
@@ -30,135 +160,18 @@ enum PaymentMethod {
   QRIS
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(CASHIER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model GalleryPhoto {
+  id          String   @id @default(uuid())
+  src         String
+  alt         String
+  width       Int
+  height      Int
+  category    String   // solo, couple, family, birthday, graduation
+  isFeatured  Boolean  @default(false)
+  isHero      Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  transactions   Transaction[]
-  referralUsages ReferralUsage[]
-
-  @@map("users")
+  @@map("gallery_photos")
 }
-
-model Category {
-  id       String    @id @default(uuid())
-  name     String
-  slug     String    @unique
-  products Product[]
-
-  @@map("categories")
-}
-
-model Product {
-  id         String   @id @default(uuid())
-  name       String
-  sku        String   @unique
-  price      Float
-  stock      Int
-  image      String?
-  categoryId String
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  category         Category          @relation(fields: [categoryId], references: [id])
-  transactionItems TransactionItem[]
-
-  @@map("products")
-}
-
-model Transaction {
-  id             String            @id @default(uuid())
-  invoiceNumber  String            @unique
-  cashierId      String
-  total          Float
-  tax            Float
-  discount       Float             @default(0)
-  paymentMethod  PaymentMethod
-  referralCodeId String?
-  status         TransactionStatus @default(COMPLETED)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-
-  cashier      User              @relation(fields: [cashierId], references: [id])
-  referralCode ReferralCode?     @relation(fields: [referralCodeId], references: [id])
-  items        TransactionItem[]
-  referralUsage ReferralUsage?
-
-  @@map("transactions")
-}
-
-model TransactionItem {
-  id            String @id @default(uuid())
-  transactionId String
-  productId     String
-  qty           Int
-  price         Float
-  subtotal      Float
-
-  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  product     Product     @relation(fields: [productId], references: [id])
-
-  @@map("transaction_items")
-}
-
-model ReferralCode {
-  id         String       @id @default(uuid())
-  code       String       @unique
-  label      String       @default("")
-  type       ReferralType @default(PERCENTAGE)
-  value      Float        @map("discount_pct")
-  expiryDate DateTime?    @map("expiry_date")
-  usageLimit Int?         @map("usage_limit")
-  usageCount Int          @default(0) @map("usage_count")
-  isActive   Boolean      @default(true) @map("is_active")
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-
-  transactions Transaction[]
-  usages       ReferralUsage[]
-
-  @@map("referral_codes")
-}
-
-model ReferralUsage {
-  id             String   @id @default(uuid())
-  referralCodeId String
-  transactionId  String   @unique
-  userId         String
-  usedAt         DateTime @default(now())
-
-  referralCode ReferralCode @relation(fields: [referralCodeId], references: [id])
-  transaction  Transaction  @relation(fields: [transactionId], references: [id])
-  user         User         @relation(fields: [userId], references: [id])
-
-  @@map("referral_usages")
-}
-
-model Booking {
-  id            String   @id @default(uuid())
-  invoiceNo     String   @unique @map("invoice_no")
-  packageId     String   @map("package_id")
-  packageName   String   @map("package_name")
-  customerName  String   @map("customer_name")
-  customerPhone String   @map("customer_phone")
-  sessionDate   String   @map("session_date") // Stored as YYYY-MM-DD
-  sessionTime   String   @map("session_time") // Stored as HH:mm
-  notes         String?
-  referralCode  String?  @map("referral_code")
-  discountPct   Float    @default(0) @map("discount_pct")
-  originalPrice Float    @map("original_price")
-  finalPrice    Float    @map("final_price")
-  paymentMethod String   @map("payment_method")
-  status        String   @default("pending")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  @@map("bookings")
-}
-

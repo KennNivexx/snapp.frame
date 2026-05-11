@@ -15,12 +15,11 @@ import { photos } from "@/data/photos";
 import type { Photo } from "@/data/photos";
 import { btn } from "@/lib/button-classes";
 
-/* ─── Data ─────────────────────────────────────────────────── */
+/* ─── Props ─────────────────────────────────────────────────── */
 
-const featuredPhotos: Photo[] = photos
-  .filter((p) => p.isFeatured)
-  .sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99))
-  .slice(0, 6);
+interface GalleryPreviewProps {
+  initialPhotos?: Photo[];
+}
 
 /* ─── Bento Layout Config ───────────────────────────────────
    Grid: 12 kolom, 3 baris.
@@ -136,7 +135,7 @@ function PhotoCard({ photo, index, onOpen, className = "" }: PhotoCardProps) {
         style={{ opacity: hovered ? 0 : 1 }}
       >
         <span
-          className="text-[10px] font-semibold text-white/60 tracking-widest"
+          className="text-[10px] font-black text-white/60 tracking-widest"
           style={{ fontFamily: "var(--font-heading)" }}
         >
           {String(index + 1).padStart(2, "0")}
@@ -158,7 +157,12 @@ function PhotoCard({ photo, index, onOpen, className = "" }: PhotoCardProps) {
 
 /* ─── Main Section ───────────────────────────────────────────── */
 
-export function GalleryPreview() {
+export function GalleryPreview({ initialPhotos }: GalleryPreviewProps) {
+  // Use initialPhotos from props or fallback to static data if empty (for dev/initial state)
+  const displayPhotos = initialPhotos && initialPhotos.length > 0 
+    ? initialPhotos 
+    : photos.filter(p => p.isFeatured).slice(0, 6);
+
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -167,7 +171,7 @@ export function GalleryPreview() {
     setLightboxOpen(true);
   }, []);
 
-  const slides = featuredPhotos.map((p) => ({
+  const slides = displayPhotos.map((p) => ({
     src: p.src,
     alt: p.alt,
     width: p.width,
@@ -177,13 +181,13 @@ export function GalleryPreview() {
   return (
     <section
       id="gallery-preview"
-      className="relative bg-[#F0EFE9] py-24 lg:py-32 overflow-hidden w-full max-w-full"
+      className="relative bg-warm-white py-24 lg:py-32 overflow-hidden w-full max-w-full"
       aria-labelledby="gallery-preview-heading"
     >
       {/* Dekoratif teks besar di background */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
         <span
-          className="text-[18vw] sm:text-[15vw] font-black text-[#1A1A1A]/[0.02] leading-none whitespace-nowrap block"
+          className="text-[18vw] sm:text-[15vw] font-black text-near-black/[0.03] leading-none whitespace-nowrap block"
           style={{ fontFamily: "var(--font-heading)" }}
           aria-hidden="true"
         >
@@ -205,20 +209,20 @@ export function GalleryPreview() {
             <div>
               {/* Eyebrow */}
               <p
-                className="text-[10px] tracking-[0.3em] uppercase text-[#888888] mb-3 font-semibold"
+                className="text-[10px] tracking-[0.4em] uppercase text-gold mb-3 font-black"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 Portfolio
               </p>
               <h2
                 id="gallery-preview-heading"
-                className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] leading-tight"
+                className="text-3xl sm:text-4xl lg:text-5xl font-black text-near-black leading-tight"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 Karya Terbaik Kami
               </h2>
             </div>
-            <p className="text-[#5A5A5A] text-sm max-w-xs leading-relaxed flex-shrink-0">
+            <p className="text-near-black/60 text-sm max-w-xs leading-relaxed flex-shrink-0 font-bold">
               Setiap foto adalah cerita. Kami mengabadikan momen Anda dengan
               sentuhan estetik minimalis yang timeless.
             </p>
@@ -226,7 +230,7 @@ export function GalleryPreview() {
         </motion.div>
 
         {/* ── Bento Grid ── */}
-        {featuredPhotos.length > 0 ? (
+        {displayPhotos.length > 0 ? (
           <motion.div
             className="grid grid-cols-2 lg:grid-cols-12 auto-rows-[220px] gap-3 lg:gap-4"
             variants={containerVariants}
@@ -234,12 +238,12 @@ export function GalleryPreview() {
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
           >
-            {featuredPhotos.map((photo, i) => {
+            {displayPhotos.map((photo, i) => {
               const config = bentoConfig[i] ?? { colSpan: "lg:col-span-4", rowSpan: "lg:row-span-1" };
               return (
                 <PhotoCard
                   key={photo.id}
-                  photo={photo}
+                  photo={photo as any}
                   index={i}
                   onOpen={openLightbox}
                   className={`${config.colSpan} ${config.rowSpan}`}
@@ -268,17 +272,17 @@ export function GalleryPreview() {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           {/* Kiri: info kecil */}
-          <p className="text-xs text-[#888888] tracking-wide">
-            {photos.filter(p => p.isFeatured).length}+ foto tersedia di galeri lengkap
+          <p className="text-[10px] text-near-black/40 tracking-[0.2em] font-black uppercase">
+            {photos.filter(p => p.isFeatured).length}+ FOTO TERSEDIA DI GALERI LENGKAP
           </p>
 
           <Link
             href="/gallery"
-            className={`group ${btn.secondary} rounded-full px-10 py-4`}
+            className={`group ${btn.secondary} rounded-full px-10 py-4 font-black uppercase tracking-[0.2em] text-[10px]`}
           >
             Lihat Semua Foto
             <ArrowRight
-              size={16}
+              size={14}
               className="transition-transform duration-300 group-hover:translate-x-1"
             />
           </Link>

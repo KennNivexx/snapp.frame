@@ -70,7 +70,6 @@ export default function CustomersAndRevenue() {
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("month");
   const [view, setView] = useState<"customers" | "revenue">("customers");
-
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -116,7 +115,6 @@ export default function CustomersAndRevenue() {
         type: t.type
       })));
 
-      // Aggregate customers
       const customerMap = new Map();
       combinedData.forEach((t: any) => {
         const key = t.phone || t.customer;
@@ -159,252 +157,210 @@ export default function CustomersAndRevenue() {
   );
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] p-6 lg:p-12 relative overflow-hidden">
-      {/* ── Background Protocol ── */}
-      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-[#3B2211]/5 to-transparent pointer-events-none" />
-
-      {/* ── Header System ── */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-2"
-        >
-          <div className="flex items-center gap-5">
-             <div className="w-16 h-16 rounded-[28px] bg-[#3B2211] flex items-center justify-center text-white shadow-3xl shadow-[#3B2211]/20">
-               <Activity size={32} />
+    <div className="p-8 lg:p-12 space-y-10 max-w-[1600px] mx-auto min-h-screen">
+      {/* ── Header Section ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[#3B2211]/5 pb-10">
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-[#C88A58] uppercase tracking-[0.4em]">Analytics Engine</p>
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-xl bg-[#3B2211] flex items-center justify-center text-white shadow-xl shadow-[#3B2211]/20">
+               <Activity size={24} />
              </div>
-             <div>
-                <h1 className="text-5xl font-bold text-[#3B2211] tracking-tight leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
-                  Analytics & Revenue
-                </h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#3B2211]/30">Studio Performance Insights Matrix</p>
-             </div>
+             <h1 className="text-4xl font-black text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>Data Pelanggan</h1>
           </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap items-center gap-4"
-        >
-          <div className="flex bg-[#FAFAF8] p-1.5 rounded-[22px] border border-[#3B2211]/5 shadow-inner">
+          <p className="text-sm text-gray-400 font-medium max-w-md">Analisis metrik perilaku pelanggan dan retensi pendapatan studio.</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex bg-gray-100 p-1 rounded-xl">
             <button 
               onClick={() => setView("customers")}
-              className={`px-8 py-3 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all select-none ${view === "customers" ? "bg-[#3B2211] !text-white shadow-xl shadow-[#3B2211]/20" : "text-[#3B2211]/30 hover:text-[#3B2211]"}`}
+              className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${view === "customers" ? "bg-white text-[#3B2211] shadow-sm" : "text-gray-400 hover:text-[#3B2211]"}`}
             >
               Pelanggan
             </button>
             <button 
               onClick={() => setView("revenue")}
-              className={`px-8 py-3 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all select-none ${view === "revenue" ? "bg-[#3B2211] !text-white shadow-xl shadow-[#3B2211]/20" : "text-[#3B2211]/30 hover:text-[#3B2211]"}`}
+              className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${view === "revenue" ? "bg-white text-[#3B2211] shadow-sm" : "text-gray-400 hover:text-[#3B2211]"}`}
             >
               Pendapatan
             </button>
           </div>
-
           <button 
             onClick={exportToExcel}
-            className="flex items-center gap-3 px-8 py-4.5 bg-white border border-[#3B2211]/10 text-[#3B2211] rounded-[22px] text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#3B2211]/5 hover:bg-[#3B2211] hover:!text-white transition-all select-none"
+            className="flex items-center gap-3 px-8 py-4 bg-[#3B2211] !text-white rounded-xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#3B2211]/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             <Download size={16} />
-            Ekspor Laporan
+            Ekspor
           </button>
-        </motion.div>
+        </div>
       </div>
 
-      {/* ── Analytical Insights ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 relative z-10">
+      {/* ── Metric Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: "Total Revenue", val: `Rp ${transactions.reduce((acc, t) => acc + t.total, 0).toLocaleString()}`, icon: DollarSign, color: "#10B981" },
-          { label: "Active Clients", val: customers.length, icon: Users, color: "#3B2211" },
-          { label: "Avg Ticket", val: `Rp ${customers.length ? Math.floor(transactions.reduce((acc, t) => acc + t.total, 0) / transactions.length).toLocaleString() : 0}`, icon: Target, color: "#3B82F6" },
-          { label: "Growth Rate", val: "74.2%", icon: Zap, color: "#F59E0B" }
+          { label: "Total Revenue", value: `Rp ${transactions.reduce((acc, t) => acc + t.total, 0).toLocaleString()}`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Active Clients", value: customers.length, icon: Users, color: "text-[#3B2211]", bg: "bg-gray-100" },
+          { label: "Avg Ticket", value: `Rp ${customers.length ? Math.floor(transactions.reduce((acc, t) => acc + t.total, 0) / transactions.length).toLocaleString() : 0}`, icon: Target, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Conversion Rate", value: "74.2%", icon: Zap, color: "text-amber-600", bg: "bg-amber-50" }
         ].map((stat, idx) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="p-10 bg-white rounded-[48px] border border-white shadow-5xl relative overflow-hidden group"
+            className="p-7 bg-white rounded-2xl border border-white shadow-sm flex flex-col justify-between group hover:shadow-xl hover:shadow-[#3B2211]/5 transition-all duration-500"
           >
-             <div className="absolute top-0 right-0 p-8 opacity-[0.04] group-hover:scale-110 group-hover:opacity-10 transition-all duration-1000">
-               <stat.icon size={88} style={{ color: stat.color }} />
+             <div className="flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
+                  <stat.icon size={22} />
+                </div>
              </div>
-             <div className="text-[9px] font-black uppercase tracking-[0.3em] text-[#3B2211]/30 mb-5 flex items-center gap-2">
-               <div className="w-1 h-1 rounded-full bg-[#3B2211]/20" /> {stat.label}
-             </div>
-             <div className="space-y-1">
-               <span className="text-4xl font-bold text-[#3B2211] block tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>{stat.val}</span>
-               <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <p className="text-[8px] font-black uppercase tracking-widest text-[#3B2211]/20">Updated just now</p>
-               </div>
+             <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{stat.label}</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-3xl font-black text-[#3B2211] tracking-tighter">{stat.value}</span>
+                </div>
              </div>
           </motion.div>
         ))}
       </div>
 
-      {/* ── Main Data Matrix ── */}
-      <div className="space-y-6 relative z-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-           <div className="relative group w-full md:w-[400px]">
-              <Search className="absolute left-7 top-1/2 -translate-y-1/2 text-[#3B2211]/20 group-focus-within:text-[#3B2211] transition-all" size={20} />
-              <input 
-                type="text" 
-                placeholder="Search Clients / Records..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-16 pr-8 py-5.5 bg-white border border-[#3B2211]/5 rounded-[32px] text-sm font-medium focus:outline-none focus:ring-8 focus:ring-[#3B2211]/2 w-full shadow-5xl transition-all"
-              />
-           </div>
-           
-           <div className="flex gap-3 bg-white p-2 rounded-[28px] border border-[#3B2211]/5 shadow-5xl">
-              {["today", "week", "month"].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setDateFilter(f)}
-                  className={`px-8 py-3.5 rounded-[20px] text-[9px] font-black uppercase tracking-[0.2em] transition-all select-none ${dateFilter === f ? "bg-[#3B2211] !text-white shadow-xl shadow-[#3B2211]/20" : "text-[#3B2211]/30 hover:text-[#3B2211]"}`}
-                >
-                  {f === "today" ? "24 Hours" : f === "week" ? "Last 7D" : "Last 30D"}
-                </button>
-              ))}
-           </div>
-        </div>
+      {/* ── Filter Bar ── */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+         <div className="relative w-full md:w-[400px]">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Cari Pelanggan / ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5 shadow-sm transition-all"
+            />
+         </div>
+         
+         <div className="flex bg-gray-100 p-1 rounded-xl">
+            {["today", "week", "month"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setDateFilter(f)}
+                className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all ${dateFilter === f ? "bg-[#3B2211] !text-white shadow-sm" : "text-gray-400 hover:text-[#3B2211]"}`}
+              >
+                {f === "today" ? "Hari Ini" : f === "week" ? "7 Hari" : "30 Hari"}
+              </button>
+            ))}
+         </div>
+      </div>
 
-        <div className="bg-white rounded-[48px] border border-[#3B2211]/5 shadow-5xl overflow-hidden min-h-[500px] flex flex-col">
-           {error ? (
-             <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-6">
-                <div className="w-24 h-24 rounded-[32px] bg-rose-50 flex items-center justify-center text-rose-500">
-                  <AlertCircle size={48} />
-                </div>
-                <div>
-                   <h3 className="text-xl font-bold text-[#3B2211]">Koneksi Database Terputus</h3>
-                   <p className="text-sm text-[#3B2211]/40 mt-2 max-w-md mx-auto">
-                     Aplikasi tidak dapat terhubung ke database. Pastikan database lokal sudah menyala atau gunakan koneksi Supabase.
-                   </p>
-                </div>
-                <button 
-                  onClick={fetchData}
-                  className="px-8 py-4 bg-[#3B2211] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#3B2211]/20 hover:scale-105 transition-all"
-                >
-                  Coba Hubungkan Kembali
-                </button>
-             </div>
-           ) : view === "customers" ? (
-             <div className="overflow-x-auto">
-               <table className="w-full text-left border-collapse">
-                 <thead>
-                   <tr className="bg-[#FAFAF8]/80 border-b border-[#3B2211]/5">
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Identitas Pelanggan</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Interaksi</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Total Belanja</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Kunjungan Terakhir</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30 text-right">Detail</th>
-                   </tr>
-                 </thead>
-                 <tbody className="divide-y divide-[#3B2211]/2">
-                   <AnimatePresence mode="popLayout">
-                     {filteredCustomers.length > 0 ? (
-                       filteredCustomers.map((c, idx) => (
-                         <motion.tr 
-                           key={c.phone || idx}
-                           initial={{ opacity: 0 }}
-                           animate={{ opacity: 1 }}
-                           className="group hover:bg-[#FAFAF8]/50 transition-all"
-                         >
-                           <td className="p-10">
-                              <div className="flex items-center gap-6">
-                                 <div className="w-14 h-14 rounded-[20px] bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211] font-black text-xs shadow-xl group-hover:bg-[#3B2211] group-hover:text-white transition-all duration-700">
-                                   {c.name.slice(0, 2).toUpperCase()}
-                                 </div>
-                                 <div>
-                                    <p className="text-base font-bold text-[#3B2211] tracking-tight">{c.name}</p>
-                                    <p className="text-[10px] text-[#3B2211]/40 uppercase tracking-[0.2em] mt-1">{c.phone}</p>
-                                 </div>
-                              </div>
-                           </td>
-                           <td className="p-10">
-                              <div className="flex items-center gap-4">
-                                 <div className="px-5 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black tracking-widest border border-emerald-100">
-                                   {c.totalBookings} PESANAN
-                                 </div>
-                              </div>
-                           </td>
-                           <td className="p-10">
-                              <p className="text-lg font-black text-[#3B2211]">Rp {c.totalSpent.toLocaleString()}</p>
-                           </td>
-                           <td className="p-10">
-                              <div className="flex items-center gap-3">
-                                 <History size={14} className="text-[#3B2211]/20" />
-                                 <span className="text-[11px] font-bold text-[#3B2211]/60">
-                                   {new Date(c.lastBooking).toLocaleDateString()}
-                                 </span>
-                              </div>
-                           </td>
-                           <td className="p-10 text-right">
-                              <button className="w-12 h-12 rounded-2xl bg-white border border-[#3B2211]/5 flex items-center justify-center text-[#3B2211]/30 hover:text-[#3B2211] hover:border-[#3B2211]/20 transition-all shadow-xl shadow-black/5">
-                                 <ArrowRight size={20} />
-                              </button>
-                           </td>
-                         </motion.tr>
-                       ))
-                     ) : (
-                       <tr>
-                         <td colSpan={5} className="p-32 text-center text-[#3B2211]/20 font-black uppercase tracking-widest">Tidak ada data pelanggan ditemukan</td>
-                       </tr>
-                     )}
-                   </AnimatePresence>
-                 </tbody>
-               </table>
-             </div>
-           ) : (
-             <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                 <thead>
-                   <tr className="bg-[#FAFAF8]/80 border-b border-[#3B2211]/5">
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">ID Transaksi</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Nama Pelanggan</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Pembayaran</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Jumlah</th>
-                     <th className="p-10 text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30 text-right">Status</th>
-                   </tr>
-                 </thead>
-                 <tbody className="divide-y divide-[#3B2211]/2">
-                   {transactions.map((t, idx) => (
-                     <tr key={t.id || idx} className="group hover:bg-[#FAFAF8]/50 transition-all">
-                        <td className="p-10">
-                           <p className="text-[11px] font-black text-[#3B2211] tracking-[0.2em]">#{t.id}</p>
-                           <p className="text-[9px] text-[#3B2211]/40 uppercase tracking-[0.1em] mt-1">{new Date(t.date).toLocaleString()}</p>
-                        </td>
-                        <td className="p-10">
-                           <p className="text-sm font-bold text-[#3B2211]">{t.customer}</p>
-                           <p className="text-[9px] text-[#3B2211]/40 uppercase mt-0.5">{t.phone}</p>
-                        </td>
-                        <td className="p-10">
-                           <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211]/60">
-                                <Wallet size={14} />
-                              </div>
-                              <span className="text-[10px] font-black uppercase tracking-widest text-[#3B2211]/60">{t.method}</span>
+      {/* ── Table Ledger ── */}
+      <div className="bg-white rounded-2xl border border-white shadow-sm overflow-hidden flex-1">
+        {error ? (
+          <div className="p-20 text-center space-y-4">
+            <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto">
+              <AlertCircle size={32} />
+            </div>
+            <h3 className="text-sm font-black text-[#3B2211] uppercase tracking-widest">Koneksi Bermasalah</h3>
+            <p className="text-xs text-gray-400 max-w-xs mx-auto">{error}</p>
+            <button onClick={fetchData} className="px-6 py-3 bg-[#3B2211] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#3B2211]/20">Refresh Data</button>
+          </div>
+        ) : view === "customers" ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-[#F8F6F4]/50 text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+                  <th className="px-8 py-5 font-black">Pelanggan</th>
+                  <th className="px-8 py-5 font-black">Aktivitas</th>
+                  <th className="px-8 py-5 font-black">Total Transaksi</th>
+                  <th className="px-8 py-5 font-black">Terakhir Kunjungan</th>
+                  <th className="px-8 py-5 text-right font-black">Tindakan</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F8F6F4] text-sm">
+                <AnimatePresence mode="popLayout">
+                  {filteredCustomers.map((c, idx) => (
+                    <motion.tr 
+                      key={c.phone || idx}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="group hover:bg-[#F8F6F4]/30 transition-colors"
+                    >
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                           <div className="w-10 h-10 rounded-xl bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211] font-black text-xs">
+                             {c.name.slice(0, 2).toUpperCase()}
                            </div>
-                        </td>
-                        <td className="p-10">
-                           <p className="text-base font-black text-[#3B2211]">Rp {t.total.toLocaleString()}</p>
-                        </td>
-                        <td className="p-10 text-right">
-                           <div className="inline-flex items-center gap-2 px-5 py-2 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
-                             <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full" />
-                             <span className="text-[9px] font-black uppercase tracking-widest">{t.status}</span>
+                           <div>
+                              <p className="font-bold text-[#3B2211]">{c.name}</p>
+                              <p className="text-[10px] text-gray-400 font-bold uppercase">{c.phone}</p>
                            </div>
-                        </td>
-                     </tr>
-                   ))}
-                 </tbody>
-                </table>
-             </div>
-           )}
-        </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                         <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 bg-emerald-50 text-emerald-600 rounded-md">
+                           {c.totalBookings} Transaksi
+                         </span>
+                      </td>
+                      <td className="px-8 py-6 font-black text-[#3B2211]">
+                        Rp {c.totalSpent.toLocaleString()}
+                      </td>
+                      <td className="px-8 py-6 text-gray-400 text-xs font-bold">
+                        {new Date(c.lastBooking).toLocaleDateString("id-ID")}
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <button className="p-2 hover:bg-[#3B2211] hover:text-white rounded-lg transition-all text-gray-300">
+                          <ArrowRight size={16} />
+                        </button>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+             <table className="w-full text-left">
+              <thead>
+                <tr className="bg-[#F8F6F4]/50 text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+                  <th className="px-8 py-5 font-black">ID Transaksi</th>
+                  <th className="px-8 py-5 font-black">Pelanggan</th>
+                  <th className="px-8 py-5 font-black">Metode</th>
+                  <th className="px-8 py-5 text-right font-black">Jumlah</th>
+                  <th className="px-8 py-5 text-center font-black">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F8F6F4] text-sm">
+                {transactions.map((t, idx) => (
+                  <tr key={t.id || idx} className="group hover:bg-[#F8F6F4]/30 transition-colors">
+                     <td className="px-8 py-6">
+                        <p className="font-black text-[#3B2211] tracking-widest">#{t.id}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">{new Date(t.date).toLocaleDateString()}</p>
+                     </td>
+                     <td className="px-8 py-6">
+                        <p className="font-bold text-[#3B2211]">{t.customer}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase">{t.phone}</p>
+                     </td>
+                     <td className="px-8 py-6">
+                        <div className="flex items-center gap-2">
+                           <Wallet size={14} className="text-gray-300" />
+                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t.method}</span>
+                        </div>
+                     </td>
+                     <td className="px-8 py-6 text-right font-black text-[#3B2211]">
+                        Rp {t.total.toLocaleString()}
+                     </td>
+                     <td className="px-8 py-6">
+                        <div className="flex justify-center">
+                          <div className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-100">
+                            {t.status}
+                          </div>
+                        </div>
+                     </td>
+                  </tr>
+                ))}
+              </tbody>
+             </table>
+          </div>
+        )}
       </div>
     </div>
   );

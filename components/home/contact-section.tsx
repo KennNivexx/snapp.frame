@@ -13,7 +13,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative bg-[#F0EFE9] py-24 lg:py-32"
+      className="relative bg-warm-white py-24 lg:py-32"
       aria-labelledby="contact-heading"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -30,13 +30,13 @@ export function ContactSection() {
 
             <h2
               id="contact-heading"
-              className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-near-black mb-6 leading-tight"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Temukan Kami
             </h2>
 
-            <p className="text-[#5A5A5A] text-sm leading-relaxed mb-10 max-w-sm">
+            <p className="text-near-black/60 text-sm leading-relaxed mb-10 max-w-sm font-bold">
               Kami siap membantu Anda merencanakan sesi foto yang sempurna.
               Hubungi kami atau langsung kunjungi studio.
             </p>
@@ -45,30 +45,30 @@ export function ContactSection() {
             <ul className="space-y-6 mb-10">
               <li className="flex items-start gap-4">
                 {/* Icon container — putih bukan dark */}
-                <div className="w-10 h-10 rounded-lg bg-white border border-[#E0E0DA] flex items-center justify-center flex-shrink-0">
-                  <MapPin size={18} className="text-[#1A1A1A]" strokeWidth={1.5} />
+                <div className="w-10 h-10 rounded-lg bg-white border border-border/60 flex items-center justify-center flex-shrink-0">
+                  <MapPin size={18} className="text-near-black" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-xs text-[#888888] uppercase tracking-wider mb-1">
+                  <p className="text-[10px] text-near-black/40 uppercase tracking-[0.2em] font-black mb-1">
                     Alamat
                   </p>
-                  <p className="text-sm text-[#3A3A3A] leading-relaxed">
+                  <p className="text-sm text-near-black/80 leading-relaxed font-bold">
                     {site.contact.address}
                   </p>
                 </div>
               </li>
 
               <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-white border border-[#E0E0DA] flex items-center justify-center flex-shrink-0">
-                  <Mail size={18} className="text-[#1A1A1A]" strokeWidth={1.5} />
+                <div className="w-10 h-10 rounded-lg bg-white border border-border/60 flex items-center justify-center flex-shrink-0">
+                  <Mail size={18} className="text-near-black" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-xs text-[#888888] uppercase tracking-wider mb-1">
+                  <p className="text-[10px] text-near-black/40 uppercase tracking-[0.2em] font-black mb-1">
                     Email
                   </p>
                   <a
                     href={`mailto:${site.contact.email}`}
-                    className="text-sm text-[#3A3A3A] hover:text-[#1A1A1A] transition-colors"
+                    className="text-sm text-near-black/80 hover:text-gold transition-colors font-bold"
                   >
                     {site.contact.email}
                   </a>
@@ -76,18 +76,18 @@ export function ContactSection() {
               </li>
 
               <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-white border border-[#E0E0DA] flex items-center justify-center flex-shrink-0">
-                  <Clock size={18} className="text-[#1A1A1A]" strokeWidth={1.5} />
+                <div className="w-10 h-10 rounded-lg bg-white border border-border/60 flex items-center justify-center flex-shrink-0">
+                  <Clock size={18} className="text-near-black" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-xs text-[#888888] uppercase tracking-wider mb-2">
+                  <p className="text-[10px] text-near-black/40 uppercase tracking-[0.2em] font-black mb-2">
                     Jam Operasional
                   </p>
                   <ul className="space-y-1">
                     {site.operatingHours.map((h) => (
-                      <li key={h.day} className="flex gap-3 text-sm">
-                        <span className="text-[#888888] w-28">{h.day}</span>
-                        <span className="text-[#3A3A3A]">{h.hours}</span>
+                      <li key={h.day} className="flex gap-3 text-sm font-bold">
+                        <span className="text-near-black/40 w-28">{h.day}</span>
+                        <span className="text-near-black/80">{h.hours}</span>
                       </li>
                     ))}
                   </ul>
@@ -100,7 +100,7 @@ export function ContactSection() {
               href={getWhatsAppUrl("general")}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-[#25D366] text-white font-semibold text-sm tracking-wide rounded-full transition-all duration-300 hover:bg-[#20bc5a] hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]"
+              className="inline-flex items-center gap-3 px-10 py-4 bg-[#25D366] text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-full transition-all duration-300 hover:bg-[#20bc5a] hover:-translate-y-1 shadow-lg shadow-green-500/20"
             >
               <MessageCircle size={18} />
               Chat via WhatsApp
@@ -108,7 +108,7 @@ export function ContactSection() {
           </div>
 
           {/* ── Kolom Kanan: Google Maps ── */}
-          <div className="rounded-2xl overflow-hidden border border-[#E0E0DA] bg-[#F0EFE9] aspect-[4/3] lg:aspect-auto lg:h-[500px]">
+          <div className="rounded-[2.5rem] overflow-hidden border border-border/60 bg-warm-white aspect-[4/3] lg:aspect-auto lg:h-[500px] shadow-2xl shadow-near-black/5">
             {site.mapsEmbedUrl ? (
               <iframe
                 src={site.mapsEmbedUrl}

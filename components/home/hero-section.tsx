@@ -14,7 +14,11 @@ import {
   useMotionValue,
   MotionValue,
 } from "framer-motion";
-import { photos } from "@/data/photos";
+import { photos, type Photo } from "@/data/photos";
+
+interface HeroSectionProps {
+  initialHeroPhoto?: Photo | null;
+}
 
 /* ─── Types ──────────────────────────────────────────────────── */
 
@@ -199,8 +203,8 @@ function FloatingEl({
 
 /* ─── Hero Section ───────────────────────────────────────────── */
 
-export function HeroSection() {
-  const heroPhoto = photos.find((p) => p.isHero) ?? photos[0];
+export function HeroSection({ initialHeroPhoto }: HeroSectionProps) {
+  const heroPhoto = initialHeroPhoto || photos.find((p) => p.isHero) || photos[0];
   const sectionRef = useRef<HTMLElement>(null);
 
   // Mouse
@@ -238,7 +242,7 @@ export function HeroSection() {
       ref={sectionRef}
       id="hero"
       className="relative min-h-svh flex items-center justify-center overflow-hidden"
-      style={{ perspective: "1100px", backgroundColor: "#3B2211" }}
+      style={{ perspective: "1100px", backgroundColor: "var(--color-near-black)" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       aria-label="Hero — Snapp.frame Studio"
@@ -257,7 +261,7 @@ export function HeroSection() {
         )}
         {/* Dark overlay yang elegan & ramah mata */}
         <div className="absolute inset-0"
-          style={{ background: "linear-gradient(160deg, rgba(59,34,17,0.85) 0%, rgba(59,34,17,0.6) 45%, rgba(59,34,17,0.95) 100%)" }}
+          style={{ background: "linear-gradient(160deg, rgba(93,64,55,0.85) 0%, rgba(93,64,55,0.6) 45%, rgba(93,64,55,0.95) 100%)" }}
         />
         {/* Soft Vignette */}
         <div className="absolute inset-0"
@@ -277,34 +281,18 @@ export function HeroSection() {
         />
       </div>
 
-      {/* ── Floating studio elements ── */}
-      <div aria-hidden="true" className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
-        {ELEMENTS.map((el) => (
-          <FloatingEl key={el.id} el={el} mx={mx} my={my} scrollY={scrollY} />
-        ))}
-      </div>
-
-      {/* ── Konten 3D ── */}
       <motion.div
         className="relative z-20 text-center px-6 sm:px-10 max-w-3xl w-full group"
-        style={{ rotateX: tiltX, rotateY: tiltY, transformStyle: "preserve-3d" }}
+        style={{ 
+          rotateX: tiltX, 
+          rotateY: tiltY, 
+          transformStyle: "preserve-3d",
+          translateY: "-15%"
+        }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
       >
-        {/* Eyebrow */}
-        <motion.div className="flex items-center justify-center gap-3 mb-5"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.7 }}
-        >
-          <div style={{ width: 32, height: 1, background: "rgba(255,240,220,0.3)" }} />
-          <span className="text-[10px] sm:text-xs font-semibold tracking-[0.35em] uppercase"
-            style={{ color: "rgba(255,240,220,0.7)", fontFamily: "var(--font-playfair), serif" }}>
-            Studio Foto Minimalis
-          </span>
-          <div style={{ width: 32, height: 1, background: "rgba(255,240,220,0.3)" }} />
-        </motion.div>
-
         {/* Heading */}
         <motion.h1
           className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5"
@@ -339,22 +327,23 @@ export function HeroSection() {
           transition={{ duration: 0.9, delay: 1.1 }}
         >
           <Link href="/packages"
-            className="group/btn inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
+            className="group/btn inline-flex items-center justify-center gap-2 px-10 py-4 rounded-full text-xs font-black uppercase tracking-[0.2em] transition-all duration-500 hover:scale-105 active:scale-95 relative overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, #FFE082, #FFB74D)",
-              color: "#1A0E00",
-              boxShadow: "0 4px 28px rgba(255,170,60,0.30), 0 0 0 1px rgba(255,220,120,0.25)",
+              background: "var(--color-gold)",
+              color: "white",
+              boxShadow: "0 10px 30px rgba(212,163,115,0.3)",
             }}
           >
-            Lihat Paket
-            <span className="transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
+            <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500" />
+            <span className="relative z-10">Lihat Paket</span>
+            <span className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
           </Link>
           <Link href="/gallery"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 hover:bg-white/10 active:scale-95"
+            className="inline-flex items-center justify-center px-10 py-4 rounded-full text-xs font-black uppercase tracking-[0.2em] transition-all duration-500 hover:bg-white/10 active:scale-95"
             style={{
-              border: "1px solid rgba(255,255,255,0.22)",
-              color: "rgba(255,255,255,0.85)",
-              backdropFilter: "blur(10px)",
+              border: "1.5px solid rgba(255,255,255,0.25)",
+              color: "rgba(255,255,255,0.9)",
+              backdropFilter: "blur(12px)",
             }}
           >
             Jelajahi Galeri
@@ -379,10 +368,10 @@ export function HeroSection() {
         />
       </motion.div>
 
-      {/* ── Soft Fade Overlay ke Section Bawah (#FCF9F6) ── */}
+      {/* ── Soft Fade Overlay ke Section Bawah ── */}
       <div 
         className="absolute bottom-0 left-0 right-0 h-48 z-10 pointer-events-none"
-        style={{ background: "linear-gradient(to top, #FCF9F6 0%, transparent 100%)" }}
+        style={{ background: "linear-gradient(to top, var(--color-warm-white) 0%, transparent 100%)" }}
       />
     </section>
   );

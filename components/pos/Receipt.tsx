@@ -25,92 +25,155 @@ export default function Receipt({
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `Struk_${new Date().getTime()}`,
+    documentTitle: `Struk_Sneapici_${new Date().getTime()}`,
+  });
+
+  const subtotal = total + discount;
+  const invoiceId = `INV-${new Date().getTime().toString().slice(-8)}`;
+  const dateStr = new Date().toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   return (
     <>
+      {/* ── Trigger Button ── */}
       <button
         onClick={() => handlePrint()}
-        className="flex-1 py-4 bg-gray-100 text-gray-700 rounded-2xl font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-3"
+        className="flex-1 py-4 bg-[#FAFAF8] border border-[#3B2211]/8 text-[#3B2211] rounded-2xl font-black text-[11px] uppercase tracking-[0.25em] hover:bg-[#3B2211]/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 shadow-sm"
       >
-        <Printer size={18} />
+        <Printer size={16} />
         Cetak Struk
       </button>
 
+      {/* ── Hidden Print Content ── */}
       <div style={{ display: "none" }}>
-        <div ref={componentRef} className="p-8 bg-white text-black font-mono text-[12px] w-[80mm]">
-          <div className="text-center space-y-1 mb-6">
-            <h1 className="text-lg font-bold uppercase">SNEAPICI STUDIO</h1>
-            <p className="text-[10px]">Jl. Contoh No. 123, Kota Anda</p>
-            <p className="text-[10px]">WhatsApp: 0812-3456-7890</p>
+        <div
+          ref={componentRef}
+          style={{
+            padding: "24px 16px",
+            backgroundColor: "#fff",
+            color: "#000",
+            fontFamily: "'Courier New', Courier, monospace",
+            fontSize: "11px",
+            width: "80mm",
+            lineHeight: "1.6",
+          }}
+        >
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: "16px" }}>
+            <div style={{ fontSize: "18px", fontWeight: 900, letterSpacing: "4px", marginBottom: "4px" }}>
+              SNEAPICI
+            </div>
+            <div style={{ fontSize: "10px", letterSpacing: "2px", marginBottom: "2px" }}>STUDIO FOTO PROFESIONAL</div>
+            <div style={{ borderTop: "1px solid #000", marginTop: "8px", paddingTop: "8px", fontSize: "9px" }}>
+              <div>Jl. Contoh No. 123, Kota Anda</div>
+              <div>WhatsApp: 0812-3456-7890</div>
+              <div>Instagram: @sneapici.studio</div>
+            </div>
           </div>
 
-          <div className="border-t border-b border-dashed border-black py-2 mb-4 space-y-1">
-            <div className="flex justify-between">
-              <span>No. Invoice:</span>
-              <span className="font-bold">INV/{new Date().getTime().toString().slice(-6)}</span>
+          {/* Divider */}
+          <div style={{ borderTop: "1px dashed #000", marginBottom: "10px" }} />
+
+          {/* Transaction Info */}
+          <div style={{ marginBottom: "12px", fontSize: "10px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>No. Invoice</span>
+              <span style={{ fontWeight: 700 }}>{invoiceId}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Tanggal:</span>
-              <span>{new Date().toLocaleString('id-ID')}</span>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Tanggal</span>
+              <span>{dateStr}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Kasir:</span>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Kasir</span>
               <span>Admin #01</span>
             </div>
-            <div className="flex justify-between">
-              <span>Pelanggan:</span>
-              <span>{customerName || "Umum"}</span>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Pelanggan</span>
+              <span style={{ fontWeight: 700 }}>{customerName || "Pelanggan Umum"}</span>
             </div>
+            {customerPhone && (
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>No. HP</span>
+                <span>{customerPhone}</span>
+              </div>
+            )}
           </div>
 
-          <div className="space-y-2 mb-4">
+          {/* Divider */}
+          <div style={{ borderTop: "1px dashed #000", marginBottom: "10px" }} />
+
+          {/* Items */}
+          <div style={{ marginBottom: "12px" }}>
             {items.map((item, idx) => (
-              <div key={idx} className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="font-bold">{item.name}</span>
-                </div>
-                <div className="flex justify-between text-[10px]">
-                  <span>{item.qty} x {item.price.toLocaleString('id-ID')}</span>
-                  <span>{(item.qty * item.price).toLocaleString('id-ID')}</span>
+              <div key={idx} style={{ marginBottom: "6px" }}>
+                <div style={{ fontWeight: 700 }}>{item.name}</div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#444" }}>
+                  <span>
+                    {item.qty} x Rp {item.price.toLocaleString("id-ID")}
+                  </span>
+                  <span>Rp {(item.qty * item.price).toLocaleString("id-ID")}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="border-t border-dashed border-black pt-2 space-y-1">
-            <div className="flex justify-between">
-              <span>Subtotal:</span>
-              <span>{(total + discount).toLocaleString('id-ID')}</span>
+          {/* Divider */}
+          <div style={{ borderTop: "1px dashed #000", marginBottom: "10px" }} />
+
+          {/* Totals */}
+          <div style={{ marginBottom: "12px", fontSize: "10px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Subtotal</span>
+              <span>Rp {subtotal.toLocaleString("id-ID")}</span>
             </div>
             {discount > 0 && (
-              <div className="flex justify-between">
-                <span>Diskon:</span>
-                <span>-{discount.toLocaleString('id-ID')}</span>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Diskon</span>
+                <span>- Rp {discount.toLocaleString("id-ID")}</span>
               </div>
             )}
-            <div className="flex justify-between text-base font-bold pt-1 border-t border-black mt-1">
-              <span>TOTAL:</span>
-              <span>Rp {total.toLocaleString('id-ID')}</span>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontWeight: 900,
+                fontSize: "13px",
+                borderTop: "1px solid #000",
+                paddingTop: "6px",
+                marginTop: "6px",
+              }}
+            >
+              <span>TOTAL</span>
+              <span>Rp {total.toLocaleString("id-ID")}</span>
             </div>
           </div>
 
-          <div className="mt-4 pt-2 border-t border-dashed border-black space-y-1 text-[10px]">
-            <div className="flex justify-between">
-              <span>Metode Bayar:</span>
-              <span>{paymentMethod}</span>
+          {/* Payment */}
+          <div style={{ fontSize: "10px", marginBottom: "16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Metode Bayar</span>
+              <span style={{ fontWeight: 700 }}>{paymentMethod}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Status:</span>
-              <span className="font-bold">LUNAS</span>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Status</span>
+              <span style={{ fontWeight: 900, letterSpacing: "1px" }}>✓ LUNAS</span>
             </div>
           </div>
 
-          <div className="text-center mt-8 space-y-1 italic text-[10px]">
-            <p>Terima kasih atas kunjungan Anda</p>
-            <p>Hasil foto terbaik hanya di Sneapici</p>
-            <p>Follow IG: @sneapici.studio</p>
+          {/* Divider */}
+          <div style={{ borderTop: "1px dashed #000", marginBottom: "14px" }} />
+
+          {/* Footer */}
+          <div style={{ textAlign: "center", fontSize: "9px", lineHeight: "1.8", color: "#555" }}>
+            <div>— Terima kasih atas kunjungan Anda —</div>
+            <div>Hasil foto terbaik hanya di Sneapici Studio</div>
+            <div style={{ marginTop: "6px", fontWeight: 700, letterSpacing: "1px" }}>www.sneapici.studio</div>
           </div>
         </div>
       </div>

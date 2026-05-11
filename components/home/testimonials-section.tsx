@@ -21,8 +21,8 @@ function StarRating({ rating }: { rating: number }) {
         <Star
           key={i}
           size={13}
-          fill={i < rating ? "#C9A84C" : "transparent"}
-          stroke={i < rating ? "#C9A84C" : "#D0CFC9"}
+          fill={i < rating ? "var(--color-gold)" : "transparent"}
+          stroke={i < rating ? "var(--color-gold)" : "var(--color-near-black)/20"}
           strokeWidth={1.5}
         />
       ))}
@@ -34,37 +34,37 @@ function StarRating({ rating }: { rating: number }) {
 
 function TestimonialCard({ t }: { t: (typeof displayed)[0] }) {
   return (
-    <div className="flex flex-col h-full bg-white border border-[#E0E0DA] rounded-2xl p-6 hover:border-[#C0C0BB] transition-colors duration-300">
+    <div className="flex flex-col h-full bg-white border border-border/60 rounded-[2rem] p-8 hover:border-gold/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(93,64,55,0.06)] group">
       {/* Quote mark — muted, tidak gold */}
       <span
-        className="text-4xl leading-none text-[#E0E0DA] mb-3 select-none"
+        className="text-5xl leading-none text-gold/20 mb-4 select-none"
         aria-hidden="true"
       >
         &ldquo;
       </span>
 
-      <p className="flex-1 text-sm text-[#3A3A3A] leading-relaxed mb-5 line-clamp-5">
+      <p className="flex-1 text-sm text-near-black/70 leading-relaxed mb-6 line-clamp-5 font-bold italic">
         {t.text}
       </p>
 
       {/* Footer card */}
-      <div className="flex items-center justify-between gap-3 pt-4 border-t border-[#E8E8E4]">
+      <div className="flex items-center justify-between gap-3 pt-6 border-t border-border/40">
         {/* Avatar + nama */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-[#F0EFE9] border border-[#E0E0DA] flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-warm-white border border-border/60 flex items-center justify-center flex-shrink-0">
             <span
-              className="text-xs font-bold text-[#888888]"
+              className="text-xs font-black text-gold"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               {t.name.charAt(0)}
             </span>
           </div>
           <div>
-            <p className="text-sm font-medium text-[#1A1A1A] leading-tight">
+            <p className="text-sm font-black text-near-black leading-tight">
               {t.name}
             </p>
             {t.sessionType && (
-              <p className="text-[11px] text-[#888888]">
+              <p className="text-[10px] text-near-black/40 font-bold uppercase tracking-wider mt-0.5">
                 {t.sessionType}
                 {t.date ? ` · ${t.date}` : ""}
               </p>
@@ -90,7 +90,7 @@ export function TestimonialsSection() {
   return (
     <section
       id="testimonials"
-      className="relative bg-[#F0EFE9] py-24 lg:py-32"
+      className="relative bg-warm-white py-24 lg:py-32"
       aria-labelledby="testimonials-heading"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -103,12 +103,12 @@ export function TestimonialsSection() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
         >
           {/* Counter ulasan — bukan eyebrow standar */}
-          <p className="text-sm font-medium text-[#888888] mb-4">
+          <p className="text-[10px] font-black text-gold tracking-[0.3em] uppercase mb-4">
             {displayed.length}+ ulasan dari klien nyata
           </p>
           <h2
             id="testimonials-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
+            className="text-3xl sm:text-4xl lg:text-5xl font-black text-near-black"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             Apa Kata Pelanggan Kami
@@ -163,10 +163,10 @@ export function TestimonialsSection() {
           <div className="flex items-center justify-center gap-4 mt-6">
             <button
               onClick={prev}
-              className="w-10 h-10 rounded-full border border-[#E0E0DA] flex items-center justify-center text-[#5A5A5A] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-all"
+              className="w-12 h-12 rounded-full border border-border/60 flex items-center justify-center text-near-black/60 hover:border-gold hover:text-gold transition-all"
               aria-label="Testimoni sebelumnya"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={20} />
             </button>
 
             {/* Dots */}
@@ -177,14 +177,14 @@ export function TestimonialsSection() {
                   onClick={() => setCurrent(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     i === current
-                      ? "w-6 bg-[#1A1A1A]"
-                      : "w-1.5 bg-[#D0CFC9] hover:bg-[#888888]"
+                      ? "w-8 bg-near-black"
+                      : "w-1.5 bg-near-black/10 hover:bg-near-black/30"
                   }`}
                   aria-label={`Testimoni ${i + 1}`}
                 />
               ))}
               {displayed.length > 6 && (
-                <span className="text-[10px] text-[#6B6B6B] px-1">
+                <span className="text-[10px] text-near-black/40 font-black px-1">
                   +{displayed.length - 6}
                 </span>
               )}
@@ -192,10 +192,10 @@ export function TestimonialsSection() {
 
             <button
               onClick={next}
-              className="w-10 h-10 rounded-full border border-[#E0E0DA] flex items-center justify-center text-[#5A5A5A] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-all"
+              className="w-12 h-12 rounded-full border border-border/60 flex items-center justify-center text-near-black/60 hover:border-gold hover:text-gold transition-all"
               aria-label="Testimoni berikutnya"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={20} />
             </button>
           </div>
         </div>

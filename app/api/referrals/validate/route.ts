@@ -15,6 +15,23 @@ export async function GET(req: Request) {
     });
 
     if (!referral) {
+      // Fallback codes
+      const fallbacks: Record<string, { type: "PERCENTAGE" | "FIXED", value: number }> = {
+        "SNAPP10": { type: "PERCENTAGE", value: 10 },
+        "TEMAN15": { type: "PERCENTAGE", value: 15 },
+        "SPESIAL20": { type: "PERCENTAGE", value: 20 },
+        "FOTO10": { type: "PERCENTAGE", value: 10 },
+      };
+
+      const fallback = fallbacks[code];
+      if (fallback) {
+        return NextResponse.json({
+          code: code,
+          type: fallback.type,
+          value: fallback.value,
+        });
+      }
+
       return NextResponse.json({ error: "Kode tidak ditemukan" }, { status: 404 });
     }
 

@@ -8,15 +8,15 @@
    ============================================= */
 
 @theme {
-  /* Brand Colors (Brown/Sepia to match logo) */
-  --color-warm-white: #FCF9F6;
-  --color-warm-light: #F3EBE3;
-  --color-near-black: #3B2211;
-  --color-dark-gray: #5A371F;
-  --color-mid-gray: #8B6145;
-  --color-muted: #A7846A;
-  --color-border: #DBC0AC;
-  --color-gold: #C88A58;
+  /* Brand Colors (Brightened Brown/Sepia) */
+  --color-warm-white: #fcf9f6;
+  --color-warm-light: #f6eee6;
+  --color-near-black: #5d4037; /* Balanced for clarity and warmth */
+  --color-dark-gray: #7b5e4f;
+  --color-mid-gray: #9c7e6e;
+  --color-muted: #bc9d85;
+  --color-border: #e2cfbf;
+  --color-gold: #d4a373;
 
   /* Background/Foreground */
   --color-background: var(--color-warm-white);
@@ -57,7 +57,8 @@ body {
   font-family: var(--font-lato), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-weight: 500;
   overflow-x: hidden;
   width: 100vw;
   min-height: 100%;
@@ -88,8 +89,9 @@ h4,
 h5,
 h6 {
   font-family: var(--font-playfair), serif;
-  font-weight: 600;
-  line-height: 1.15;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 a {
@@ -99,7 +101,33 @@ a {
 img {
   max-width: 100%;
   height: auto;
-  display: block;
+}
+
+/* =============================================
+   Utilities & Custom Components
+   ============================================= */
+
+/* Premium Dark Scrollbar for Sidebar */
+.dark-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: #4a2e1c20;
+  border-radius: 10px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #4a2e1c40;
+}
+
+.dark-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #4a2e1c20 transparent;
 }
 
 /* =============================================
@@ -131,8 +159,8 @@ img {
 }
 
 /* Prevent text selection on interactive elements to fix click visibility issues */
-button, 
-a, 
+button,
+a,
 [role="button"] {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -160,9 +188,10 @@ body.modal-open main > div {
   overflow: hidden !important;
 }
 
-/* Custom Scrollbar utility */
+/* Custom Scrollbar — light (admin content area) */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -175,5 +204,85 @@ body.modal-open main > div {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 34, 17, 0.2);
+  background: rgba(59, 34, 17, 0.25);
+}
+
+/* Dark Scrollbar — for sidebar / dark surfaces */
+.dark-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 138, 88, 0.4);
+}
+
+/* =============================================
+   Skeleton Shimmer Animation
+   ============================================= */
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0ede9 25%, #e8e4e0 50%, #f0ede9 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 8px;
+}
+
+/* =============================================
+   Studio Input — Unified Focus Ring
+   ============================================= */
+
+.input-studio {
+  background-color: #fafaf8;
+  border: 1px solid rgba(59, 34, 17, 0.08);
+  border-radius: 12px;
+  color: #3b2211;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.input-studio:focus {
+  outline: none;
+  border-color: rgba(200, 138, 88, 0.4);
+  box-shadow: 0 0 0 3px rgba(200, 138, 88, 0.12);
+}
+
+/* =============================================
+   Studio Badge Utilities
+   ============================================= */
+
+.badge-active {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #d1fae5;
+}
+
+.badge-inactive {
+  background: #f9fafb;
+  color: #9ca3af;
+  border: 1px solid #f3f4f6;
+}
+
+.badge-pending {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fef3c7;
 }

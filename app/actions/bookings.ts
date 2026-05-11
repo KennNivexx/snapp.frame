@@ -66,8 +66,9 @@ export async function createBooking(data: any) {
   if (data.referral_code) {
     try {
       const { prisma } = await import("@/lib/prisma");
+      const normalizedCode = data.referral_code.trim().toUpperCase();
       await prisma.referralCode.update({
-        where: { code: data.referral_code },
+        where: { code: normalizedCode },
         data: { usageCount: { increment: 1 } }
       });
     } catch (err) {

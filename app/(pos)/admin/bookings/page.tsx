@@ -28,7 +28,8 @@ import {
   CalendarDays,
   ShieldCheck,
   Sparkles,
-  Command
+  Command,
+  Ticket
 } from "lucide-react";
 import { getBookings, updateBookingStatus } from "@/app/actions/bookings";
 import { createClient } from "@/lib/supabase/client";
@@ -41,9 +42,13 @@ interface Booking {
   package_name: string;
   session_date: string;
   session_time: string;
+  original_price: number;
   final_price: number;
   status: string;
   payment_method: string;
+  referral_code?: string;
+  discount_pct?: number;
+  notes?: string;
   created_at: string;
 }
 
@@ -116,184 +121,172 @@ export default function BookingManagement() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] p-6 lg:p-12">
-      {/* ── Header Protocol ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="space-y-2"
-        >
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-2xl bg-[#3B2211] flex items-center justify-center text-white shadow-xl shadow-[#3B2211]/20">
-               <CalendarDays size={20} />
+    <div className="p-8 lg:p-12 space-y-10 max-w-[1600px] mx-auto min-h-screen">
+      {/* ── Header Section ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[#3B2211]/5 pb-10">
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-[#C88A58] uppercase tracking-[0.4em]">Studio Operations</p>
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-xl bg-[#3B2211] flex items-center justify-center text-white shadow-xl shadow-[#3B2211]/20">
+               <CalendarDays size={24} />
              </div>
-             <div>
-                <h1 className="text-3xl font-bold text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>
-                  Manajemen Reservasi
-                </h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#3B2211]/40">Sistem Kelola Pesanan & Jadwal</p>
-             </div>
+             <h1 className="text-4xl font-black text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>Reservasi</h1>
           </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex flex-wrap items-center gap-4"
-        >
+          <p className="text-sm text-gray-400 font-medium max-w-md">Pantau dan kelola jadwal pemotretan pelanggan secara real-time.</p>
+        </div>
+        <div className="flex items-center gap-4">
           <div className="relative group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#3B2211]/30 group-focus-within:text-[#3B2211] transition-colors" size={16} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#3B2211] transition-colors" size={16} />
             <input 
               type="text" 
-              placeholder="Cari Data Pesanan..."
+              placeholder="Cari invoice / nama..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-12 pr-6 py-4 bg-white border border-[#3B2211]/5 rounded-[22px] text-sm focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5 w-full md:w-80 shadow-2xl shadow-[#3B2211]/5 placeholder:text-[#3B2211]/20"
+              className="pl-11 pr-6 py-3.5 bg-white border border-[#3B2211]/5 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-[#3B2211]/2 w-full md:w-64 transition-all shadow-sm"
             />
           </div>
-          
-          <div className="flex bg-white p-1.5 rounded-[22px] border border-[#3B2211]/5 shadow-xl shadow-[#3B2211]/5">
-            <button 
-              onClick={() => setViewMode("list")}
-              className={`p-3 rounded-[18px] transition-all ${viewMode === "list" ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/20" : "text-[#3B2211]/40 hover:text-[#3B2211]"}`}
-            >
-              <List size={18} />
-            </button>
-            <button 
-              onClick={() => setViewMode("calendar")}
-              className={`p-3 rounded-[18px] transition-all ${viewMode === "calendar" ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/20" : "text-[#3B2211]/40 hover:text-[#3B2211]"}`}
-            >
-              <LayoutGrid size={18} />
-            </button>
+          <div className="flex bg-gray-100 p-1 rounded-xl">
+             <button 
+               onClick={() => setViewMode("list")}
+               className={`p-2.5 rounded-lg transition-all ${viewMode === "list" ? "bg-white text-[#3B2211] shadow-sm" : "text-gray-400 hover:text-[#3B2211]"}`}
+             >
+               <List size={18} />
+             </button>
+             <button 
+               onClick={() => setViewMode("calendar")}
+               className={`p-2.5 rounded-lg transition-all ${viewMode === "calendar" ? "bg-white text-[#3B2211] shadow-sm" : "text-gray-400 hover:text-[#3B2211]"}`}
+             >
+               <LayoutGrid size={18} />
+             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* ── Status Metrics ── */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        {["Total", "Konfirmasi", "Selesai", "Tertunda"].map((label, idx) => (
+      {/* ── Metric Summary ── */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          { label: "Total Pesanan", val: bookings.length, icon: CalendarIcon, color: "text-[#3B2211]", bg: "bg-gray-100" },
+          { label: "Menunggu Konfirmasi", val: bookings.filter(b => b.status === "Konfirmasi").length, icon: Zap, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Sesi Selesai", val: bookings.filter(b => b.status === "Selesai").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Sesi Tertunda", val: bookings.filter(b => b.status === "Tertunda").length, icon: AlertCircle, color: "text-amber-600", bg: "bg-amber-50" }
+        ].map((stat, idx) => (
           <motion.div
-            key={label}
+            key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="p-8 bg-white rounded-[32px] border border-[#3B2211]/5 shadow-2xl shadow-[#3B2211]/5 relative overflow-hidden group"
+            className="p-7 bg-white rounded-2xl border border-white shadow-sm flex flex-col justify-between group hover:shadow-xl hover:shadow-[#3B2211]/5 transition-all duration-500"
           >
-            <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-              <Command size={60} className="text-[#3B2211]" />
-            </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 mb-3">{label}</p>
-            <div className="flex items-end gap-3">
-              <span className="text-4xl font-bold text-[#3B2211]" style={{ fontFamily: "var(--font-playfair)" }}>
-                {label === "Total" ? bookings.length : bookings.filter(b => b.status === label).length}
-              </span>
-              <div className="flex items-center gap-1 mb-2">
-                 <TrendingUp size={12} className="text-emerald-500" />
-                 <span className="text-[9px] font-bold text-emerald-500 uppercase">+12%</span>
-              </div>
-            </div>
+             <div className="flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
+                  <stat.icon size={22} />
+                </div>
+             </div>
+             <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{stat.label}</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-3xl font-black text-[#3B2211] tracking-tighter">{stat.val}</span>
+                  <div className="mb-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                </div>
+             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* ── Filter Strip ── */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-4 mb-8 custom-scrollbar">
+      {/* ── Filters ── */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {["all", "Konfirmasi", "Selesai", "Tertunda", "Dibatalkan"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border whitespace-nowrap active:scale-95 select-none ${
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border whitespace-nowrap ${
               filter === f 
-              ? "bg-[#3B2211] !text-white border-transparent shadow-xl shadow-[#3B2211]/20" 
-              : "bg-white text-[#3B2211]/40 border-[#3B2211]/5 hover:border-[#3B2211]/20 hover:text-[#3B2211] active:bg-gray-50"
+              ? "bg-[#3B2211] text-white border-transparent shadow-lg shadow-[#3B2211]/20" 
+              : "bg-white text-gray-400 border-gray-100 hover:border-[#3B2211]/20 hover:text-[#3B2211]"
             }`}
           >
-            {f === "all" ? "Semua Pesanan" : f}
+            {f === "all" ? "Semua Reservasi" : f}
           </button>
         ))}
       </div>
 
-      {/* ── Main Manifest Grid ── */}
+      {/* ── Booking Grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <AnimatePresence mode="popLayout">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-64 bg-white/50 animate-pulse rounded-[32px] border border-[#3B2211]/5" />
+              <div key={i} className="h-64 bg-white/50 animate-pulse rounded-2xl border border-gray-100" />
             ))
           ) : filteredBookings.length > 0 ? (
             filteredBookings.map((booking, idx) => (
               <motion.div
                 key={booking.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: idx * 0.05 }}
-                className="group bg-white rounded-[32px] border border-[#3B2211]/5 shadow-2xl shadow-[#3B2211]/5 hover:shadow-[#3B2211]/10 transition-all duration-700 relative overflow-hidden"
+                className="group bg-white rounded-3xl border border-white shadow-sm hover:shadow-2xl hover:shadow-[#3B2211]/10 transition-all duration-500 relative overflow-hidden"
               >
-                {/* Visual Accent */}
                 <div 
-                  className="absolute top-0 left-0 w-1.5 h-full transition-all duration-700" 
+                  className="absolute top-0 left-0 w-1 h-full opacity-50" 
                   style={{ backgroundColor: statusStyles[booking.status]?.color || "#E0E0DA" }}
                 />
 
-                <div className="p-8">
-                   <div className="flex items-start justify-between mb-8">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/30 mb-1">
+                <div className="p-8 space-y-6">
+                   <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-300">
                           #{booking.invoice_no}
                         </p>
-                        <h3 className="text-lg font-bold text-[#3B2211] truncate max-w-[180px]">
+                        <h3 className="text-lg font-black text-[#3B2211] leading-tight">
                           {booking.customer_name}
                         </h3>
                       </div>
                       <div 
-                        className="px-4 py-2 rounded-xl flex items-center gap-2"
+                        className="px-3 py-1.5 rounded-lg flex items-center gap-2"
                         style={{ backgroundColor: statusStyles[booking.status]?.bg || "#F5F5F0" }}
                       >
-                         {statusStyles[booking.status] && React.createElement(statusStyles[booking.status].icon, { size: 12, style: { color: statusStyles[booking.status].color } })}
-                         <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: statusStyles[booking.status]?.color || "#5A5A5A" }}>
+                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusStyles[booking.status]?.color }} />
+                         <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: statusStyles[booking.status]?.color }}>
                            {booking.status}
                          </span>
                       </div>
                    </div>
 
-                   <div className="space-y-6">
-                      <div className="flex items-center gap-5 p-4 bg-[#FAFAF8] rounded-[22px] border border-[#3B2211]/2">
-                         <div className="w-12 h-12 rounded-2xl bg-white border border-[#3B2211]/5 flex items-center justify-center shadow-lg">
-                            <Clock size={20} className="text-[#3B2211]/40" />
-                         </div>
-                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-[#3B2211]/30">Jadwal Sesi</p>
-                            <p className="text-sm font-bold text-[#3B2211]">
-                               {new Date(booking.session_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • {booking.session_time}
-                            </p>
-                         </div>
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-[#F8F6F4]/50 rounded-2xl border border-white">
+                         <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 mb-1">Tanggal Sesi</p>
+                         <p className="text-xs font-bold text-[#3B2211]">
+                            {new Date(booking.session_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                         </p>
                       </div>
-
-                      <div className="flex items-center justify-between px-2">
-                         <div className="flex items-center gap-3">
-                            <Package size={14} className="text-[#3B2211]/20" />
-                            <span className="text-[11px] font-bold text-[#3B2211]/60">{booking.package_name}</span>
-                         </div>
-                         <div className="flex items-center gap-3">
-                            <CreditCard size={14} className="text-[#3B2211]/20" />
-                            <span className="text-sm font-black text-[#3B2211]">Rp {booking.final_price.toLocaleString()}</span>
-                         </div>
+                      <div className="p-4 bg-[#F8F6F4]/50 rounded-2xl border border-white">
+                         <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 mb-1">Waktu Sesi</p>
+                         <p className="text-xs font-bold text-[#3B2211]">{booking.session_time}</p>
                       </div>
                    </div>
 
-                   <div className="mt-8 pt-6 border-t border-[#3B2211]/5 flex items-center justify-between">
+                   <div className="flex items-center justify-between pt-2">
                       <div className="flex items-center gap-2">
-                        <Phone size={12} className="text-[#3B2211]/30" />
-                        <span className="text-[10px] font-bold text-[#3B2211]/40">{booking.customer_phone}</span>
+                         <Package size={12} className="text-gray-300" />
+                         <span className="text-[10px] font-bold text-gray-400">{booking.package_name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                         <span className="text-sm font-black text-[#3B2211]">Rp {booking.final_price.toLocaleString()}</span>
+                      </div>
+                   </div>
+
+                   <div className="pt-6 border-t border-[#F8F6F4] flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Phone size={10} className="text-gray-300" />
+                        <span className="text-[10px] font-medium text-gray-400">{booking.customer_phone}</span>
                       </div>
                       <button 
                         onClick={() => setSelectedBooking(booking)}
-                        className="w-10 h-10 rounded-xl bg-[#3B2211]/5 text-[#3B2211] flex items-center justify-center hover:bg-[#3B2211] hover:text-white active:bg-[#2A180C] transition-all group-hover:scale-110 select-none"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#3B2211] !text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#3B2211]/20"
                       >
-                        <ChevronRight size={18} />
+                        Detail <ChevronRight size={14} />
                       </button>
                    </div>
                 </div>
@@ -301,19 +294,13 @@ export default function BookingManagement() {
             ))
           ) : (
             <div className="col-span-full py-32 flex flex-col items-center justify-center space-y-6 text-center">
-               <div className="w-24 h-24 rounded-[40px] bg-white border border-[#3B2211]/5 flex items-center justify-center shadow-2xl shadow-[#3B2211]/5">
-                 <AlertCircle size={40} className="text-[#3B2211]/10" />
+               <div className="w-20 h-20 rounded-3xl bg-gray-50 flex items-center justify-center text-gray-200">
+                 <CalendarDays size={40} />
                </div>
                <div>
-                  <h3 className="text-xl font-bold text-[#3B2211]">Data Tidak Ditemukan</h3>
-                  <p className="text-sm text-[#3B2211]/40 max-w-xs mt-2">Sistem tidak menemukan data pesanan yang sesuai dengan kriteria Anda.</p>
+                  <h3 className="text-xl font-black text-[#3B2211]">Tidak Ada Reservasi</h3>
+                  <p className="text-sm text-gray-400 max-w-xs mt-1">Gunakan kata kunci lain atau ubah filter untuk mencari data.</p>
                </div>
-               <button 
-                 onClick={() => { setSearch(""); setFilter("all"); }}
-                 className="px-8 py-4 bg-[#3B2211] text-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#3B2211]/20 hover:scale-105 transition-all"
-               >
-                 Reset Filter
-               </button>
             </div>
           )}
         </AnimatePresence>
@@ -328,68 +315,72 @@ export default function BookingManagement() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedBooking(null)}
-              className="absolute inset-0 bg-[#3B2211]/40 backdrop-blur-2xl"
+              className="absolute inset-0 bg-[#3B2211]/20 backdrop-blur-md"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="w-full max-w-2xl bg-white rounded-[48px] shadow-4xl relative z-10 overflow-hidden border border-white/20"
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-xl bg-white rounded-[2rem] shadow-2xl relative z-10 overflow-hidden border border-white"
             >
-              <div className="p-12">
-                 <div className="flex items-center justify-between mb-12">
+              <div className="p-10 space-y-8">
+                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                       <div className="w-14 h-14 rounded-2xl bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211]">
-                         <ShieldCheck size={28} />
+                       <div className="w-12 h-12 rounded-xl bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211]">
+                         <ShieldCheck size={24} />
                        </div>
                        <div>
-                          <h2 className="text-2xl font-bold text-[#3B2211]" style={{ fontFamily: "var(--font-playfair)" }}>Detail Pesanan</h2>
-                          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Akses Data Aman</p>
+                          <h2 className="text-xl font-black text-[#3B2211]" style={{ fontFamily: "var(--font-playfair)" }}>Detail Reservasi</h2>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Invoice: #{selectedBooking.invoice_no}</p>
                        </div>
                     </div>
                     <button 
                       onClick={() => setSelectedBooking(null)}
-                      className="w-14 h-14 rounded-full bg-[#FAFAF8] border border-[#3B2211]/5 flex items-center justify-center text-[#3B2211]/40 hover:text-[#3B2211] transition-all"
+                      className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all"
                     >
-                      <XCircle size={24} />
+                      <XCircle size={20} />
                     </button>
                  </div>
 
-                 <div className="grid grid-cols-2 gap-10 mb-12">
-                    <div className="space-y-2">
-                       <p className="text-[9px] font-black uppercase tracking-widest text-[#3B2211]/30">Identitas Pelanggan</p>
-                       <p className="text-lg font-bold text-[#3B2211]">{selectedBooking.customer_name}</p>
-                       <p className="text-xs text-[#3B2211]/50">{selectedBooking.customer_phone}</p>
+                 <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-1">
+                       <p className="text-[8px] font-black uppercase tracking-widest text-gray-400">Customer</p>
+                       <p className="text-base font-bold text-[#3B2211]">{selectedBooking.customer_name}</p>
+                       <p className="text-xs text-gray-400">{selectedBooking.customer_phone}</p>
                     </div>
-                    <div className="space-y-2">
-                       <p className="text-[9px] font-black uppercase tracking-widest text-[#3B2211]/30">Catatan Keuangan</p>
-                       <p className="text-lg font-bold text-[#3B2211]">Rp {selectedBooking.final_price.toLocaleString()}</p>
-                       <p className="text-xs text-[#3B2211]/50">{selectedBooking.payment_method}</p>
-                    </div>
-                    <div className="space-y-2">
-                       <p className="text-[9px] font-black uppercase tracking-widest text-[#3B2211]/30">Status Pesanan</p>
-                       <div 
-                        className="inline-flex items-center gap-3 px-5 py-2 rounded-xl"
-                        style={{ backgroundColor: statusStyles[selectedBooking.status]?.bg || "#F5F5F0" }}
-                       >
-                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: statusStyles[selectedBooking.status]?.color || "#5A5A5A" }} />
-                         <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: statusStyles[selectedBooking.status]?.color || "#5A5A5A" }}>
-                           {selectedBooking.status}
-                         </span>
-                       </div>
-                    </div>
-                    <div className="space-y-2">
-                       <p className="text-[9px] font-black uppercase tracking-widest text-[#3B2211]/30">ID Referensi</p>
-                       <p className="text-sm font-bold text-[#3B2211]">INVOICE-{selectedBooking.invoice_no}</p>
+                    <div className="space-y-1">
+                       <p className="text-[8px] font-black uppercase tracking-widest text-gray-400">Payment</p>
+                       <p className="text-base font-bold text-[#3B2211]">Rp {selectedBooking.final_price.toLocaleString()}</p>
+                       <p className="text-xs text-gray-400">{selectedBooking.payment_method}</p>
                     </div>
                  </div>
 
-                 <div className="flex gap-4">
-                    <button className="flex-1 py-5 bg-[#3B2211] text-white rounded-[24px] text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl shadow-[#3B2211]/30 hover:scale-[1.02] transition-all">
-                      Konfirmasi Pesanan
+                 <div className="p-6 bg-[#F8F6F4] rounded-2xl space-y-4">
+                    <div className="flex items-center justify-between">
+                       <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Paket Layanan</p>
+                       <p className="text-xs font-bold text-[#3B2211]">{selectedBooking.package_name}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                       <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Jadwal Sesi</p>
+                       <p className="text-xs font-bold text-[#3B2211]">
+                         {new Date(selectedBooking.session_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} @ {selectedBooking.session_time}
+                       </p>
+                    </div>
+                 </div>
+
+                 {selectedBooking.notes && (
+                   <div className="space-y-2">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-gray-400">Catatan Khusus</p>
+                      <p className="text-xs text-[#3B2211]/70 leading-relaxed italic">"{selectedBooking.notes}"</p>
+                   </div>
+                 )}
+
+                 <div className="flex gap-3 pt-4">
+                    <button className="flex-1 py-4 bg-[#3B2211] !text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#3B2211]/20 hover:scale-[1.02] transition-all">
+                      Update Status
                     </button>
-                    <button className="flex-1 py-5 bg-[#FAFAF8] text-[#3B2211]/40 border border-[#3B2211]/5 rounded-[24px] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-[#3B2211] transition-all">
-                      Arsipkan Data
+                    <button className="px-6 py-4 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all">
+                      Cetak Struk
                     </button>
                  </div>
               </div>

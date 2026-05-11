@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { site } from "@/data/site";
 import { Logo } from "@/components/ui/logo";
-import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Ticket, 
-  Settings, 
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Ticket,
+  Settings,
   LogOut,
   Users,
   ChevronRight,
@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   Package,
-  History
+  History,
+  Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,113 +28,149 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
   { label: "Kasir POS", icon: ShoppingCart, href: "/kasir" },
   { label: "Manajemen Produk", icon: Package, href: "/admin/products" },
+  { label: "Kelola Galeri", icon: ImageIcon, href: "/admin/gallery" },
   { label: "Booking", icon: Calendar, href: "/admin/bookings" },
   { label: "Pelanggan", icon: Users, href: "/admin/customers" },
   { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
   { label: "Laporan", icon: History, href: "/admin/reports" },
 ];
 
-export default function POSLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function POSLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [isPOSPage, setIsPOSPage] = useState(false);
-  
+
   useEffect(() => {
     setIsPOSPage(!!pathname && /kasir|katalog/.test(pathname));
     setIsSidebarOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    const handleOpenSidebar = () => setIsSidebarOpen(true);
+    window.addEventListener("open-sidebar", handleOpenSidebar);
+    return () => window.removeEventListener("open-sidebar", handleOpenSidebar);
+  }, []);
+
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-white border-r border-gray-100">
-      {/* Logo Section */}
-      <div className="px-6 py-8 flex items-center justify-center border-b border-gray-50">
-         <Logo height={60} />
+    <div className="flex flex-col h-full bg-[#FDFBF7] text-near-black border-r border-near-black/5 relative">
+      {/* ── Logo Section ────────────────────────────────── */}
+      <div className="pt-8 pb-4 flex flex-col items-center px-4">
+        <Link href="/admin" className="w-full flex justify-center group">
+          <img 
+            src="/logosnapframe-removebg-preview.png" 
+            alt="Snapframe Logo" 
+            className="w-full max-w-[320px] h-auto object-contain transition-transform duration-500 group-hover:scale-105" 
+          />
+        </Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
-        <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Menu Utama</p>
-        
+      {/* ── Navigation ──────────────────────────────────── */}
+      <nav className="flex-1 overflow-y-auto pt-0 pb-4 px-4 custom-scrollbar space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+          const Icon = item.icon;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/admin" && pathname.startsWith(item.href));
+
           return (
-            <Link 
-              key={item.href} 
+            <Link
+              key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all select-none ${
-                isActive 
-                ? "bg-[#3B2211] !text-white shadow-lg shadow-[#3B2211]/10" 
-                : "text-gray-500 hover:bg-gray-50 hover:text-[#3B2211]"
-              }`}
+              className={`
+                group relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300
+                ${
+                  isActive
+                    ? "bg-gold/15 text-near-black ring-1 ring-gold/20"
+                    : "text-near-black/60 hover:bg-near-black/5 hover:text-near-black"
+                }
+              `}
             >
-              <div className="flex items-center gap-3">
-                <item.icon size={18} />
-                <span className="text-sm font-semibold">{item.label}</span>
+              <div
+                className={`transition-transform duration-300 ${isActive ? "scale-105" : "group-hover:scale-105"}`}
+              >
+                <Icon
+                  size={16}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  className={isActive ? "text-near-black" : ""}
+                />
               </div>
-              {isActive && <ChevronRight size={14} className="opacity-50" />}
+              <span
+                className={`text-[11px] tracking-wide uppercase font-black`}
+              >
+                {item.label}
+              </span>
+
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-active-line"
+                  className="absolute left-0 w-1 h-4 bg-gold rounded-r-full"
+                />
+              )}
             </Link>
           );
         })}
       </nav>
 
-      {/* Profile Section */}
-      <div className="p-4 border-t border-gray-50 space-y-4">
-        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-           <div className="w-10 h-10 rounded-lg bg-[#3B2211] flex items-center justify-center font-bold text-xs text-white">
-             AD
-           </div>
-           <div className="flex-1 min-w-0">
-             <p className="text-xs font-bold text-gray-900 truncate">Administrator</p>
-             <p className="text-[10px] text-gray-500 uppercase font-medium">Sneapici Studio</p>
-           </div>
+      {/* ── Profile Section ──────────────────────────────── */}
+      <div className="p-4 border-t border-near-black/5">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-near-black/5 shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-near-black flex items-center justify-center text-white font-black text-[10px]">
+              AD
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black text-near-black truncate uppercase tracking-wider">
+                Administrator
+              </p>
+              <p className="text-[8px] text-muted font-bold truncate uppercase tracking-widest">
+                Studio Manager
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-near-black/5 text-near-black/30 hover:text-red-500 hover:bg-red-50 hover:border-red-100 transition-all text-[9px] font-black uppercase tracking-[0.2em]"
+          >
+            <LogOut size={12} />
+            Keluar Sistem
+          </button>
         </div>
-        
-        <button 
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-semibold text-xs"
-        >
-          <LogOut size={16} />
-          Keluar
-        </button>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] text-gray-900 font-sans flex overflow-hidden h-screen">
-      {/* Desktop Sidebar - Sembunyikan di halaman POS */}
-      {!isPOSPage && (
-        <aside className="hidden lg:flex w-64 flex-col z-50">
-          <SidebarContent />
-        </aside>
-      )}
+    <div className="min-h-screen bg-[#F8F6F4] text-[#3B2211] font-sans flex overflow-hidden h-screen">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-72 flex-col z-50 h-screen sticky top-0">
+        <SidebarContent />
+      </aside>
 
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] lg:hidden"
+              className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] lg:hidden"
             />
-            <motion.aside 
+            <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-64 bg-white z-[70] lg:hidden shadow-2xl"
+              className="fixed inset-y-0 left-0 w-72 bg-[#1A110B] z-[70] lg:hidden shadow-2xl"
             >
-              <div className="absolute right-4 top-4">
-                <button onClick={() => setIsSidebarOpen(false)} className="p-2 text-gray-400">
-                  <X size={20} />
+              <div className="absolute right-4 top-4 z-50">
+                <button
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="p-2 text-white/40 hover:text-white transition-colors"
+                >
+                  <X size={24} />
                 </button>
               </div>
               <SidebarContent />
@@ -144,32 +181,48 @@ export default function POSLayout({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 relative h-full">
-        {/* Header - Tampilkan di semua halaman kecuali Kasir karena Kasir punya Header custom */}
+        {/* Header */}
         {!isPOSPage && (
-          <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 lg:px-8 sticky top-0 z-40">
-             <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => setIsSidebarOpen(true)}
-                  className="lg:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-50 rounded-lg"
-                >
-                  <Menu size={20} />
-                </button>
-                <div className="flex flex-col">
-                  <h1 className="text-sm font-bold text-gray-900">
-                    {navItems.find(i => i.href === pathname)?.label || "Dashboard"}
-                  </h1>
+          <header className="h-20 bg-white/60 backdrop-blur-xl border-b border-[#3B2211]/5 flex items-center justify-between px-8 sticky top-0 z-40 shadow-sm shadow-[#3B2211]/2">
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden p-2.5 -ml-2 text-[#3B2211] hover:bg-[#3B2211]/5 rounded-xl transition-colors"
+              >
+                <Menu size={22} />
+              </button>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-black text-[#3B2211] tracking-tight">
+                  {navItems.find((i) => i.href === pathname)?.label ||
+                    "Dashboard"}
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Server Operational
+                  </span>
                 </div>
-             </div>
-             
-             <div className="flex items-center gap-4">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-[10px] font-bold text-green-700 uppercase">Sistem Online</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5">
+              <div className="hidden md:flex items-center gap-4 mr-4">
+                <div className="text-right">
+                  <p className="text-[11px] font-black text-[#3B2211] uppercase tracking-wider">
+                    Studio Status
+                  </p>
+                  <p className="text-[9px] text-green-600 font-bold uppercase">
+                    Online & Synced
+                  </p>
                 </div>
-                <div className="p-2 text-gray-400 hover:text-gray-600 cursor-pointer">
-                  <Settings size={18} />
-                </div>
-             </div>
+                <div className="w-px h-8 bg-[#3B2211]/10" />
+              </div>
+
+              <button className="p-2.5 text-[#3B2211]/30 hover:text-[#3B2211] hover:bg-[#3B2211]/5 rounded-xl transition-all relative">
+                <Settings size={20} />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-[#C88A58] rounded-full border-2 border-white" />
+              </button>
+            </div>
           </header>
         )}
 

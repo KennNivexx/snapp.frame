@@ -57,7 +57,7 @@ export async function getTransactionReports(filters: {
       phone: "-",
       referral: t.referralCode?.code || "-",
       type: "POS",
-      details: t.items.map(i => `${i.product.name} x${i.qty}`).join(", ")
+      details: t.items.map((i: any) => `${i.product.name} x${i.qty}`).join(", ")
     }));
 
     const normalizedBookings = bookings.map(b => ({

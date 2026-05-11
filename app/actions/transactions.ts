@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import crypto from "crypto";
 
 export async function saveTransaction(data: {
   invoiceNumber: string;
@@ -22,6 +23,9 @@ export async function saveTransaction(data: {
     const session = await auth();
     let userId = (session?.user as any)?.id;
 
+    const fs = require("fs");
+    fs.writeFileSync("prisma_keys.txt", Object.keys(prisma).filter(k => !k.startsWith("_") && !k.startsWith("$")).join("\n"));
+
     if (!userId) {
       console.warn("SaveTransaction: No session found, attempting fallback user");
       
@@ -40,10 +44,12 @@ export async function saveTransaction(data: {
         console.log("Database empty, creating auto-system-user");
         fallbackUser = await prisma.user.create({
           data: {
+            id: crypto.randomUUID(),
             name: "System Admin",
             email: "admin@system.com",
             password: "system_admin_pass", // Wajib diisi sesuai skema
-            role: "ADMIN"
+            role: "ADMIN",
+            updatedAt: new Date()
           }
         });
       }
@@ -79,9 +85,11 @@ export async function saveTransaction(data: {
 
     // 2. Find referral code
     let referralCodeId = null;
-    if (data.referralCode) {
+    const normalizedReferralCode = data.referralCode?.trim().toUpperCase();
+
+    if (normalizedReferralCode) {
       const ref = await prisma.referralCode.findUnique({
-        where: { code: data.referralCode }
+        where: { code: normalizedReferralCode }
       });
       if (ref) {
         referralCodeId = ref.id;
@@ -102,8 +110,10 @@ export async function saveTransaction(data: {
       : data.invoiceNumber;
 
     // 4. Create Transaction
+    const transactionId = crypto.randomUUID();
     const transaction = await prisma.transaction.create({
       data: {
+        id: transactionId,
         invoiceNumber: finalInvoice,
         cashierId: userId,
         total: data.total,
@@ -112,8 +122,15 @@ export async function saveTransaction(data: {
         paymentMethod: data.paymentMethod,
         referralCodeId: referralCodeId,
         status: "COMPLETED",
+        updatedAt: new Date(),
         items: {
-          create: validItems
+          create: validItems.map(item => ({
+            id: crypto.randomUUID(),
+            productId: item.productId,
+            qty: item.qty,
+            price: item.price,
+            subtotal: item.subtotal
+          }))
         }
       }
     });
@@ -122,6 +139,7 @@ export async function saveTransaction(data: {
     if (referralCodeId) {
       await prisma.referralUsage.create({
         data: {
+          id: crypto.randomUUID(),
           referralCodeId: referralCodeId,
           transactionId: transaction.id,
           userId: userId,
@@ -136,6 +154,10 @@ export async function saveTransaction(data: {
         : "";
 
       try {
+        // Hitung discountPct untuk record booking
+        const subtotal = data.total + data.discount;
+        const discountPct = subtotal > 0 ? (data.discount / subtotal) * 100 : 0;
+
         await prisma.booking.create({
           data: {
             invoiceNo: finalInvoice,
@@ -145,17 +167,17 @@ export async function saveTransaction(data: {
             sessionTime: data.bookingTime || new Date().toTimeString().split(' ')[0].substring(0, 5),
             packageName: data.items.map(i => i.name).join(", "),
             packageId: data.items[0]?.id || "unknown",
-            originalPrice: data.total + data.discount,
+            originalPrice: subtotal,
             finalPrice: data.total,
-            paymentMethod: data.paymentMethod.toLowerCase(), // Konversi ke lowercase
+            paymentMethod: data.paymentMethod.toLowerCase(),
             status: "confirmed",
-            referralCode: data.referralCode,
+            referralCode: normalizedReferralCode,
+            discountPct: discountPct,
             notes: notes
           }
         });
       } catch (bookingError: any) {
         console.error("Booking creation failed, but transaction is saved:", bookingError.message);
-        // Kita tidak return error di sini agar transaksi tetap dianggap sukses
       }
     }
 

@@ -78,289 +78,168 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] selection:bg-[#3B2211] selection:text-white pb-24">
-      {/* ── Background Elements ── */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-40">
-        <div className="absolute top-[10%] right-[10%] w-[50%] h-[50%] bg-[#3B2211]/5 blur-[140px] rounded-full" />
-        <div className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%] bg-[#A0A096]/10 blur-[140px] rounded-full" />
+    <div className="p-8 lg:p-12 space-y-10 max-w-[1600px] mx-auto min-h-screen">
+      {/* ── Header Section ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[#3B2211]/5 pb-10">
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-[#C88A58] uppercase tracking-[0.4em]">Financial Audit</p>
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-xl bg-[#3B2211] flex items-center justify-center text-white shadow-xl shadow-[#3B2211]/20">
+               <BarChart3 size={24} />
+             </div>
+             <h1 className="text-4xl font-black text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>Wawasan Keuangan</h1>
+          </div>
+          <p className="text-sm text-gray-400 font-medium max-w-md">Metrik presisi untuk analisis pendapatan dan performa studio strategis.</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={exportToExcel}
+            className="flex items-center gap-3 px-8 py-4 bg-[#3B2211] !text-white rounded-xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#3B2211]/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            <Download size={16} />
+            Ekspor Laporan
+          </button>
+        </div>
       </div>
 
-      <div className="relative z-10 p-6 md:p-12 space-y-12 max-w-[1700px] mx-auto">
+      {/* ── Metric Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          { label: "Total Revenue", value: `Rp ${data?.summary?.totalRevenue.toLocaleString("id-ID") || 0}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Volume Transaksi", value: data?.summary?.totalCount || 0, icon: ShoppingBag, color: "text-[#3B2211]", bg: "bg-gray-100" },
+          { label: "POS Revenue", value: data?.summary?.posCount || 0, icon: CreditCard, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Booking Revenue", value: data?.summary?.bookingCount || 0, icon: CalendarDays, color: "text-amber-600", bg: "bg-amber-50" }
+        ].map((stat, idx) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="p-7 bg-white rounded-2xl border border-white shadow-sm flex flex-col justify-between group hover:shadow-xl hover:shadow-[#3B2211]/5 transition-all duration-500"
+          >
+             <div className="flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
+                  <stat.icon size={22} />
+                </div>
+             </div>
+             <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{stat.label}</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-3xl font-black text-[#3B2211] tracking-tighter">{stat.value}</span>
+                </div>
+             </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ── Filters ── */}
+      <div className="bg-white p-8 rounded-2xl border border-white shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Dari Tanggal</label>
+          <input 
+            type="date" 
+            value={filters.startDate}
+            onChange={e => setFilters({...filters, startDate: e.target.value})}
+            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Sampai Tanggal</label>
+          <input 
+            type="date" 
+            value={filters.endDate}
+            onChange={e => setFilters({...filters, endDate: e.target.value})}
+            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Tipe Transaksi</label>
+          <select 
+            value={filters.type}
+            onChange={e => setFilters({...filters, type: e.target.value as any})}
+            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B2211]/5 appearance-none cursor-pointer"
+          >
+            <option value="ALL">Semua Transaksi</option>
+            <option value="POS">Penjualan POS</option>
+            <option value="BOOKING">Booking Online</option>
+          </select>
+        </div>
+      </div>
+
+      {/* ── Table Ledger ── */}
+      <div className="bg-white rounded-2xl border border-white shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+           <div className="flex items-center gap-3">
+             <div className="w-8 h-8 rounded-lg bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211]">
+               <FileText size={16} />
+             </div>
+             <h3 className="text-sm font-black text-[#3B2211] uppercase tracking-widest">Buku Besar Transaksi</h3>
+           </div>
+           <button 
+             onClick={fetchData}
+             className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-400"
+           >
+             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+           </button>
+        </div>
         
-        {/* ── Header ── */}
-        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "circOut" }}
-            className="space-y-6"
-          >
-            <div className="flex items-center gap-4">
-              <Link href="/admin" className="group flex items-center gap-3 px-6 py-3 bg-white rounded-full border border-[#3B2211]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 hover:text-[#3B2211] hover:border-[#3B2211]/20 transition-all shadow-sm active:scale-95">
-                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
-                Administration
-              </Link>
-              <div className="h-px w-8 bg-[#3B2211]/10" />
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Financial Audit</span>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <h1 className="text-5xl lg:text-7xl font-bold text-[#3B2211] tracking-tight leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
-                Wawasan Keuangan
-              </h1>
-              <p className="text-sm text-[#3B2211]/50 font-medium max-w-xl leading-relaxed">
-                Metrik presisi untuk pengembangan studio strategis. Rekonsiliasi aset, analisis kecepatan konversi, dan optimalkan arus pendapatan.
-              </p>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }}
-            className="flex items-center gap-6"
-          >
-            <button 
-              onClick={exportToExcel}
-              className="group relative inline-flex items-center justify-center gap-4 px-10 py-5 bg-[#3B2211] text-white rounded-[24px] text-[10px] font-black hover:scale-[1.02] transition-all shadow-2xl active:scale-95 uppercase tracking-[0.4em] overflow-hidden select-none"
-            >
-              <Download size={18} />
-              Ekspor Laporan
-            </button>
-          </motion.div>
-        </header>
-
-        {/* ── Summary Matrix ── */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            { label: "Total Revenue", value: `Rp ${data?.summary?.totalRevenue.toLocaleString("id-ID") || 0}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+12.4%", isPrimary: true },
-            { label: "Record Volume", value: data?.summary?.totalCount || 0, icon: ShoppingBag, color: "text-[#3B2211]", bg: "bg-[#F0EFE9]", trend: "Stabilized" },
-            { label: "Direct Sales", value: data?.summary?.posCount || 0, icon: CreditCard, color: "text-amber-600", bg: "bg-amber-50", trend: "POS Matrix" },
-            { label: "Digital Booking", value: data?.summary?.bookingCount || 0, icon: CalendarDays, color: "text-indigo-600", bg: "bg-indigo-50", trend: "Reservation" },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 + (i * 0.1) }}
-              className={`rounded-[48px] p-10 relative overflow-hidden group shadow-5xl transition-all duration-700 ${
-                stat.isPrimary ? "bg-[#3B2211] text-white shadow-[#3B2211]/20" : "bg-white text-[#3B2211] border border-white shadow-[#3B2211]/5"
-              }`}
-            >
-              <div className={`absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all duration-700 ${stat.isPrimary ? "text-white" : "text-[#3B2211]"}`}>
-                <stat.icon size={120} strokeWidth={1} />
-              </div>
-              <div className="relative z-10 space-y-6">
-                <div className={`w-14 h-14 ${stat.isPrimary ? "bg-white/10" : stat.bg} ${stat.isPrimary ? "text-white" : stat.color} rounded-2xl flex items-center justify-center shadow-inner`}>
-                  <stat.icon size={26} />
-                </div>
-                <div className="space-y-1">
-                  <p className={`text-[9px] font-black uppercase tracking-[0.4em] ${stat.isPrimary ? "opacity-40" : "text-[#3B2211]/30"}`}>{stat.label}</p>
-                  <h4 className="text-3xl font-bold tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>{stat.value}</h4>
-                </div>
-                <div className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${stat.isPrimary ? "text-emerald-300" : "text-[#3B2211]/40"}`}>
-                  {stat.trend.includes("+") ? <ArrowUpRight size={14} /> : <Zap size={14} />}
-                  {stat.trend}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </section>
-
-        {/* ── Filter Parameters ── */}
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="bg-white/40 backdrop-blur-2xl p-8 md:p-10 rounded-[64px] border border-white shadow-2xl shadow-[#3B2211]/5 flex flex-col xl:flex-row items-center gap-10 ring-1 ring-[#3B2211]/5"
-        >
-          <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-[#3B2211]/40 uppercase tracking-[0.4em] flex items-center gap-3 ml-2">
-                <CalendarIcon size={14} /> Rentang Waktu - Mulai
-              </label>
-              <div className="relative group">
-                <input 
-                  type="date" 
-                  value={filters.startDate}
-                  onChange={e => setFilters({...filters, startDate: e.target.value})}
-                  className="w-full px-8 py-6 bg-[#FAFAF8] border-2 border-transparent group-hover:border-[#3B2211]/10 focus:border-[#3B2211] focus:bg-white rounded-[28px] text-sm font-bold outline-none transition-all shadow-inner"
-                />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-[#3B2211]/40 uppercase tracking-[0.4em] flex items-center gap-3 ml-2">
-                <CalendarIcon size={14} /> Rentang Waktu - Selesai
-              </label>
-              <div className="relative group">
-                <input 
-                  type="date" 
-                  value={filters.endDate}
-                  onChange={e => setFilters({...filters, endDate: e.target.value})}
-                  className="w-full px-8 py-6 bg-[#FAFAF8] border-2 border-transparent group-hover:border-[#3B2211]/10 focus:border-[#3B2211] focus:bg-white rounded-[28px] text-sm font-bold outline-none transition-all shadow-inner"
-                />
-              </div>
-            </div>
-          </div>
-          
-          <div className="w-full xl:w-80 space-y-4">
-            <label className="text-[10px] font-black text-[#3B2211]/40 uppercase tracking-[0.4em] flex items-center gap-3 ml-2">
-              <Filter size={14} /> Protokol Sumber Data
-            </label>
-            <div className="relative group">
-              <select 
-                value={filters.type}
-                onChange={e => setFilters({...filters, type: e.target.value as any})}
-                className="w-full px-8 py-6 bg-[#FAFAF8] border-2 border-transparent group-hover:border-[#3B2211]/10 focus:border-[#3B2211] focus:bg-white rounded-[28px] text-sm font-bold outline-none transition-all shadow-inner appearance-none cursor-pointer"
-              >
-                <option value="ALL">Semua Sumber</option>
-                <option value="POS">Penjualan Langsung (POS)</option>
-                <option value="BOOKING">Reservasi Online</option>
-              </select>
-              <ChevronDown className="absolute right-8 top-1/2 -translate-y-1/2 text-[#3B2211]/20 group-hover:text-[#3B2211] transition-colors pointer-events-none" size={20} />
-            </div>
-          </div>
-
-          <div className="pt-8">
-            <button 
-              onClick={fetchData}
-              disabled={loading}
-              className="w-20 h-20 bg-[#3B2211] text-white rounded-[30px] flex items-center justify-center hover:bg-[#2A180C] transition-all shadow-2xl disabled:opacity-50 active:scale-90 group"
-            >
-              <RefreshCw size={32} className={`${loading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"}`} />
-            </button>
-          </div>
-        </motion.section>
-
-        {/* ── Transaction Ledger ── */}
-        <motion.section 
-          layout
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
-          className="bg-white/60 backdrop-blur-3xl rounded-[64px] border border-white shadow-2xl shadow-[#3B2211]/10 overflow-hidden ring-1 ring-[#3B2211]/5"
-        >
-          <div className="p-12 border-b border-[#F0EFE9] flex items-center justify-between bg-white/40">
-             <div className="flex items-center gap-6">
-               <div className="w-14 h-14 bg-[#3B2211] rounded-2xl flex items-center justify-center text-white shadow-xl">
-                 <BarChart3 size={28} />
-               </div>
-               <div>
-                 <h3 className="text-2xl font-bold text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>Buku Besar Transaksi</h3>
-                 <p className="text-[10px] font-black text-[#3B2211]/40 uppercase tracking-[0.3em] mt-1">Rekonsiliasi Aset Real-time</p>
-               </div>
-             </div>
-             <div className="flex items-center gap-4">
-               <div className="px-5 py-2 bg-[#F0EFE9] rounded-full flex items-center gap-3">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-[9px] font-black text-[#3B2211]/60 uppercase tracking-widest">Aliran Aktif</span>
-               </div>
-             </div>
-          </div>
-          
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#FAFAF8] text-[9px] text-[#3B2211]/40 uppercase tracking-[0.4em] font-black border-b border-[#F0EFE9]">
-                  <th className="px-12 py-10 font-black">ID Transaksi</th>
-                  <th className="px-12 py-10 font-black">Profil Pelanggan</th>
-                  <th className="px-12 py-10 font-black">Detail Layanan</th>
-                  <th className="px-12 py-10 text-right font-black">Nilai Aset</th>
-                  <th className="px-12 py-10 font-black">Status Pembayaran</th>
-                  <th className="px-12 py-10 text-right font-black">Atribusi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#F0EFE9]">
-                <AnimatePresence mode="popLayout">
-                  {loading ? (
-                    <tr><td colSpan={6} className="px-12 py-40 text-center">
-                      <div className="flex flex-col items-center gap-6">
-                        <RefreshCw size={48} className="animate-spin text-[#3B2211] opacity-20" />
-                        <p className="text-[10px] font-black text-[#3B2211]/40 uppercase tracking-[0.3em]">Merekonsiliasi Buku Besar...</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-[#F8F6F4]/50 text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+                <th className="px-8 py-5 font-black">ID Transaksi</th>
+                <th className="px-8 py-5 font-black">Pelanggan</th>
+                <th className="px-8 py-5 font-black">Layanan</th>
+                <th className="px-8 py-5 text-right font-black">Total</th>
+                <th className="px-8 py-5 font-black text-center">Status</th>
+                <th className="px-8 py-5 text-right font-black">Metode</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F8F6F4] text-sm">
+              <AnimatePresence mode="popLayout">
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td colSpan={6} className="px-8 py-6"><div className="h-10 bg-[#F8F6F4] rounded-lg w-full" /></td>
+                    </tr>
+                  ))
+                ) : data?.transactions?.map((t: any, idx: number) => (
+                  <motion.tr 
+                    key={t.id} 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="group hover:bg-[#F8F6F4]/30 transition-colors"
+                  >
+                    <td className="px-8 py-6">
+                      <p className="font-black text-[#3B2211] tracking-widest">#{t.invoiceNumber}</p>
+                      <p className="text-[9px] text-gray-400 font-bold uppercase">{new Date(t.createdAt).toLocaleDateString()}</p>
+                    </td>
+                    <td className="px-8 py-6 font-bold text-[#3B2211]">{t.customer}</td>
+                    <td className="px-8 py-6">
+                       <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${t.type === "BOOKING" ? "bg-indigo-50 text-indigo-600" : "bg-amber-50 text-amber-600"}`}>
+                         {t.type}
+                       </span>
+                    </td>
+                    <td className="px-8 py-6 text-right font-black text-[#3B2211]">
+                       Rp {t.total.toLocaleString()}
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex justify-center">
+                        <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest ${t.status === "SUCCESS" || t.status === "COMPLETED" ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-amber-50 border-amber-100 text-amber-600"}`}>
+                           <div className={`w-1 h-1 rounded-full ${t.status === "SUCCESS" || t.status === "COMPLETED" ? "bg-emerald-600" : "bg-amber-600"}`} />
+                           {t.status}
+                        </div>
                       </div>
-                    </td></tr>
-                  ) : data?.transactions?.length === 0 ? (
-                    <tr><td colSpan={6} className="px-12 py-40 text-center">
-                      <div className="flex flex-col items-center gap-8 opacity-20">
-                         <div className="w-24 h-24 bg-[#3B2211]/5 rounded-[40px] flex items-center justify-center">
-                           <FilterX size={48} className="text-[#3B2211]" />
-                         </div>
-                         <p className="text-[10px] font-black text-[#3B2211] uppercase tracking-[0.3em]">No Temporal Matches in Archive</p>
-                      </div>
-                    </td></tr>
-                  ) : data?.transactions?.map((t: any, idx: number) => (
-                    <motion.tr 
-                      key={t.id} 
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.03 }}
-                      className="group/row hover:bg-[#FAFAF8]/80 transition-all duration-500"
-                    >
-                      <td className="px-12 py-10">
-                        <div className="flex items-center gap-6">
-                          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-[#F0EFE9] text-[#3B2211]/20 group-hover/row:scale-110 transition-transform">
-                            <Target size={20} />
-                          </div>
-                          <div className="flex flex-col gap-1.5">
-                            <span className="text-[14px] font-bold text-[#3B2211] font-mono group-hover/row:text-[#3B2211] transition-colors tracking-widest uppercase">
-                              <span className="opacity-20">SNF-</span>{t.invoiceNumber}
-                            </span>
-                            <div className="flex items-center gap-2 text-[9px] font-black text-[#3B2211]/30 uppercase tracking-widest">
-                              <CalendarIcon size={10} />
-                              {new Date(t.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-12 py-10">
-                        <div className="flex flex-col gap-1.5">
-                          <span className="text-sm font-bold text-[#3B2211] tracking-tight">{t.customer}</span>
-                          <span className="text-[9px] font-black text-[#3B2211]/30 uppercase tracking-widest flex items-center gap-2">
-                             <ShieldCheck size={10} /> Identitas Terverifikasi
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-12 py-10">
-                        <div className="flex flex-col max-w-xs gap-2">
-                          <span className={`text-[8px] font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full w-fit shadow-sm border ${
-                            t.type === "BOOKING" ? "bg-indigo-50 text-indigo-700 border-indigo-100" : "bg-amber-50 text-amber-700 border-amber-100"
-                          }`}>
-                            {t.type} Channel
-                          </span>
-                          <span className="text-xs font-bold text-[#3B2211] truncate tracking-tight">{t.details}</span>
-                        </div>
-                      </td>
-                      <td className="px-12 py-10 text-right">
-                        <div className="flex flex-col items-end gap-1.5">
-                          <span className="text-xl font-bold text-[#3B2211] tracking-tighter">Rp {t.total.toLocaleString("id-ID")}</span>
-                          <span className="text-[8px] font-black text-emerald-600 uppercase tracking-[0.4em] bg-emerald-500/5 px-3 py-1 rounded-lg">Protokol {t.paymentMethod}</span>
-                        </div>
-                      </td>
-                      <td className="px-12 py-10">
-                        <div className={`inline-flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.2em] px-5 py-2.5 rounded-full border shadow-sm ${
-                          t.status === "COMPLETED" || t.status === "SUCCESS" 
-                          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/10" 
-                          : "bg-amber-500/10 text-amber-600 border-amber-500/10"
-                        }`}>
-                          <div className={`w-2 h-2 rounded-full ${t.status === "COMPLETED" || t.status === "SUCCESS" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
-                          {t.status}
-                        </div>
-                      </td>
-                      <td className="px-12 py-10 text-right">
-                        <div className="flex flex-col items-end gap-1.5">
-                          <span className="text-[11px] font-black text-[#3B2211]/40 uppercase tracking-[0.4em]">{t.referral || "Akses Langsung"}</span>
-                          <ChevronRight size={16} className="text-[#3B2211]/10 group-hover/row:text-[#3B2211] group-hover/row:translate-x-1 transition-all duration-500" />
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
-          </div>
-        </motion.section>
+                    </td>
+                    <td className="px-8 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                       {t.paymentMethod}
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

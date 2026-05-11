@@ -75,7 +75,10 @@ export async function createReferral(data: {
       } 
     };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    if (error.code === "P2002") {
+      return { success: false, error: "Kode promo ini sudah ada. Silakan gunakan kode lain yang unik." };
+    }
+    return { success: false, error: error.message || "Gagal membuat kode promo." };
   }
 }
 
@@ -113,6 +116,26 @@ export async function validateReferral(code: string) {
     });
 
     if (!referral) {
+      // Fallback codes for consistency with marketing page
+      const fallbacks: Record<string, { type: "PERCENTAGE" | "FIXED", value: number }> = {
+        "SNAPP10": { type: "PERCENTAGE", value: 10 },
+        "TEMAN15": { type: "PERCENTAGE", value: 15 },
+        "SPESIAL20": { type: "PERCENTAGE", value: 20 },
+        "FOTO10": { type: "PERCENTAGE", value: 10 },
+      };
+
+      const fallback = fallbacks[code.toUpperCase()];
+      if (fallback) {
+        return {
+          success: true,
+          data: {
+            code: code.toUpperCase(),
+            type: fallback.type,
+            value: fallback.value
+          }
+        };
+      }
+
       return { success: false, error: "Kode promo tidak valid atau sudah tidak aktif." };
     }
 
@@ -133,6 +156,7 @@ export async function validateReferral(code: string) {
       } 
     };
   } catch (error: any) {
-    return { success: false, error: "Gagal memvalidasi kode promo." };
+    console.error("ValidateReferral Error:", error);
+    return { success: false, error: `Gagal memvalidasi kode promo: ${error.message}` };
   }
 }

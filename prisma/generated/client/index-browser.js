@@ -120,58 +120,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  password: 'password',
-  role: 'role',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.CategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  slug: 'slug'
-};
-
-exports.Prisma.ProductScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  sku: 'sku',
-  price: 'price',
-  stock: 'stock',
-  image: 'image',
-  categoryId: 'categoryId',
-  isActive: 'isActive',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.TransactionScalarFieldEnum = {
-  id: 'id',
-  invoiceNumber: 'invoiceNumber',
-  cashierId: 'cashierId',
-  total: 'total',
-  tax: 'tax',
-  discount: 'discount',
-  paymentMethod: 'paymentMethod',
-  referralCodeId: 'referralCodeId',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.TransactionItemScalarFieldEnum = {
-  id: 'id',
-  transactionId: 'transactionId',
-  productId: 'productId',
-  qty: 'qty',
-  price: 'price',
-  subtotal: 'subtotal'
-};
-
 exports.Prisma.ReferralCodeScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -184,14 +132,6 @@ exports.Prisma.ReferralCodeScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ReferralUsageScalarFieldEnum = {
-  id: 'id',
-  referralCodeId: 'referralCodeId',
-  transactionId: 'transactionId',
-  userId: 'userId',
-  usedAt: 'usedAt'
 };
 
 exports.Prisma.BookingScalarFieldEnum = {
@@ -214,6 +154,85 @@ exports.Prisma.BookingScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug'
+};
+
+exports.Prisma.ProductScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sku: 'sku',
+  price: 'price',
+  stock: 'stock',
+  image: 'image',
+  duration: 'duration',
+  photoCount: 'photoCount',
+  features: 'features',
+  isPopular: 'isPopular',
+  sortOrder: 'sortOrder',
+  categoryId: 'categoryId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReferralUsageScalarFieldEnum = {
+  id: 'id',
+  referralCodeId: 'referralCodeId',
+  transactionId: 'transactionId',
+  userId: 'userId',
+  usedAt: 'usedAt'
+};
+
+exports.Prisma.TransactionItemScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  productId: 'productId',
+  qty: 'qty',
+  price: 'price',
+  subtotal: 'subtotal'
+};
+
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  cashierId: 'cashierId',
+  total: 'total',
+  tax: 'tax',
+  discount: 'discount',
+  paymentMethod: 'paymentMethod',
+  referralCodeId: 'referralCodeId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.GalleryPhotoScalarFieldEnum = {
+  id: 'id',
+  src: 'src',
+  alt: 'alt',
+  width: 'width',
+  height: 'height',
+  category: 'category',
+  isFeatured: 'isFeatured',
+  isHero: 'isHero',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -228,9 +247,9 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Role = exports.$Enums.Role = {
-  ADMIN: 'ADMIN',
-  CASHIER: 'CASHIER'
+exports.ReferralType = exports.$Enums.ReferralType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED'
 };
 
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
@@ -245,20 +264,21 @@ exports.TransactionStatus = exports.$Enums.TransactionStatus = {
   CANCELLED: 'CANCELLED'
 };
 
-exports.ReferralType = exports.$Enums.ReferralType = {
-  PERCENTAGE: 'PERCENTAGE',
-  FIXED: 'FIXED'
+exports.Role = exports.$Enums.Role = {
+  ADMIN: 'ADMIN',
+  CASHIER: 'CASHIER'
 };
 
 exports.Prisma.ModelName = {
-  User: 'User',
+  ReferralCode: 'ReferralCode',
+  Booking: 'Booking',
   Category: 'Category',
   Product: 'Product',
-  Transaction: 'Transaction',
-  TransactionItem: 'TransactionItem',
-  ReferralCode: 'ReferralCode',
   ReferralUsage: 'ReferralUsage',
-  Booking: 'Booking'
+  TransactionItem: 'TransactionItem',
+  Transaction: 'Transaction',
+  User: 'User',
+  GalleryPhoto: 'GalleryPhoto'
 };
 
 /**

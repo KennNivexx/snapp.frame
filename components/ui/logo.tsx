@@ -7,7 +7,12 @@ interface LogoProps {
   whiteMode?: boolean;
 }
 
-export function Logo({ className = "", height = 36, textColor = "#3B2211", whiteMode = false }: LogoProps) {
+export function Logo({
+  className = "",
+  height = 36,
+  textColor = "#3B2211",
+  whiteMode = false,
+}: LogoProps) {
   return (
     <Image
       src="/logosnapframe-removebg-preview.png"

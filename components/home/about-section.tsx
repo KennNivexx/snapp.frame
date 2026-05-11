@@ -27,7 +27,7 @@ export function AboutSection() {
   return (
     <section
       id="about"
-      className="relative bg-[#FAFAF8] py-24 lg:py-32 overflow-hidden"
+      className="relative bg-white py-24 lg:py-32 overflow-hidden"
       aria-labelledby="about-heading"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -55,7 +55,7 @@ export function AboutSection() {
             </div>
 
             {/* Stats card — inline di bawah foto, tidak floating */}
-            <div className="mt-4 flex items-center gap-6 bg-[#F0EFE9] rounded border border-[#E0E0DA] px-5 py-4">
+            <div className="mt-4 flex items-center gap-6 bg-warm-white/50 rounded-xl border border-border/60 px-5 py-4">
               {[
                 { value: site.stats.sessions, label: "Sesi" },
                 { value: site.stats.rating + "★", label: "Rating" },
@@ -63,12 +63,12 @@ export function AboutSection() {
               ].map((s) => (
                 <div key={s.label} className="text-center flex-1">
                   <p
-                    className="text-xl font-semibold text-[#1A1A1A]"
+                    className="text-xl font-black text-near-black"
                     style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {s.value}
                   </p>
-                  <p className="text-[10px] text-[#888888] uppercase tracking-wider mt-0.5">
+                  <p className="text-[10px] text-near-black/40 uppercase tracking-[0.2em] font-black mt-1">
                     {s.label}
                   </p>
                 </div>
@@ -87,13 +87,13 @@ export function AboutSection() {
 
             <h2
               id="about-heading"
-              className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-6 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-near-black mb-6 leading-tight"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Tentang Snapp.frame Studio
             </h2>
 
-            <p className="text-[#5A5A5A] text-base leading-relaxed mb-8">
+            <p className="text-near-black/60 text-base leading-relaxed mb-8 font-bold">
               {site.description}
             </p>
 
@@ -102,19 +102,19 @@ export function AboutSection() {
               {ABOUT_POINTS.map((point, i) => (
                 <li key={i} className="flex gap-4">
                   {/* Number circle — tanpa gold */}
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full border border-[#E0E0DA] flex items-center justify-center mt-0.5">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full border border-border/60 flex items-center justify-center mt-0.5">
                     <span
-                      className="text-xs font-bold text-[#888888]"
+                      className="text-xs font-black text-gold"
                       style={{ fontFamily: "var(--font-heading)" }}
                     >
                       0{i + 1}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-[#1A1A1A] mb-1">
+                    <h3 className="text-sm font-black text-near-black mb-1">
                       {point.title}
                     </h3>
-                    <p className="text-sm text-[#5A5A5A] leading-relaxed">
+                    <p className="text-sm text-near-black/60 leading-relaxed font-bold">
                       {point.desc}
                     </p>
                   </div>

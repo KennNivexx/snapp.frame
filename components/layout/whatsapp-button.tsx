@@ -40,7 +40,13 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Hubungi kami via WhatsApp"
-      className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+      className={[
+        "fixed z-50 flex items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2",
+        // Desktop: bottom right (Elevated significantly)
+        "lg:bottom-20 lg:right-6 lg:w-14 lg:h-14 lg:top-auto lg:translate-y-0",
+        // Mobile: well above middle right, smaller
+        "top-[40%] -translate-y-1/2 right-3 w-11 h-11"
+      ].join(" ")}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 1.2, type: "spring", stiffness: 260, damping: 20 }}
@@ -49,7 +55,12 @@ export function WhatsAppButton() {
     >
       {/* Pulse ring */}
       <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-25 pointer-events-none" />
-      <WhatsAppIcon size={28} />
+      <div className="lg:hidden">
+        <WhatsAppIcon size={22} />
+      </div>
+      <div className="hidden lg:block">
+        <WhatsAppIcon size={28} />
+      </div>
     </motion.a>
   );
 }

@@ -10,6 +10,8 @@ import { AboutSection } from "@/components/home/about-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { ContactSection } from "@/components/home/contact-section";
+import { getFeaturedPhotos, getGalleryPhotos } from "@/app/actions/gallery";
+import { getProducts } from "@/app/actions/products";
 
 export const metadata: Metadata = {
   title: `${site.name} — Studio Foto Minimalis Modern`,
@@ -51,7 +53,16 @@ const jsonLd = {
 
 /* ─── Page ───────────────────────────────────────────────── */
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [featuredRes, allRes, productsRes] = await Promise.all([
+    getFeaturedPhotos(6),
+    getGalleryPhotos(),
+    getProducts()
+  ]);
+
+  const featuredPhotos = (featuredRes.success && Array.isArray(featuredRes.data)) ? featuredRes.data : [];
+  const heroPhoto = (allRes.success && Array.isArray(allRes.data)) ? allRes.data.find((p: any) => p.isHero) : null;
+  const packagesData = (productsRes.success && Array.isArray(productsRes.data)) ? (productsRes.data as any) : [];
   return (
     <>
       {/* JSON-LD Schema untuk SEO lokal */}
@@ -63,13 +74,13 @@ export default function HomePage() {
       />
 
       {/* Section 1 — Hero */}
-      <HeroSection />
+      <HeroSection initialHeroPhoto={heroPhoto as any} />
 
       {/* Section 2 — Gallery Preview */}
-      <GalleryPreview />
+      <GalleryPreview initialPhotos={featuredPhotos as any} />
 
       {/* Section 3 — Packages Preview */}
-      <PackagesPreview />
+      <PackagesPreview initialPackages={packagesData} />
 
       {/* Section 4 — About */}
       <AboutSection />

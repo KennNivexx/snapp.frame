@@ -43,7 +43,7 @@ function PhotoCard({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.94 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-      className="relative overflow-hidden rounded-2xl cursor-pointer group break-inside-avoid mb-3 md:mb-4"
+      className="relative overflow-hidden rounded-[2rem] cursor-pointer group break-inside-avoid mb-6"
       style={{ aspectRatio: isPortrait ? "3/4" : "4/3" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -83,8 +83,8 @@ function PhotoCard({
         animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
         transition={{ duration: 0.2 }}
       >
-        <div className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
-          <Expand size={17} color="#1A1A1A" />
+        <div className="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl border border-gold/20">
+          <Expand size={20} className="text-gold" />
         </div>
       </motion.div>
 
@@ -94,7 +94,7 @@ function PhotoCard({
         style={{ opacity: hovered ? 0 : 1 }}
       >
         <span
-          className="text-[10px] font-semibold text-white/50 tracking-widest"
+          className="text-[10px] font-black text-white/60 tracking-[0.2em]"
           style={{ fontFamily: "var(--font-heading)" }}
         >
           {String(index + 1).padStart(2, "0")}
@@ -103,17 +103,17 @@ function PhotoCard({
 
       {/* Category badge + alt text saat hover */}
       <div
-        className="absolute bottom-0 left-0 right-0 px-4 py-4"
+        className="absolute bottom-0 left-0 right-0 px-6 py-6"
         style={{
           opacity: hovered ? 1 : 0,
-          transform: hovered ? "translateY(0)" : "translateY(8px)",
-          transition: "opacity 0.3s ease, transform 0.3s ease",
+          transform: hovered ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.4s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1)",
         }}
       >
-        <span className="inline-block text-[9px] font-bold tracking-[0.2em] uppercase bg-white/20 backdrop-blur-sm text-white/80 px-2.5 py-1 rounded-full mb-2">
+        <span className="inline-block text-[9px] font-black tracking-[0.2em] uppercase bg-gold text-white px-3 py-1 rounded-full mb-3 shadow-lg shadow-gold/20">
           {photo.category}
         </span>
-        <p className="text-xs text-white/90 leading-snug line-clamp-2">
+        <p className="text-sm text-white font-bold leading-snug line-clamp-2">
           {photo.alt}
         </p>
       </div>
@@ -167,12 +167,11 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
               aria-selected={activeFilter === f.value}
               onClick={() => setActiveFilter(f.value)}
               className={[
-                "flex-shrink-0 px-5 py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-250 min-h-[44px]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]",
-                "font-[family-name:var(--font-heading)]",
+                "flex-shrink-0 px-8 py-3 rounded-full text-[10px] font-black tracking-[0.2em] uppercase transition-all duration-300 min-h-[44px]",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-near-black",
                 activeFilter === f.value
-                  ? "bg-[#1A1A1A] text-white shadow-md"
-                  : "bg-white/70 border border-[#E0E0DA] text-[#888888] hover:border-[#1A1A1A] hover:text-[#1A1A1A] hover:bg-white",
+                  ? "bg-near-black text-white shadow-xl shadow-near-black/20"
+                  : "bg-white border border-border/60 text-near-black/40 hover:border-gold hover:text-gold hover:bg-white",
               ].join(" ")}
             >
               {f.label}
@@ -181,12 +180,12 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
         </div>
 
         {/* Jumlah foto */}
-        <p className="text-xs text-[#888888] mt-4">
+        <p className="text-[10px] text-near-black/40 font-black uppercase tracking-[0.2em] mt-6">
           Menampilkan{" "}
-          <span className="text-[#1A1A1A] font-semibold">{filtered.length}</span>{" "}
-          foto
+          <span className="text-gold">{filtered.length}</span>{" "}
+          karya terbaik
           {activeFilter !== "all" && (
-            <> · kategori <span className="text-[#5A5A5A] capitalize italic">{activeFilter}</span></>
+            <> · kategori <span className="text-near-black">{activeFilter}</span></>
           )}
         </p>
       </div>
@@ -220,25 +219,25 @@ export function GalleryGrid({ photos }: GalleryGridProps) {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center py-32 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-[#F0EFE9] flex items-center justify-center mb-5">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#CCCCCC]">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
+              <div className="w-20 h-20 rounded-full bg-warm-white flex items-center justify-center mb-6 border border-border/60 shadow-inner">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-near-black/20">
+                  <rect x="3" y="3" width="18" height="18" rx="4" />
+                  <circle cx="8.5" cy="8.5" r="2" />
                   <polyline points="21,15 16,10 5,21" />
                 </svg>
               </div>
               <p
-                className="text-lg font-semibold text-[#1A1A1A] mb-2"
+                className="text-xl font-black text-near-black mb-2"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 Belum ada foto di kategori ini
               </p>
-              <p className="text-sm text-[#888888] mb-5">
+              <p className="text-sm text-near-black/40 mb-8 font-bold italic">
                 Coba pilih kategori lain untuk melihat koleksi kami.
               </p>
               <button
                 onClick={() => setActiveFilter("all")}
-                className="text-sm font-semibold text-[#1A1A1A] border border-[#1A1A1A] rounded-full px-6 py-2.5 hover:bg-[#1A1A1A] hover:text-white transition-all duration-200"
+                className="text-[10px] font-black text-near-black border border-near-black rounded-full px-10 py-4 uppercase tracking-[0.2em] hover:bg-near-black hover:text-white transition-all duration-300"
               >
                 Lihat semua foto
               </button>

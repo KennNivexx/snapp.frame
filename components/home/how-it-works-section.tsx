@@ -38,7 +38,7 @@ export function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="relative bg-[#FAFAF8] py-24 lg:py-32"
+      className="relative bg-white py-24 lg:py-32"
       aria-labelledby="how-it-works-heading"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -52,12 +52,12 @@ export function HowItWorksSection() {
         >
           <h2
             id="how-it-works-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A]"
+            className="text-3xl sm:text-4xl lg:text-5xl font-black text-near-black"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             Cara Memesan
           </h2>
-          <p className="text-[#5A5A5A] text-sm mt-3 max-w-md mx-auto">
+          <p className="text-near-black/60 text-sm mt-3 max-w-md mx-auto font-bold">
             Proses booking yang mudah — hanya 4 langkah dan Anda siap sesi foto.
           </p>
         </motion.div>
@@ -75,7 +75,7 @@ export function HowItWorksSection() {
         >
           {/* Garis penghubung horizontal — muted, tidak gold */}
           <div
-            className="absolute top-9 left-[12.5%] right-[12.5%] h-px bg-[#E0E0DA]"
+            className="absolute top-9 left-[12.5%] right-[12.5%] h-px bg-border/40"
             aria-hidden="true"
           />
 
@@ -95,25 +95,25 @@ export function HowItWorksSection() {
                 }}
               >
                 {/* Icon circle — warm light bg, near-black icon */}
-                <div className="relative z-10 w-[72px] h-[72px] rounded-full bg-[#F0EFE9] border-2 border-[#E0E0DA] flex items-center justify-center mb-6 flex-shrink-0">
-                  <Icon size={28} className="text-[#1A1A1A]" strokeWidth={1.5} />
+                <div className="relative z-10 w-[72px] h-[72px] rounded-full bg-warm-white/80 border-2 border-border/60 flex items-center justify-center mb-6 flex-shrink-0 group-hover:border-gold transition-all duration-500">
+                  <Icon size={28} className="text-near-black" strokeWidth={1.5} />
                 </div>
 
                 {/* Number — dekoratif, sangat subtle */}
                 <span
-                  className="text-xs font-bold text-[#E0E0DA] tracking-[0.2em] mb-2"
+                  className="text-[10px] font-black text-gold tracking-[0.4em] mb-2 uppercase"
                   style={{ fontFamily: "var(--font-heading)" }}
                 >
                   {step.number}
                 </span>
 
                 <h3
-                  className="text-base font-semibold text-[#1A1A1A] mb-2"
+                  className="text-base font-black text-near-black mb-2"
                   style={{ fontFamily: "var(--font-heading)" }}
                 >
                   {step.title}
                 </h3>
-                <p className="text-xs text-[#5A5A5A] leading-relaxed">
+                <p className="text-xs text-near-black/60 leading-relaxed font-bold">
                   {step.desc}
                 </p>
               </motion.div>
@@ -134,7 +134,7 @@ export function HowItWorksSection() {
         >
           {/* Garis penghubung vertikal — muted */}
           <div
-            className="absolute left-9 top-9 bottom-9 w-px bg-[#E0E0DA]"
+            className="absolute left-9 top-9 bottom-9 w-px bg-border/40"
             aria-hidden="true"
           />
 
@@ -154,25 +154,25 @@ export function HowItWorksSection() {
                 }}
               >
                 {/* Icon circle */}
-                <div className="relative z-10 w-[72px] h-[72px] rounded-full bg-[#F0EFE9] border-2 border-[#E0E0DA] flex items-center justify-center flex-shrink-0">
-                  <Icon size={26} className="text-[#1A1A1A]" strokeWidth={1.5} />
+                <div className="relative z-10 w-[72px] h-[72px] rounded-full bg-warm-white/80 border-2 border-border/60 flex items-center justify-center flex-shrink-0">
+                  <Icon size={26} className="text-near-black" strokeWidth={1.5} />
                 </div>
 
                 {/* Text */}
                 <div className="pt-4">
                   <span
-                    className="text-xs font-bold text-[#E0E0DA] tracking-[0.2em]"
+                    className="text-[10px] font-black text-gold tracking-[0.4em] uppercase"
                     style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {step.number}
                   </span>
                   <h3
-                    className="text-base font-semibold text-[#1A1A1A] mt-1 mb-1.5"
+                    className="text-base font-black text-near-black mt-1 mb-1.5"
                     style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {step.title}
                   </h3>
-                  <p className="text-sm text-[#5A5A5A] leading-relaxed">
+                  <p className="text-sm text-near-black/60 leading-relaxed font-bold">
                     {step.desc}
                   </p>
                 </div>
