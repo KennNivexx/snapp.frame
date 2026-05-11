@@ -245,7 +245,7 @@ export default function Cart() {
         <button 
           onClick={() => setIsCheckoutOpen(true)}
           disabled={items.length === 0}
-          className="w-full py-4 bg-[#3B2211] text-white rounded-2xl font-bold text-sm shadow-xl shadow-[#3B2211]/10 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
+          className="w-full py-4 bg-[#3B2211] text-white rounded-2xl font-bold text-sm shadow-xl shadow-[#3B2211]/10 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 select-none"
         >
           <CreditCard size={18} />
           Bayar Sekarang

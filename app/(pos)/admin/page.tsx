@@ -107,7 +107,7 @@ export default function AdminDashboard() {
   const quickStats = [
     { label: "Penjualan Kasir", value: statsData.posToday.toString(), icon: ShoppingBag, color: "bg-white", textColor: "text-gray-900" },
     { label: "Booking Hari Ini", value: statsData.bookingsToday.toString(), icon: CalendarIcon, color: "bg-white", textColor: "text-gray-900" },
-    { label: "Pendapatan Bulan Ini", value: `Rp ${statsData.revenue.toLocaleString("id-ID")}`, icon: DollarSign, color: "bg-[#3B2211]", textColor: "text-white" },
+    { label: "Pendapatan Bulan Ini", value: `Rp ${statsData.revenue.toLocaleString("id-ID")}`, icon: DollarSign, color: "bg-[#3B2211]", textColor: "!text-white" },
     { label: "Referral Aktif", value: statsData.referrals.toString(), icon: Ticket, color: "bg-white", textColor: "text-gray-900" },
   ];
 
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
           <p className="text-sm text-gray-500">Selamat datang kembali, berikut performa Sneapici hari ini.</p>
         </div>
         <div className="flex gap-3">
-          <Link href="/kasir" className="px-6 py-3 bg-[#3B2211] text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-[#3B2211]/10">
+          <Link href="/kasir" className="px-6 py-3 bg-[#3B2211] !text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-[#3B2211]/10 select-none">
             <ShoppingBag size={18} />
             Buka Kasir
           </Link>

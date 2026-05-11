@@ -73,19 +73,77 @@ CREATE POLICY "user can select own bookings"
     customer_phone = (auth.jwt() ->> 'phone')
   );
 
--- 4. RPC: increment_referral_usage
--- Digunakan untuk menambah counter pemakaian kode promo
-CREATE OR REPLACE FUNCTION increment_referral_usage(p_code text)
-RETURNS void
-LANGUAGE sql
-SECURITY DEFINER
-AS $$
-  UPDATE referral_codes
-  SET usage_count = usage_count + 1
-  WHERE UPPER(code) = UPPER(p_code);
-$$;
+-- 4. TABEL: users
+CREATE TABLE IF NOT EXISTS users (
+  id          uuid          PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        text          NOT NULL,
+  email       text          UNIQUE NOT NULL,
+  password    text          NOT NULL,
+  role        text          NOT NULL DEFAULT 'CASHIER' CHECK (role IN ('ADMIN', 'CASHIER')),
+  created_at  timestamptz   NOT NULL DEFAULT now(),
+  updated_at  timestamptz   NOT NULL DEFAULT now()
+);
 
--- 5. SEED DATA (Opsional)
+-- 5. TABEL: categories
+CREATE TABLE IF NOT EXISTS categories (
+  id    uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+  name  text    NOT NULL,
+  slug  text    UNIQUE NOT NULL
+);
+
+-- 6. TABEL: products
+CREATE TABLE IF NOT EXISTS products (
+  id          uuid          PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        text          NOT NULL,
+  sku         text          UNIQUE NOT NULL,
+  price       numeric       NOT NULL,
+  stock       integer       NOT NULL DEFAULT 0,
+  image       text,
+  category_id uuid          NOT NULL REFERENCES categories(id),
+  is_active   boolean       NOT NULL DEFAULT true,
+  created_at  timestamptz   NOT NULL DEFAULT now(),
+  updated_at  timestamptz   NOT NULL DEFAULT now()
+);
+
+-- 7. TABEL: transactions
+CREATE TABLE IF NOT EXISTS transactions (
+  id              uuid          PRIMARY KEY DEFAULT gen_random_uuid(),
+  invoice_number  text          UNIQUE NOT NULL,
+  cashier_id      uuid          NOT NULL REFERENCES users(id),
+  total           numeric       NOT NULL,
+  tax             numeric       NOT NULL DEFAULT 0,
+  discount        numeric       NOT NULL DEFAULT 0,
+  payment_method  text          NOT NULL CHECK (payment_method IN ('CASH', 'TRANSFER', 'QRIS')),
+  referral_id     uuid          REFERENCES referral_codes(id),
+  status          text          NOT NULL DEFAULT 'COMPLETED',
+  created_at      timestamptz   NOT NULL DEFAULT now(),
+  updated_at      timestamptz   NOT NULL DEFAULT now()
+);
+
+-- 8. TABEL: transaction_items
+CREATE TABLE IF NOT EXISTS transaction_items (
+  id              uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+  transaction_id  uuid    NOT NULL REFERENCES transactions(id) ON DELETE CASCADE,
+  product_id      uuid    NOT NULL REFERENCES products(id),
+  qty             integer NOT NULL,
+  price           numeric NOT NULL,
+  subtotal        numeric NOT NULL
+);
+
+-- RLS: Semuanya (Sederhana untuk Admin/Staff)
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transaction_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "authenticated can access everything" 
+  ON users FOR ALL TO authenticated USING (true);
+-- ... (Policy serupa untuk tabel lain jika perlu, tapi untuk admin biasanya pakai service role)
+
+-- 9. RPC: increment_referral_usage (Sudah ada di atas)
+
+-- 10. SEED DATA
 INSERT INTO referral_codes (code, label, type, discount_pct, is_active) 
 VALUES
   ('SNAPP10', 'Official Discount', 'PERCENTAGE', 10, true),

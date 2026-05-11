@@ -5,13 +5,17 @@ import { env } from "@/lib/env";
 
 const connectionString = env.DATABASE_URL;
 
+if (!connectionString) {
+  console.warn("⚠️ DATABASE_URL is not set. Prisma will not be able to connect to the database.");
+}
+
 const pool = new pg.Pool({ 
   connectionString,
-  connectionTimeoutMillis: 15000 // 15 detik timeout untuk stabilitas
+  connectionTimeoutMillis: 15000 
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+  console.error('❌ Unexpected error on idle database client', err);
 });
 
 const adapter = new PrismaPg(pool);
@@ -22,7 +26,7 @@ export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
     adapter,
-    log: ["query", "error", "warn"],
+    log: ["error", "warn"],
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

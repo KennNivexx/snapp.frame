@@ -62,6 +62,20 @@ export default function ReferralManagement() {
   const supabase = createClient();
 
   useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add("modal-open");
+      document.documentElement.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
+    }
+    return () => {
+      document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
     fetchReferrals();
 
     const channel = supabase
@@ -197,7 +211,7 @@ export default function ReferralManagement() {
           
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-3 px-8 py-4 bg-[#3B2211] text-white rounded-[22px] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-[#3B2211]/30 hover:scale-105 transition-all"
+            className="flex items-center gap-3 px-8 py-4 bg-[#3B2211] !text-white rounded-[22px] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-[#3B2211]/30 hover:scale-105 active:scale-95 transition-all select-none"
           >
             <Plus size={16} />
             Buat Kode Baru

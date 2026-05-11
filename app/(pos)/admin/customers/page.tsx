@@ -19,6 +19,7 @@ import {
   History,
   Phone,
   Target,
+  AlertCircle,
   Zap,
   RefreshCw,
   ChevronDown,
@@ -70,12 +71,15 @@ export default function CustomersAndRevenue() {
   const [dateFilter, setDateFilter] = useState("month");
   const [view, setView] = useState<"customers" | "revenue">("customers");
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     fetchData();
   }, [dateFilter]);
 
   async function fetchData() {
     setLoading(true);
+    setError(null);
     try {
       let start = "";
       if (dateFilter === "today") {
@@ -91,7 +95,10 @@ export default function CustomersAndRevenue() {
       }
 
       const res = await getTransactionReports({ startDate: start });
-      if (!res.success) throw new Error(res.error);
+      if (!res.success) {
+        setError(res.error || "Gagal mengambil data dari database");
+        return;
+      }
       
       const combinedData = res.data?.transactions || [];
       
@@ -132,6 +139,7 @@ export default function CustomersAndRevenue() {
       setCustomers(Array.from(customerMap.values()));
     } catch (err: any) {
       console.error(err);
+      setError("Terjadi kesalahan sistem saat memproses data");
     } finally {
       setLoading(false);
     }
@@ -156,48 +164,48 @@ export default function CustomersAndRevenue() {
       <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-[#3B2211]/5 to-transparent pointer-events-none" />
 
       {/* ── Header System ── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-16 relative z-10">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12 relative z-10">
         <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-2"
         >
-          <div className="flex items-center gap-4">
-             <div className="w-14 h-14 rounded-[22px] bg-[#3B2211] flex items-center justify-center text-white shadow-2xl shadow-[#3B2211]/20">
-               <Activity size={28} />
+          <div className="flex items-center gap-5">
+             <div className="w-16 h-16 rounded-[28px] bg-[#3B2211] flex items-center justify-center text-white shadow-3xl shadow-[#3B2211]/20">
+               <Activity size={32} />
              </div>
              <div>
-                <h1 className="text-4xl font-bold text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>
-                  Data Pelanggan & Laba
+                <h1 className="text-5xl font-bold text-[#3B2211] tracking-tight leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
+                  Analytics & Revenue
                 </h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/40">Analisis Pelanggan & Laporan Keuangan</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#3B2211]/30">Studio Performance Insights Matrix</p>
              </div>
           </div>
         </motion.div>
 
         <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex flex-wrap items-center gap-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-wrap items-center gap-4"
         >
-          <div className="flex bg-white p-2 rounded-[24px] border border-[#3B2211]/5 shadow-xl shadow-[#3B2211]/5">
+          <div className="flex bg-[#FAFAF8] p-1.5 rounded-[22px] border border-[#3B2211]/5 shadow-inner">
             <button 
               onClick={() => setView("customers")}
-              className={`px-8 py-3 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${view === "customers" ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/20" : "text-[#3B2211]/40 hover:text-[#3B2211]"}`}
+              className={`px-8 py-3 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all select-none ${view === "customers" ? "bg-[#3B2211] !text-white shadow-xl shadow-[#3B2211]/20" : "text-[#3B2211]/30 hover:text-[#3B2211]"}`}
             >
-              Data Pelanggan
+              Pelanggan
             </button>
             <button 
               onClick={() => setView("revenue")}
-              className={`px-8 py-3 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${view === "revenue" ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/20" : "text-[#3B2211]/40 hover:text-[#3B2211]"}`}
+              className={`px-8 py-3 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all select-none ${view === "revenue" ? "bg-[#3B2211] !text-white shadow-xl shadow-[#3B2211]/20" : "text-[#3B2211]/30 hover:text-[#3B2211]"}`}
             >
-              Aliran Kas
+              Pendapatan
             </button>
           </div>
 
           <button 
             onClick={exportToExcel}
-            className="flex items-center gap-3 px-8 py-4 bg-white border border-[#3B2211]/10 text-[#3B2211] rounded-[22px] text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#3B2211]/5 hover:bg-[#3B2211] hover:text-white transition-all"
+            className="flex items-center gap-3 px-8 py-4.5 bg-white border border-[#3B2211]/10 text-[#3B2211] rounded-[22px] text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[#3B2211]/5 hover:bg-[#3B2211] hover:!text-white transition-all select-none"
           >
             <Download size={16} />
             Ekspor Laporan
@@ -206,64 +214,84 @@ export default function CustomersAndRevenue() {
       </div>
 
       {/* ── Analytical Insights ── */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 relative z-10">
         {[
-          { label: "Total Pendapatan", val: `Rp ${transactions.reduce((acc, t) => acc + t.total, 0).toLocaleString()}`, icon: DollarSign, color: "#10B981" },
-          { label: "Pelanggan Aktif", val: customers.length, icon: Users, color: "#3B2211" },
-          { label: "Rata-rata Transaksi", val: `Rp ${customers.length ? Math.floor(transactions.reduce((acc, t) => acc + t.total, 0) / transactions.length).toLocaleString() : 0}`, icon: Target, color: "#3B82F6" },
-          { label: "Tingkat Konversi", val: "74%", icon: Zap, color: "#F59E0B" }
+          { label: "Total Revenue", val: `Rp ${transactions.reduce((acc, t) => acc + t.total, 0).toLocaleString()}`, icon: DollarSign, color: "#10B981" },
+          { label: "Active Clients", val: customers.length, icon: Users, color: "#3B2211" },
+          { label: "Avg Ticket", val: `Rp ${customers.length ? Math.floor(transactions.reduce((acc, t) => acc + t.total, 0) / transactions.length).toLocaleString() : 0}`, icon: Target, color: "#3B82F6" },
+          { label: "Growth Rate", val: "74.2%", icon: Zap, color: "#F59E0B" }
         ].map((stat, idx) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="p-10 bg-white rounded-[40px] border border-[#3B2211]/5 shadow-2xl shadow-[#3B2211]/5 relative overflow-hidden group"
+            className="p-10 bg-white rounded-[48px] border border-white shadow-5xl relative overflow-hidden group"
           >
-             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-               <stat.icon size={80} style={{ color: stat.color }} />
+             <div className="absolute top-0 right-0 p-8 opacity-[0.04] group-hover:scale-110 group-hover:opacity-10 transition-all duration-1000">
+               <stat.icon size={88} style={{ color: stat.color }} />
              </div>
-             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 mb-4">{stat.label}</p>
-             <div className="flex items-end gap-3">
-               <span className="text-3xl font-bold text-[#3B2211]" style={{ fontFamily: "var(--font-playfair)" }}>{stat.val}</span>
+             <div className="text-[9px] font-black uppercase tracking-[0.3em] text-[#3B2211]/30 mb-5 flex items-center gap-2">
+               <div className="w-1 h-1 rounded-full bg-[#3B2211]/20" /> {stat.label}
              </div>
-             <div className="mt-6 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <p className="text-[8px] font-black uppercase tracking-widest text-[#3B2211]/30">Pembaruan Real-time</p>
+             <div className="space-y-1">
+               <span className="text-4xl font-bold text-[#3B2211] block tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>{stat.val}</span>
+               <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="text-[8px] font-black uppercase tracking-widest text-[#3B2211]/20">Updated just now</p>
+               </div>
              </div>
           </motion.div>
         ))}
       </div>
 
       {/* ── Main Data Matrix ── */}
-      <div className="space-y-8 relative z-10">
-        <div className="flex items-center justify-between">
-           <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[#3B2211]/20 group-focus-within:text-[#3B2211] transition-colors" size={18} />
+      <div className="space-y-6 relative z-10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+           <div className="relative group w-full md:w-[400px]">
+              <Search className="absolute left-7 top-1/2 -translate-y-1/2 text-[#3B2211]/20 group-focus-within:text-[#3B2211] transition-all" size={20} />
               <input 
                 type="text" 
-                placeholder="Cari Nama/HP..."
+                placeholder="Search Clients / Records..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-16 pr-8 py-5 bg-white border border-[#3B2211]/5 rounded-[28px] text-sm focus:outline-none focus:ring-4 focus:ring-[#3B2211]/2 w-full md:w-96 shadow-2xl shadow-[#3B2211]/5 transition-all"
+                className="pl-16 pr-8 py-5.5 bg-white border border-[#3B2211]/5 rounded-[32px] text-sm font-medium focus:outline-none focus:ring-8 focus:ring-[#3B2211]/2 w-full shadow-5xl transition-all"
               />
            </div>
            
-           <div className="flex gap-4">
+           <div className="flex gap-3 bg-white p-2 rounded-[28px] border border-[#3B2211]/5 shadow-5xl">
               {["today", "week", "month"].map((f) => (
                 <button
                   key={f}
                   onClick={() => setDateFilter(f)}
-                  className={`px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${dateFilter === f ? "bg-[#3B2211] text-white shadow-xl shadow-[#3B2211]/20" : "bg-white text-[#3B2211]/40 border border-[#3B2211]/5 hover:text-[#3B2211]"}`}
+                  className={`px-8 py-3.5 rounded-[20px] text-[9px] font-black uppercase tracking-[0.2em] transition-all select-none ${dateFilter === f ? "bg-[#3B2211] !text-white shadow-xl shadow-[#3B2211]/20" : "text-[#3B2211]/30 hover:text-[#3B2211]"}`}
                 >
-                  {f === "today" ? "24H" : f === "week" ? "7D" : "30D"}
+                  {f === "today" ? "24 Hours" : f === "week" ? "Last 7D" : "Last 30D"}
                 </button>
               ))}
            </div>
         </div>
 
-        <div className="bg-white rounded-[48px] border border-[#3B2211]/5 shadow-5xl overflow-hidden min-h-[500px]">
-           {view === "customers" ? (
+        <div className="bg-white rounded-[48px] border border-[#3B2211]/5 shadow-5xl overflow-hidden min-h-[500px] flex flex-col">
+           {error ? (
+             <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-6">
+                <div className="w-24 h-24 rounded-[32px] bg-rose-50 flex items-center justify-center text-rose-500">
+                  <AlertCircle size={48} />
+                </div>
+                <div>
+                   <h3 className="text-xl font-bold text-[#3B2211]">Koneksi Database Terputus</h3>
+                   <p className="text-sm text-[#3B2211]/40 mt-2 max-w-md mx-auto">
+                     Aplikasi tidak dapat terhubung ke database. Pastikan database lokal sudah menyala atau gunakan koneksi Supabase.
+                   </p>
+                </div>
+                <button 
+                  onClick={fetchData}
+                  className="px-8 py-4 bg-[#3B2211] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#3B2211]/20 hover:scale-105 transition-all"
+                >
+                  Coba Hubungkan Kembali
+                </button>
+             </div>
+           ) : view === "customers" ? (
              <div className="overflow-x-auto">
                <table className="w-full text-left border-collapse">
                  <thead>

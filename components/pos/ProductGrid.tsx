@@ -73,21 +73,26 @@ export default function ProductGrid({ onSelect }: { onSelect?: () => void }) {
       } else {
         console.error("Gagal memuat produk via Server Action:", res.error);
         // Fallback ke Supabase query jika Server Action gagal
-        const { data, error } = await supabase
-          .from("Product")
-          .select(`id, name, price, isActive, image, stock, category:Category(name)`)
+        // Gunakan nama tabel sesuai schema (products & categories)
+        const { data: rawData, error } = await supabase
+          .from("products")
+          .select(`id, name, price, isActive, image, stock, category:categories(name)`)
           .eq("isActive", true);
           
-        if (error) throw error;
-        setProducts((data as any) || []);
+        if (error) {
+           console.error("Fallback Supabase Error:", error);
+           throw error;
+        }
+
+        const transformed: Product[] = (rawData as any[] || []).map(p => ({
+          ...p,
+          category: Array.isArray(p.category) ? p.category[0] : (p.category || { name: "Umum" })
+        }));
+
+        setProducts(transformed);
       }
     } catch (err: any) {
-      console.error("Error fetch products (Full Error):", {
-        message: err.message,
-        details: err.details,
-        hint: err.hint,
-        code: err.code
-      });
+      console.error("Error fetch products (Full Error):", err);
     } finally {
       setLoading(false);
     }

@@ -126,15 +126,54 @@ img {
    ============================================= */
 
 ::selection {
-  background: var(--color-foreground);
-  color: var(--color-background);
+  background: var(--color-near-black);
+  color: var(--color-warm-white);
+}
+
+/* Prevent text selection on interactive elements to fix click visibility issues */
+button, 
+a, 
+[role="button"] {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* =============================================
-   Focus visible outline
+   Focus & Active Protocol
    ============================================= */
 
 :focus-visible {
-  outline: 2px solid var(--color-foreground);
+  outline: 2px solid var(--color-near-black);
   outline-offset: 2px;
+}
+
+/* Ensure text remains visible when button is active/clicked */
+button:active,
+a:active {
+  color: currentColor; /* Maintain intended text color on click */
+}
+
+/* Lock background scroll for dashboard layout when modal is open */
+html.modal-open,
+body.modal-open,
+body.modal-open main > div {
+  overflow: hidden !important;
+}
+
+/* Custom Scrollbar utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 34, 17, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 34, 17, 0.2);
 }

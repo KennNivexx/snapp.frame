@@ -18,7 +18,7 @@ const NAV_LINKS = [
   { label: "Paket", href: "/packages" },
   { label: "Tentang", href: "/#about" },
   { label: "Kontak", href: "/#contact" },
-  { label: "Kasir", href: "/kasir" },
+  { label: "Kasir", href: "/kasir", isHidden: true },
 ] as const;
 
 /* ─── Component ────────────────────────────────────────────── */
@@ -85,8 +85,8 @@ export function Navbar() {
     return pathname === href;
   };
 
-  // Transparan di hero, solid saat scroll
-  const headerTextColor = scrolled ? "text-[#3B2211]" : "text-white";
+  // Transparan di hero, solid saat scroll — Selalu hitam sesuai permintaan
+  const headerTextColor = "text-[#3B2211]";
 
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -162,12 +162,14 @@ export function Navbar() {
                     role="menuitem"
                     onClick={(e) => handleNavClick(e, link.href)}
                     className={[
-                      "relative text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-200",
+                      "relative text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300",
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-current rounded-sm",
                       "font-[family-name:var(--font-heading)]",
-                      isActive(link.href)
-                        ? "text-current border-b-2 border-current pb-0.5"
-                        : "text-current/70 hover:text-current",
+                      link.isHidden 
+                        ? "opacity-0 hover:opacity-100 !text-black" 
+                        : isActive(link.href)
+                          ? "text-current border-b-2 border-current pb-0.5"
+                          : "text-current/70 hover:text-current",
                       "group",
                     ].join(" ")}
                   >

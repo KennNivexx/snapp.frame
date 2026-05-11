@@ -65,6 +65,20 @@ export default function BookingManagement() {
   const supabase = createClient();
 
   useEffect(() => {
+    if (selectedBooking) {
+      document.body.classList.add("modal-open");
+      document.documentElement.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
+    }
+    return () => {
+      document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
+    };
+  }, [selectedBooking]);
+
+  useEffect(() => {
     fetchBookings();
 
     const channel = supabase
@@ -189,10 +203,10 @@ export default function BookingManagement() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border whitespace-nowrap ${
+            className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border whitespace-nowrap active:scale-95 select-none ${
               filter === f 
-              ? "bg-[#3B2211] text-white border-transparent shadow-xl shadow-[#3B2211]/20" 
-              : "bg-white text-[#3B2211]/40 border-[#3B2211]/5 hover:border-[#3B2211]/20 hover:text-[#3B2211]"
+              ? "bg-[#3B2211] !text-white border-transparent shadow-xl shadow-[#3B2211]/20" 
+              : "bg-white text-[#3B2211]/40 border-[#3B2211]/5 hover:border-[#3B2211]/20 hover:text-[#3B2211] active:bg-gray-50"
             }`}
           >
             {f === "all" ? "Semua Pesanan" : f}
@@ -277,7 +291,7 @@ export default function BookingManagement() {
                       </div>
                       <button 
                         onClick={() => setSelectedBooking(booking)}
-                        className="w-10 h-10 rounded-xl bg-[#3B2211]/5 text-[#3B2211] flex items-center justify-center hover:bg-[#3B2211] hover:text-white transition-all group-hover:scale-110"
+                        className="w-10 h-10 rounded-xl bg-[#3B2211]/5 text-[#3B2211] flex items-center justify-center hover:bg-[#3B2211] hover:text-white active:bg-[#2A180C] transition-all group-hover:scale-110 select-none"
                       >
                         <ChevronRight size={18} />
                       </button>

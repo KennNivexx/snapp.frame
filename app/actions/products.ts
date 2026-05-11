@@ -22,6 +22,7 @@ export async function getProducts(includeInactive: boolean = false) {
       }))
     };
   } catch (error: any) {
+    console.error("Prisma getProducts Error:", error);
     return { success: false, error: error.message };
   }
 }

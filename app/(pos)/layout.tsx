@@ -65,9 +65,9 @@ export default function POSLayout({
             <Link 
               key={item.href} 
               href={item.href}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all select-none ${
                 isActive 
-                ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/10" 
+                ? "bg-[#3B2211] !text-white shadow-lg shadow-[#3B2211]/10" 
                 : "text-gray-500 hover:bg-gray-50 hover:text-[#3B2211]"
               }`}
             >

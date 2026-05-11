@@ -11,8 +11,10 @@ export async function getTransactionReports(filters: {
     const { startDate, endDate, type = "ALL" } = filters;
 
     let dateFilter: any = {};
-    if (startDate) dateFilter.gte = new Date(startDate);
-    if (endDate) {
+    if (startDate && !isNaN(new Date(startDate).getTime())) {
+      dateFilter.gte = new Date(startDate);
+    }
+    if (endDate && !isNaN(new Date(endDate).getTime())) {
       const end = new Date(endDate);
       end.setHours(23, 59, 59, 999);
       dateFilter.lte = end;

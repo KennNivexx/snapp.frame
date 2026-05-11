@@ -41,6 +41,8 @@ model User {
 
   transactions   Transaction[]
   referralUsages ReferralUsage[]
+
+  @@map("users")
 }
 
 model Category {
@@ -48,6 +50,8 @@ model Category {
   name     String
   slug     String    @unique
   products Product[]
+
+  @@map("categories")
 }
 
 model Product {
@@ -64,6 +68,8 @@ model Product {
 
   category         Category          @relation(fields: [categoryId], references: [id])
   transactionItems TransactionItem[]
+
+  @@map("products")
 }
 
 model Transaction {
@@ -83,6 +89,8 @@ model Transaction {
   referralCode ReferralCode?     @relation(fields: [referralCodeId], references: [id])
   items        TransactionItem[]
   referralUsage ReferralUsage?
+
+  @@map("transactions")
 }
 
 model TransactionItem {
@@ -95,6 +103,8 @@ model TransactionItem {
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   product     Product     @relation(fields: [productId], references: [id])
+
+  @@map("transaction_items")
 }
 
 model ReferralCode {
@@ -126,6 +136,8 @@ model ReferralUsage {
   referralCode ReferralCode @relation(fields: [referralCodeId], references: [id])
   transaction  Transaction  @relation(fields: [transactionId], references: [id])
   user         User         @relation(fields: [userId], references: [id])
+
+  @@map("referral_usages")
 }
 
 model Booking {

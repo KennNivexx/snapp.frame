@@ -90,41 +90,44 @@ export default function ReportsPage() {
         {/* ── Header ── */}
         <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
           <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "circOut" }}
+            className="space-y-6"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <Link href="/admin" className="group flex items-center gap-3 px-5 py-2.5 bg-white rounded-full border border-[#3B2211]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 hover:text-[#3B2211] hover:border-[#3B2211]/20 transition-all shadow-sm active:scale-95">
+            <div className="flex items-center gap-4">
+              <Link href="/admin" className="group flex items-center gap-3 px-6 py-3 bg-white rounded-full border border-[#3B2211]/10 text-[9px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 hover:text-[#3B2211] hover:border-[#3B2211]/20 transition-all shadow-sm active:scale-95">
                 <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
-                Pusat Administrasi
+                Administration
               </Link>
               <div className="h-px w-8 bg-[#3B2211]/10" />
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#3B2211]/40">Audit Keuangan</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Financial Audit</span>
               </div>
             </div>
-            <h1 className="text-5xl lg:text-8xl font-bold text-[#3B2211] tracking-tighter mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-              Wawasan Keuangan
-            </h1>
-            <p className="text-lg text-[#3B2211]/60 font-medium italic max-w-xl border-l-2 border-[#3B2211]/10 pl-6">
-              Metrik presisi untuk pengembangan studio strategis. Rekonsiliasi aset, analisis kecepatan konversi, dan optimalkan arus pendapatan.
-            </p>
+            
+            <div className="space-y-3">
+              <h1 className="text-5xl lg:text-7xl font-bold text-[#3B2211] tracking-tight leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
+                Wawasan Keuangan
+              </h1>
+              <p className="text-sm text-[#3B2211]/50 font-medium max-w-xl leading-relaxed">
+                Metrik presisi untuk pengembangan studio strategis. Rekonsiliasi aset, analisis kecepatan konversi, dan optimalkan arus pendapatan.
+              </p>
+            </div>
           </motion.div>
           
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }}
             className="flex items-center gap-6"
           >
             <button 
               onClick={exportToExcel}
-              className="group relative inline-flex items-center justify-center gap-4 px-10 py-6 bg-[#3B2211] text-white rounded-[28px] text-[11px] font-black hover:bg-[#2A180C] transition-all shadow-2xl active:scale-95 uppercase tracking-[0.3em] overflow-hidden"
+              className="group relative inline-flex items-center justify-center gap-4 px-10 py-5 bg-[#3B2211] text-white rounded-[24px] text-[10px] font-black hover:scale-[1.02] transition-all shadow-2xl active:scale-95 uppercase tracking-[0.4em] overflow-hidden select-none"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <Download size={20} className="group-hover:translate-y-1 transition-transform duration-500" />
-              Ekspor Audit Aset
+              <Download size={18} />
+              Ekspor Laporan
             </button>
           </motion.div>
         </header>
@@ -132,30 +135,30 @@ export default function ReportsPage() {
         {/* ── Summary Matrix ── */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { label: "Total Pendapatan", value: `Rp ${data?.summary?.totalRevenue.toLocaleString("id-ID") || 0}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+12.4%", isPrimary: true },
-            { label: "Volume Transaksi", value: data?.summary?.totalCount || 0, icon: ShoppingBag, color: "text-[#3B2211]", bg: "bg-[#F0EFE9]", trend: "Stabil" },
-            { label: "Penjualan Studio", value: data?.summary?.posCount || 0, icon: CreditCard, color: "text-amber-600", bg: "bg-amber-50", trend: "Matriks POS" },
-            { label: "Konversi Online", value: data?.summary?.bookingCount || 0, icon: CalendarDays, color: "text-indigo-600", bg: "bg-indigo-50", trend: "Reservasi" },
+            { label: "Total Revenue", value: `Rp ${data?.summary?.totalRevenue.toLocaleString("id-ID") || 0}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+12.4%", isPrimary: true },
+            { label: "Record Volume", value: data?.summary?.totalCount || 0, icon: ShoppingBag, color: "text-[#3B2211]", bg: "bg-[#F0EFE9]", trend: "Stabilized" },
+            { label: "Direct Sales", value: data?.summary?.posCount || 0, icon: CreditCard, color: "text-amber-600", bg: "bg-amber-50", trend: "POS Matrix" },
+            { label: "Digital Booking", value: data?.summary?.bookingCount || 0, icon: CalendarDays, color: "text-indigo-600", bg: "bg-indigo-50", trend: "Reservation" },
           ].map((stat, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 + (i * 0.1) }}
-              className={`rounded-[56px] p-10 relative overflow-hidden group shadow-2xl transition-all duration-700 ${
-                stat.isPrimary ? "bg-[#3B2211] text-white shadow-[#3B2211]/30" : "bg-white text-[#3B2211] border border-white shadow-[#3B2211]/5"
+              className={`rounded-[48px] p-10 relative overflow-hidden group shadow-5xl transition-all duration-700 ${
+                stat.isPrimary ? "bg-[#3B2211] text-white shadow-[#3B2211]/20" : "bg-white text-[#3B2211] border border-white shadow-[#3B2211]/5"
               }`}
             >
-              <div className={`absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all duration-700 ${stat.isPrimary ? "text-white" : "text-[#3B2211]"}`}>
-                <stat.icon size={140} strokeWidth={1} />
+              <div className={`absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all duration-700 ${stat.isPrimary ? "text-white" : "text-[#3B2211]"}`}>
+                <stat.icon size={120} strokeWidth={1} />
               </div>
-              <div className="relative z-10 space-y-8">
+              <div className="relative z-10 space-y-6">
                 <div className={`w-14 h-14 ${stat.isPrimary ? "bg-white/10" : stat.bg} ${stat.isPrimary ? "text-white" : stat.color} rounded-2xl flex items-center justify-center shadow-inner`}>
-                  <stat.icon size={28} />
+                  <stat.icon size={26} />
                 </div>
-                <div className="space-y-2">
-                  <p className={`text-[9px] font-black uppercase tracking-[0.4em] ${stat.isPrimary ? "opacity-40" : "text-[#3B2211]/40"}`}>{stat.label}</p>
-                  <h4 className="text-3xl font-bold tracking-tighter">{stat.value}</h4>
+                <div className="space-y-1">
+                  <p className={`text-[9px] font-black uppercase tracking-[0.4em] ${stat.isPrimary ? "opacity-40" : "text-[#3B2211]/30"}`}>{stat.label}</p>
+                  <h4 className="text-3xl font-bold tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>{stat.value}</h4>
                 </div>
                 <div className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${stat.isPrimary ? "text-emerald-300" : "text-[#3B2211]/40"}`}>
                   {stat.trend.includes("+") ? <ArrowUpRight size={14} /> : <Zap size={14} />}
@@ -287,7 +290,7 @@ export default function ReportsPage() {
                          <p className="text-[10px] font-black text-[#3B2211] uppercase tracking-[0.3em]">No Temporal Matches in Archive</p>
                       </div>
                     </td></tr>
-                  ) : data.transactions.map((t: any, idx: number) => (
+                  ) : data?.transactions?.map((t: any, idx: number) => (
                     <motion.tr 
                       key={t.id} 
                       initial={{ opacity: 0, x: -10 }}
