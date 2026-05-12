@@ -10,6 +10,7 @@ import { AboutSection } from "@/components/home/about-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { ContactSection } from "@/components/home/contact-section";
+import { FaqSection } from "@/components/home/faq-section";
 import { getFeaturedPhotos, getGalleryPhotos } from "@/app/actions/gallery";
 import { getProducts } from "@/app/actions/products";
 
@@ -91,7 +92,10 @@ export default async function HomePage() {
       {/* Section 6 — How It Works */}
       <HowItWorksSection />
 
-      {/* Section 7 — Contact & Location */}
+      {/* Section 7 — FAQ */}
+      <FaqSection />
+
+      {/* Section 8 — Contact & Location */}
       <ContactSection />
     </>
   );

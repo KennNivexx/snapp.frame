@@ -57,19 +57,19 @@ export default async function GalleryPage() {
             </div>
 
             {/* Right: Floating Image Element */}
-            <div className="flex-1 relative">
-              <div className="relative w-full aspect-[4/5] max-w-sm mx-auto group">
+            <div className="flex-1 relative mt-16 lg:mt-0">
+              <div className="relative w-full max-w-xl mx-auto group">
                 {/* Decorative Frame */}
                 <div className="absolute -inset-6 border border-gold/30 rounded-[2.5rem] -rotate-3 transition-transform duration-700 group-hover:rotate-0" />
                 <div className="absolute -inset-6 border border-near-black/5 rounded-[2.5rem] rotate-3 transition-transform duration-700 group-hover:rotate-0" />
                 
                 {/* Main Image */}
-                <div className="relative h-full w-full rounded-[2rem] overflow-hidden shadow-2xl shadow-near-black/20 bg-warm-white">
+                <div className="relative w-full rounded-[2rem] overflow-hidden shadow-2xl shadow-near-black/20 bg-warm-white">
                   {heroPhoto && (
                     <img 
                       src={(heroPhoto as any).src || (heroPhoto as any).url} 
                       alt="Featured Work" 
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      className="w-full h-auto block object-cover transition-transform duration-1000 group-hover:scale-110"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-near-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

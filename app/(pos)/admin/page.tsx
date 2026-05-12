@@ -304,7 +304,7 @@ export default function AdminDashboard() {
                 ))
               ) : (
                 <div className="py-20 text-center space-y-4 opacity-30">
-                  <Zap size={40} className="mx-auto text-white" />
+                  <CalendarIcon size={40} className="mx-auto text-white" />
                   <p className="text-[10px] font-black uppercase tracking-widest text-white">Tidak ada jadwal terdekat</p>
                 </div>
               )}

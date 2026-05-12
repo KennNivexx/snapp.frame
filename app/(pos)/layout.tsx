@@ -59,7 +59,7 @@ export default function POSLayout({ children }: { children: React.ReactNode }) {
           <img 
             src="/logosnapframe-removebg-preview.png" 
             alt="Snapframe Logo" 
-            className="w-full max-w-[320px] h-auto object-contain transition-transform duration-500 group-hover:scale-105" 
+            className="w-[180px] h-auto object-contain transition-transform duration-500 group-hover:scale-105" 
           />
         </Link>
       </div>

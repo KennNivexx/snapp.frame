@@ -18,14 +18,6 @@ export default function CashierPage() {
           >
             <Menu size={20} />
           </button>
-          <Link
-            href="/admin"
-            className="p-2 -ml-2 text-[#3B2211]/30 hover:text-[#3B2211] hover:bg-[#3B2211]/5 rounded-xl transition-all flex items-center gap-2 group"
-          >
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-[10px] font-black uppercase tracking-wider hidden sm:inline text-[#3B2211]/50">Admin</span>
-          </Link>
-          <div className="w-px h-5 bg-[#3B2211]/10 hidden sm:block" />
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#3B2211] flex items-center justify-center shadow-lg shadow-[#3B2211]/20">
               <Zap size={16} className="text-white fill-white" />

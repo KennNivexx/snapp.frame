@@ -52,8 +52,8 @@ export function Footer() {
           {/* Col 1: Brand */}
           <div className="col-span-2 lg:col-span-1">
             <Link href="/" aria-label="Snapp.frame Studio — Beranda"
-              className="block -mt-36 -mb-36">
-              <Logo height={450} textColor="#3B2211" />
+              className="block mb-6">
+              <Logo height={120} textColor="#3B2211" />
             </Link>
             <p className="text-xs leading-relaxed mb-4 max-w-[240px] relative z-10" style={normal}>
               {site.subTagline}

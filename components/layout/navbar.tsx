@@ -110,11 +110,11 @@ export function Navbar() {
             <Link
               href="/"
               onClick={(e) => handleNavClick(e, "/")}
-              className="flex-shrink-0 focus:outline-none transition-all duration-500 -ml-10"
+              className="flex-shrink-0 focus:outline-none transition-all duration-500 ml-8"
               style={{ transform: scrolled ? "scale(1.1)" : "scale(1.3)" }}
               aria-label="Snapp.frame Studio"
             >
-              <Logo height={scrolled ? 180 : 240} />
+              <Logo height={scrolled ? 80 : 80} />
             </Link>
 
             <ul className="flex items-center gap-10" role="menubar">
