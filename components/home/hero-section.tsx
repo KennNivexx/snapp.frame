@@ -287,7 +287,7 @@ export function HeroSection({ initialHeroPhoto }: HeroSectionProps) {
           rotateX: tiltX, 
           rotateY: tiltY, 
           transformStyle: "preserve-3d",
-          translateY: "-15%"
+          translateY: "0%"
         }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}

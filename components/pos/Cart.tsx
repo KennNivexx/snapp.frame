@@ -269,11 +269,11 @@ export default function Cart() {
         <button
           onClick={() => setIsCheckoutOpen(true)}
           disabled={items.length === 0}
-          className="w-full py-4 bg-[#3B2211] text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.25em] shadow-xl shadow-[#3B2211]/20 flex items-center justify-center gap-3 hover:bg-[#C88A58] hover:shadow-[#C88A58]/20 active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:bg-[#3B2211] disabled:scale-100 select-none"
+          className="relative w-full py-4 bg-[#3B2211] text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.25em] shadow-xl shadow-[#3B2211]/20 flex items-center justify-center hover:bg-[#C88A58] hover:shadow-[#C88A58]/20 active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:bg-[#3B2211] disabled:scale-100 select-none"
         >
-          <CreditCard size={18} />
-          Proses Pembayaran
-          {items.length > 0 && <ChevronRight size={16} className="ml-auto" />}
+          <CreditCard size={18} className="absolute left-6" />
+          <span className="text-center">Proses Pembayaran</span>
+          {items.length > 0 && <ChevronRight size={16} className="absolute right-6" />}
         </button>
       </div>
 

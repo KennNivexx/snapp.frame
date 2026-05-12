@@ -273,10 +273,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* ── Upcoming Bookings ───────────────────────────── */}
-        <div className="bg-near-black rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
+        <div className="bg-near-black rounded-[3rem] p-10 shadow-2xl relative overflow-hidden flex flex-col h-full">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full blur-[100px] -mr-32 -mt-32" />
           
-          <div className="relative z-10">
+          <div className="relative z-10 flex flex-col flex-1">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-xl font-black text-white">Booking <span className="text-gold italic">Segera</span></h3>
               <Link href="/admin/bookings" className="text-gold hover:text-white transition-colors">
@@ -312,7 +312,7 @@ export default function AdminDashboard() {
             
             <Link 
               href="/admin/bookings" 
-              className="mt-8 block w-full py-4 rounded-2xl bg-gold text-near-black text-center text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-500 shadow-lg shadow-gold/20"
+              className="mt-auto block w-full py-4 rounded-2xl bg-gold text-near-black text-center text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all duration-500 shadow-lg shadow-gold/20"
             >
               Lihat Kalender Lengkap
             </Link>
@@ -329,7 +329,7 @@ export default function AdminDashboard() {
           </div>
           <Link 
             href="/admin/reports" 
-            className="px-8 py-3 rounded-2xl bg-near-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all duration-500 shadow-lg shadow-near-black/20"
+            className="px-8 py-3 rounded-2xl bg-gold text-near-black text-[10px] font-black uppercase tracking-widest hover:bg-near-black hover:text-white transition-all duration-500 shadow-lg shadow-gold/20"
           >
             Lihat Laporan Detail
           </Link>
