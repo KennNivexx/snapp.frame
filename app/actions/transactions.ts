@@ -8,7 +8,7 @@ import crypto from "crypto";
 export async function saveTransaction(data: {
   invoiceNumber: string;
   items: { id: string; qty: number; price: number; name: string }[];
-  paymentMethod: "CASH" | "TRANSFER" | "QRIS";
+  paymentMethod: "CASH" | "TRANSFER" | "QRIS" | "EWALLET";
   referralCodeId?: string | null;
   total: number;
   discount: number;

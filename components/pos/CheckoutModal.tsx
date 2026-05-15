@@ -12,11 +12,15 @@ import {
   Sparkles,
   ReceiptText,
   Tag,
-  Loader2
+  Loader2,
+  User,
+  Phone,
+  Calendar,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { saveTransaction } from "@/app/actions/transactions";
-import { validateReferral } from "@/app/actions/referrals";
 import Receipt from "./Receipt";
 
 const paymentMethods = [
@@ -27,7 +31,7 @@ const paymentMethods = [
     icon: Banknote,
     accent: "#10B981",
     bg: "bg-emerald-50",
-    text: "text-emerald-600"
+    text: "text-emerald-600",
   },
   {
     id: "QRIS",
@@ -36,7 +40,7 @@ const paymentMethods = [
     icon: Smartphone,
     accent: "#3B82F6",
     bg: "bg-blue-50",
-    text: "text-blue-600"
+    text: "text-blue-600",
   },
   {
     id: "E-Wallet",
@@ -45,7 +49,7 @@ const paymentMethods = [
     icon: Smartphone,
     accent: "#F59E0B",
     bg: "bg-amber-50",
-    text: "text-amber-600"
+    text: "text-amber-600",
   },
   {
     id: "Transfer",
@@ -54,7 +58,7 @@ const paymentMethods = [
     icon: CreditCard,
     accent: "#8B5CF6",
     bg: "bg-violet-50",
-    text: "text-violet-600"
+    text: "text-violet-600",
   },
 ];
 
@@ -72,6 +76,7 @@ export default function CheckoutModal({
     customerPhone,
     bookingDate,
     bookingTime,
+    setCustomerInfo,
   } = useCartStore();
 
   useEffect(() => {
@@ -94,9 +99,6 @@ export default function CheckoutModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [isCheckingReferral, setIsCheckingReferral] = useState(false);
-  const [referralMessage, setReferralMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [discount, setDiscount] = useState(0);
 
   // Referral State
   const [referralInput, setReferralInput] = useState("");
@@ -107,11 +109,14 @@ export default function CheckoutModal({
     feePercentage: number;
     discountPercentage: number;
   } | null>(null);
-  const [referralMessage, setReferralMessage] = useState<{type: 'success'|'error', text: string} | null>(null);
+  const [referralMessage, setReferralMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const [isApplyingReferral, setIsApplyingReferral] = useState(false);
 
   const subtotalAmount = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const discount = referralData?.discountAmount || 0;
+  const discount = referralData?.discountAmount ?? 0;
   const finalTotal = Math.max(0, subtotalAmount - discount);
 
   const handleApplyReferral = async () => {
@@ -120,22 +125,25 @@ export default function CheckoutModal({
     setReferralMessage(null);
 
     try {
-      const response = await fetch('/api/admin/referrals/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/referrals/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: referralInput.trim(), subtotal: subtotalAmount }),
       });
       const data = await response.json();
-      
+
       if (!response.ok || !data.success) {
-        setReferralMessage({ type: 'error', text: data.message || 'Kode tidak valid' });
+        setReferralMessage({ type: "error", text: data.message || "Kode tidak valid" });
         setReferralData(null);
       } else {
-        setReferralMessage({ type: 'success', text: `Diskon ${data.data.discountPercentage}% berhasil diterapkan` });
+        setReferralMessage({
+          type: "success",
+          text: `Diskon ${data.data.discountPercentage}% berhasil diterapkan`,
+        });
         setReferralData(data.data);
       }
-    } catch (error) {
-      setReferralMessage({ type: 'error', text: 'Terjadi kesalahan sistem' });
+    } catch {
+      setReferralMessage({ type: "error", text: "Terjadi kesalahan sistem" });
       setReferralData(null);
     } finally {
       setIsApplyingReferral(false);
@@ -156,10 +164,10 @@ export default function CheckoutModal({
       const res = await saveTransaction({
         invoiceNumber: inv,
         items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
-        paymentMethod: methodMap[method] || "CASH",
-        referralCodeId: referralData?.id || null,
+        paymentMethod: methodMap[method] ?? "CASH",
+        referralCodeId: referralData?.id ?? null,
         total: finalTotal,
-        discount: discount,
+        discount,
         tax: 0,
         customerName,
         customerPhone,
@@ -246,24 +254,24 @@ export default function CheckoutModal({
                     {method === "QRIS" ? "Scan QRIS" : "Pembayaran Berhasil!"}
                   </h2>
                   <p className="text-[10px] font-medium text-gray-400">
-                    {method === "QRIS" 
-                      ? "Silakan scan QR code berikut menggunakan aplikasi E-Wallet atau M-Banking Anda." 
+                    {method === "QRIS"
+                      ? "Silakan scan QR code berikut menggunakan aplikasi E-Wallet atau M-Banking Anda."
                       : "Transaksi berhasil dicatat ke sistem Sneapici Studio."}
                   </p>
                 </div>
 
                 {/* QRIS Code Display */}
                 {method === "QRIS" && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2, type: "spring" }}
                     className="mx-auto w-36 h-36 bg-white p-2.5 rounded-2xl shadow-lg shadow-blue-900/5 border border-blue-50 relative overflow-hidden"
                   >
                     <div className="absolute top-0 left-0 w-full h-1 bg-blue-500 animate-pulse" />
-                    <img 
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QRIS_PAYMENT_${invoiceNumber}_AMOUNT_${finalTotal}`} 
-                      alt="QRIS Code" 
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QRIS_PAYMENT_${invoiceNumber}_AMOUNT_${finalTotal}`}
+                      alt="QRIS Code"
                       className="w-full h-full object-contain mix-blend-multiply"
                     />
                   </motion.div>
@@ -338,13 +346,13 @@ export default function CheckoutModal({
                 </div>
 
                 <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                  
+
                   {/* Informasi Sesi */}
                   <div className="space-y-2">
                     <p className="text-[9px] font-black text-[#3B2211]/40 uppercase tracking-[0.25em] ml-1">
                       Informasi Sesi
                     </p>
-                    
+
                     <div className="grid grid-cols-2 gap-2">
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
@@ -388,45 +396,6 @@ export default function CheckoutModal({
                         />
                       </div>
                     </div>
-
-                    <div className="space-y-1.5 pt-1">
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
-                          <input
-                            type="text"
-                            placeholder="Kode promo / referral"
-                            value={referralCode || ""}
-                            onChange={(e) => setReferral(e.target.value, 0)}
-                            className="w-full pl-9 pr-3 py-2 bg-[#FAFAF8] border border-[#3B2211]/8 rounded-xl text-[11px] font-medium text-[#3B2211] placeholder:text-gray-300 uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 transition-all"
-                          />
-                        </div>
-                        <button
-                          onClick={handleCheckReferral}
-                          disabled={isCheckingReferral || !referralCode}
-                          className="px-4 py-2 bg-[#3B2211] text-white rounded-xl text-[9px] font-black uppercase tracking-widest disabled:opacity-40 hover:bg-[#C88A58] active:scale-[0.97] transition-all"
-                        >
-                          {isCheckingReferral ? "..." : "Cek"}
-                        </button>
-                      </div>
-                      <AnimatePresence>
-                        {referralMessage && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold border ${
-                              referralMessage.type === "success"
-                                ? "bg-green-50 text-green-700 border-green-100"
-                                : "bg-red-50 text-red-600 border-red-100"
-                            }`}
-                          >
-                            {referralMessage.type === "success" ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
-                            {referralMessage.text}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
                   </div>
 
                   {/* Total Banner */}
@@ -436,17 +405,6 @@ export default function CheckoutModal({
                     <p className="text-3xl font-black tracking-tight">
                       Rp {finalTotal.toLocaleString("id-ID")}
                     </p>
-<<<<<<< HEAD
-                    {discount > 0 && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/30">
-                          Subtotal Rp {subtotal.toLocaleString("id-ID")} •
-                        </span>
-                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
-                          Hemat Rp {discount.toLocaleString("id-ID")}
-                        </span>
-=======
-                    
                     {referralData && (
                       <div className="mt-4 pt-4 border-t border-white/10 space-y-1.5">
                         <div className="flex justify-between text-sm">
@@ -457,7 +415,6 @@ export default function CheckoutModal({
                           <p className="font-bold uppercase tracking-widest text-[10px] text-emerald-400">Diskon</p>
                           <p className="font-bold text-emerald-400">- Rp {referralData.discountAmount.toLocaleString("id-ID")}</p>
                         </div>
->>>>>>> kevin
                       </div>
                     )}
                   </div>
@@ -468,8 +425,8 @@ export default function CheckoutModal({
                       <Tag size={12} /> Kode Referral
                     </p>
                     <div className="flex gap-2">
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={referralInput}
                         onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
                         placeholder="Masukkan kode..."
@@ -477,7 +434,7 @@ export default function CheckoutModal({
                         disabled={!!referralData || isApplyingReferral}
                       />
                       {referralData ? (
-                        <button 
+                        <button
                           onClick={() => {
                             setReferralData(null);
                             setReferralInput("");
@@ -488,7 +445,7 @@ export default function CheckoutModal({
                           Batal
                         </button>
                       ) : (
-                        <button 
+                        <button
                           onClick={handleApplyReferral}
                           disabled={isApplyingReferral || !referralInput.trim()}
                           className="px-5 py-3 bg-[#3B2211] text-white rounded-xl text-xs font-bold hover:bg-[#C88A58] disabled:opacity-50 transition-all flex items-center"
@@ -498,9 +455,12 @@ export default function CheckoutModal({
                       )}
                     </div>
                     {referralMessage && (
-                      <p className={`text-[10px] font-bold ${referralMessage.type === 'success' ? 'text-emerald-600' : 'text-red-500'} ml-1`}>
+                      <div className={`flex items-center gap-2 text-[10px] font-bold ml-1 ${referralMessage.type === "success" ? "text-emerald-600" : "text-red-500"}`}>
+                        {referralMessage.type === "success"
+                          ? <CheckCircle2 size={12} />
+                          : <AlertCircle size={12} />}
                         {referralMessage.text}
-                      </p>
+                      </div>
                     )}
                   </div>
 
@@ -590,7 +550,7 @@ export default function CheckoutModal({
                       </span>
                     ) : (
                       <>
-                        <span className="text-center">Konfirmasi & Bayar</span>
+                        <span className="text-center">Konfirmasi &amp; Bayar</span>
                         <ChevronRight size={16} className="absolute right-6" />
                       </>
                     )}
