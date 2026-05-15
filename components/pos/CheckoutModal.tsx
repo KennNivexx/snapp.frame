@@ -10,7 +10,9 @@ import {
   ChevronRight,
   Smartphone,
   Sparkles,
-  ReceiptText
+  ReceiptText,
+  Tag,
+  Loader2
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { saveTransaction } from "@/app/actions/transactions";
@@ -49,11 +51,9 @@ const paymentMethods = [
 export default function CheckoutModal({
   isOpen,
   onClose,
-  discount,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  discount: number;
 }) {
   const {
     items,
@@ -62,7 +62,6 @@ export default function CheckoutModal({
     customerPhone,
     bookingDate,
     bookingTime,
-    referralCode,
   } = useCartStore();
 
   const [method, setMethod] = useState("Tunai");
@@ -70,8 +69,49 @@ export default function CheckoutModal({
   const [isSuccess, setIsSuccess] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState("");
 
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const finalTotal = Math.max(0, subtotal - discount);
+  // Referral State
+  const [referralInput, setReferralInput] = useState("");
+  const [referralData, setReferralData] = useState<{
+    id: string;
+    marketerName: string;
+    discountAmount: number;
+    feePercentage: number;
+    discountPercentage: number;
+  } | null>(null);
+  const [referralMessage, setReferralMessage] = useState<{type: 'success'|'error', text: string} | null>(null);
+  const [isApplyingReferral, setIsApplyingReferral] = useState(false);
+
+  const subtotalAmount = items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const discount = referralData?.discountAmount || 0;
+  const finalTotal = Math.max(0, subtotalAmount - discount);
+
+  const handleApplyReferral = async () => {
+    if (!referralInput.trim()) return;
+    setIsApplyingReferral(true);
+    setReferralMessage(null);
+
+    try {
+      const response = await fetch('/api/admin/referrals/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: referralInput.trim(), subtotal: subtotalAmount }),
+      });
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        setReferralMessage({ type: 'error', text: data.message || 'Kode tidak valid' });
+        setReferralData(null);
+      } else {
+        setReferralMessage({ type: 'success', text: `Diskon ${data.data.discountPercentage}% berhasil diterapkan` });
+        setReferralData(data.data);
+      }
+    } catch (error) {
+      setReferralMessage({ type: 'error', text: 'Terjadi kesalahan sistem' });
+      setReferralData(null);
+    } finally {
+      setIsApplyingReferral(false);
+    }
+  };
 
   const handleCheckout = async () => {
     setIsProcessing(true);
@@ -87,9 +127,9 @@ export default function CheckoutModal({
         invoiceNumber: inv,
         items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
         paymentMethod: methodMap[method] || "CASH",
-        referralCode,
+        referralCodeId: referralData?.id || null,
         total: finalTotal,
-        discount,
+        discount: discount,
         tax: 0,
         customerName,
         customerPhone,
@@ -114,6 +154,9 @@ export default function CheckoutModal({
   const handleDone = () => {
     clearCart();
     setIsSuccess(false);
+    setReferralData(null);
+    setReferralInput("");
+    setReferralMessage(null);
     onClose();
   };
 
@@ -137,7 +180,7 @@ export default function CheckoutModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 24 }}
           transition={{ type: "spring", stiffness: 280, damping: 28 }}
-          className="w-full max-w-md bg-white rounded-[32px] shadow-2xl relative z-10 overflow-hidden border border-white/20"
+          className="w-full max-w-md bg-white rounded-[32px] shadow-2xl relative z-10 overflow-y-auto max-h-[90vh] border border-white/20"
         >
           <AnimatePresence mode="wait">
             {/* ── SUCCESS STATE ── */}
@@ -252,15 +295,60 @@ export default function CheckoutModal({
                     <p className="text-4xl font-black tracking-tight">
                       Rp {finalTotal.toLocaleString("id-ID")}
                     </p>
-                    {discount > 0 && (
-                      <div className="mt-3 flex items-center gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/30">
-                          Subtotal Rp {subtotal.toLocaleString("id-ID")} •
-                        </span>
-                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
-                          Hemat Rp {discount.toLocaleString("id-ID")}
-                        </span>
+                    
+                    {referralData && (
+                      <div className="mt-4 pt-4 border-t border-white/10 space-y-1.5">
+                        <div className="flex justify-between text-sm">
+                          <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">Subtotal</p>
+                          <p className="text-white/60 line-through">Rp {subtotalAmount.toLocaleString("id-ID")}</p>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <p className="font-bold uppercase tracking-widest text-[10px] text-emerald-400">Diskon</p>
+                          <p className="font-bold text-emerald-400">- Rp {referralData.discountAmount.toLocaleString("id-ID")}</p>
+                        </div>
                       </div>
+                    )}
+                  </div>
+
+                  {/* Referral Section */}
+                  <div className="space-y-3">
+                    <p className="text-[9px] font-black text-[#3B2211]/40 uppercase tracking-[0.25em] ml-1 flex items-center gap-2">
+                      <Tag size={12} /> Kode Referral
+                    </p>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        value={referralInput}
+                        onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
+                        placeholder="Masukkan kode..."
+                        className="flex-1 px-4 py-3 bg-white border border-[#3B2211]/10 rounded-xl text-sm font-bold focus:outline-none focus:border-[#3B2211]/30 transition-all uppercase"
+                        disabled={!!referralData || isApplyingReferral}
+                      />
+                      {referralData ? (
+                        <button 
+                          onClick={() => {
+                            setReferralData(null);
+                            setReferralInput("");
+                            setReferralMessage(null);
+                          }}
+                          className="px-4 py-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition-all"
+                        >
+                          Batal
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={handleApplyReferral}
+                          disabled={isApplyingReferral || !referralInput.trim()}
+                          className="px-5 py-3 bg-[#3B2211] text-white rounded-xl text-xs font-bold hover:bg-[#C88A58] disabled:opacity-50 transition-all flex items-center"
+                        >
+                          {isApplyingReferral ? <Loader2 size={16} className="animate-spin" /> : "Terapkan"}
+                        </button>
+                      )}
+                    </div>
+                    {referralMessage && (
+                      <p className={`text-[10px] font-bold ${referralMessage.type === 'success' ? 'text-emerald-600' : 'text-red-500'} ml-1`}>
+                        {referralMessage.text}
+                      </p>
                     )}
                   </div>
 
@@ -323,7 +411,7 @@ export default function CheckoutModal({
                   >
                     {isProcessing ? (
                       <span className="flex items-center justify-center gap-3">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <Loader2 size={16} className="animate-spin" />
                         Memproses...
                       </span>
                     ) : (

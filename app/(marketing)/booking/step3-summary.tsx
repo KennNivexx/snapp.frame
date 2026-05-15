@@ -28,7 +28,7 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
   const [error, setError] = useState("");
   const [checking, setChecking] = useState(false);
 
-  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.type) : pkg.price;
+  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.maxDiscountAmount) : pkg.price;
   const discount = pkg.price - finalPrice;
 
   async function applyCode() {
@@ -115,10 +115,8 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
               <div>
                 <p className="text-sm font-semibold text-[#3B2211]">{referral.code}</p>
                 <p className="text-xs text-[#8B6145]">
-                  {referral.type === "PERCENTAGE" 
-                    ? `Diskon ${referral.discountPct}%` 
-                    : `Diskon Rp ${referral.discountPct.toLocaleString("id-ID")}`
-                  }
+                  {`Diskon ${referral.discountPct}%`}
+                  {referral.maxDiscountAmount > 0 && ` (Maks Rp ${referral.maxDiscountAmount.toLocaleString("id-ID")})`}
                 </p>
               </div>
             </div>
@@ -163,7 +161,7 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
           {referral && (
             <div className="flex justify-between text-sm">
               <span className="text-[#5A371F]">
-                Diskon {referral.type === "PERCENTAGE" ? `${referral.discountPct}%` : "Nominal"} ({referral.code})
+                Diskon {referral.discountPct}% ({referral.code})
               </span>
               <span className="text-[#5A371F] font-medium">- {formatPrice(discount)}</span>
             </div>

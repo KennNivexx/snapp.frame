@@ -42,7 +42,7 @@ interface Step5Props {
 type SaveState = "idle" | "saving" | "saved" | "error";
 
 export default function Step5Receipt({ pkg, formData, referral, paymentMethod, onReset }: Step5Props) {
-  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.type) : pkg.price;
+  const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.maxDiscountAmount) : pkg.price;
   const discount = pkg.price - finalPrice;
   const [invoice] = useState(generateInvoice);
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -258,7 +258,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
             {referral && (
               <div className="flex justify-between text-xs">
                 <span className="text-[#5A371F]">
-                  Diskon {referral.type === "PERCENTAGE" ? `${referral.discountPct}%` : "Nominal"} ({referral.code})
+                  Diskon {referral.discountPct}% ({referral.code})
                 </span>
                 <span className="text-[#5A371F]">- {formatPrice(discount)}</span>
               </div>

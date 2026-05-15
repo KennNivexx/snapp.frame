@@ -125,7 +125,7 @@ export function Navbar() {
                     role="menuitem"
                     onClick={(e) => handleNavClick(e, link.href)}
                     className={[
-                      "relative text-[11px] font-bold tracking-[0.18em] uppercase transition-all duration-300",
+                      "relative text-base md:text-lg font-bold tracking-[0.18em] uppercase transition-all duration-300",
                       "font-[family-name:var(--font-heading)]",
                       link.isHidden
                         ? "opacity-0 hover:opacity-100 !text-near-black"
@@ -183,7 +183,7 @@ export function Navbar() {
                 </div>
                 <span
                   className={[
-                    "text-[9px] font-bold uppercase tracking-widest transition-colors duration-300",
+                    "text-xs font-bold uppercase tracking-widest transition-colors duration-300 mt-1",
                     active ? "text-gold" : "text-near-black/60",
                   ].join(" ")}
                 >

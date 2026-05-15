@@ -9,18 +9,13 @@ import {
   CreditCard,
   User,
   Phone,
-  Ticket,
-  AlertCircle,
-  CheckCircle2,
   ShoppingCart,
   Calendar,
   Clock,
-  Tag,
   ChevronRight
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import CheckoutModal from "./CheckoutModal";
-import { validateReferral } from "@/app/actions/referrals";
 
 export default function Cart() {
   const {
@@ -33,46 +28,12 @@ export default function Cart() {
     bookingDate,
     bookingTime,
     setCustomerInfo,
-    referralCode,
-    setReferral
   } = useCartStore();
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isCheckingReferral, setIsCheckingReferral] = useState(false);
-  const [referralMessage, setReferralMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [discountAmount, setDiscountAmount] = useState(0);
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-
-  const handleCheckReferral = async () => {
-    if (!referralCode) return;
-    setIsCheckingReferral(true);
-    setReferralMessage(null);
-    try {
-      const res = await validateReferral(referralCode);
-      if (res.success && res.data) {
-        let disc = 0;
-        if (res.data.type === "PERCENTAGE") {
-          disc = Math.floor(subtotal * (res.data.value / 100));
-        } else {
-          disc = res.data.value;
-        }
-        setDiscountAmount(disc);
-        setReferral(res.data.code, res.data.value, res.data.type as any);
-        setReferralMessage({ type: "success", text: `Diskon Rp ${disc.toLocaleString()} berhasil diterapkan` });
-      } else {
-        setDiscountAmount(0);
-        setReferral(null, 0);
-        setReferralMessage({ type: "error", text: res.error || "Kode tidak valid atau sudah kadaluarsa" });
-      }
-    } catch {
-      setReferralMessage({ type: "error", text: "Terjadi kesalahan sistem" });
-    } finally {
-      setIsCheckingReferral(false);
-    }
-  };
-
-  const finalTotal = Math.max(0, subtotal - discountAmount);
+  const finalTotal = subtotal; // Referral diurus di CheckoutModal
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -201,46 +162,6 @@ export default function Cart() {
             />
           </div>
         </div>
-
-        {/* Kode Promo */}
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
-              <input
-                type="text"
-                placeholder="Kode promo / referral"
-                value={referralCode || ""}
-                onChange={(e) => setReferral(e.target.value, 0)}
-                className="w-full pl-9 pr-3 py-2.5 bg-white border border-[#3B2211]/8 rounded-xl text-[11px] font-medium text-[#3B2211] placeholder:text-gray-300 uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 focus:border-[#C88A58]/30 transition-all"
-              />
-            </div>
-            <button
-              onClick={handleCheckReferral}
-              disabled={isCheckingReferral || !referralCode}
-              className="px-4 bg-[#3B2211] text-white rounded-xl text-[9px] font-black uppercase tracking-widest disabled:opacity-40 hover:bg-[#C88A58] active:scale-[0.97] transition-all shadow-md shadow-[#3B2211]/10"
-            >
-              {isCheckingReferral ? "..." : "Cek"}
-            </button>
-          </div>
-          <AnimatePresence>
-            {referralMessage && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold border ${
-                  referralMessage.type === "success"
-                    ? "bg-green-50 text-green-700 border-green-100"
-                    : "bg-red-50 text-red-600 border-red-100"
-                }`}
-              >
-                {referralMessage.type === "success" ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
-                {referralMessage.text}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </div>
 
       {/* ── Ringkasan & Bayar ── */}
@@ -250,16 +171,6 @@ export default function Cart() {
             <span className="font-medium">Subtotal</span>
             <span className="font-bold text-[#3B2211]">Rp {subtotal.toLocaleString("id-ID")}</span>
           </div>
-          {discountAmount > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="flex justify-between text-[11px] text-emerald-600"
-            >
-              <span className="font-medium flex items-center gap-1.5"><Ticket size={11} /> Diskon Kode</span>
-              <span className="font-bold">- Rp {discountAmount.toLocaleString("id-ID")}</span>
-            </motion.div>
-          )}
           <div className="flex justify-between items-center pt-3 border-t border-[#3B2211]/5 mt-1">
             <span className="text-[11px] font-black text-[#3B2211] uppercase tracking-widest">Total Akhir</span>
             <span className="text-xl font-black text-[#3B2211]">Rp {finalTotal.toLocaleString("id-ID")}</span>
@@ -280,7 +191,6 @@ export default function Cart() {
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
-        discount={discountAmount}
       />
     </div>
   );

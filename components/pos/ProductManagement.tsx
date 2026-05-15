@@ -229,7 +229,7 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
                 onClick={() => {
                   setEditingProduct(null);
                   setFormData({ 
-                    name: "", sku: "", price: "", category: "Layanan", isActive: true, stock: "0", image: "",
+                    name: "", price: "", category: "Layanan", isActive: true, image: "",
                     duration: "", photoCount: "", features: "", isPopular: false, sortOrder: "0"
                   });
                   setIsModalOpen(true);
@@ -280,7 +280,7 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
               onClick={() => {
                 setEditingProduct(null);
                 setFormData({ 
-                  name: "", sku: "", price: "", category: "Layanan", isActive: true, stock: "0", image: "",
+                  name: "", price: "", category: "Layanan", isActive: true, image: "",
                   duration: "", photoCount: "", features: "", isPopular: false, sortOrder: "0"
                 });
                 setIsModalOpen(true);
@@ -361,11 +361,9 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
                           setEditingProduct(p);
                           setFormData({
                             name: p.name,
-                            sku: p.sku || "",
                             price: p.price.toString(),
                             category: typeof p.category === 'string' ? p.category : p.category?.name || "Layanan",
                             isActive: p.isActive,
-                            stock: p.stock.toString(),
                             image: p.image || "",
                             duration: p.duration || "",
                             photoCount: p.photoCount || "",

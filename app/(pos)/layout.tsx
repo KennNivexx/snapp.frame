@@ -30,9 +30,9 @@ const navItems = [
   { label: "Manajemen Produk", icon: Package, href: "/admin/products" },
   { label: "Kelola Galeri", icon: ImageIcon, href: "/admin/gallery" },
   { label: "Booking", icon: Calendar, href: "/admin/bookings" },
-  { label: "Pelanggan", icon: Users, href: "/admin/customers" },
   { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
   { label: "Laporan", icon: History, href: "/admin/reports" },
+  { label: "Pengaturan Web", icon: Settings, href: "/admin/settings" },
 ];
 
 export default function POSLayout({ children }: { children: React.ReactNode }) {

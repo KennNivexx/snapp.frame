@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { ReferralType } from "@/prisma/generated/client";
 
 export async function getReferrals() {
   try {
@@ -46,9 +45,12 @@ export async function getReferrals() {
 
 export async function createReferral(data: {
   code: string;
-  label: string;
-  type: ReferralType;
-  value: number;
+  marketerName: string;
+  discountPercentage: number;
+  maxDiscountAmount: number;
+  feePercentage: number;
+  bankName?: string | null;
+  bankAccount?: string | null;
   usageLimit?: number | null;
   expiryDate?: string | null;
 }) {
@@ -56,9 +58,12 @@ export async function createReferral(data: {
     const referral = await prisma.referralCode.create({
       data: {
         code: data.code.toUpperCase(),
-        label: data.label,
-        type: data.type,
-        value: data.value,
+        marketerName: data.marketerName,
+        discountPct: data.discountPercentage,
+        maxDiscountAmount: data.maxDiscountAmount,
+        feePercentage: data.feePercentage,
+        bankName: data.bankName || null,
+        bankAccount: data.bankAccount || null,
         usageLimit: data.usageLimit || null,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
         isActive: true,
@@ -106,6 +111,7 @@ export async function deleteReferral(id: string) {
     return { success: false, error: error.message };
   }
 }
+
 export async function validateReferral(code: string) {
   try {
     const referral = await prisma.referralCode.findFirst({
@@ -116,26 +122,6 @@ export async function validateReferral(code: string) {
     });
 
     if (!referral) {
-      // Fallback codes for consistency with marketing page
-      const fallbacks: Record<string, { type: "PERCENTAGE" | "FIXED", value: number }> = {
-        "SNAPP10": { type: "PERCENTAGE", value: 10 },
-        "TEMAN15": { type: "PERCENTAGE", value: 15 },
-        "SPESIAL20": { type: "PERCENTAGE", value: 20 },
-        "FOTO10": { type: "PERCENTAGE", value: 10 },
-      };
-
-      const fallback = fallbacks[code.toUpperCase()];
-      if (fallback) {
-        return {
-          success: true,
-          data: {
-            code: code.toUpperCase(),
-            type: fallback.type,
-            value: fallback.value
-          }
-        };
-      }
-
       return { success: false, error: "Kode promo tidak valid atau sudah tidak aktif." };
     }
 
@@ -151,8 +137,8 @@ export async function validateReferral(code: string) {
       success: true, 
       data: {
         code: referral.code,
-        type: referral.type,
-        value: referral.value
+        discountPct: referral.discountPct,
+        maxDiscountAmount: referral.maxDiscountAmount
       } 
     };
   } catch (error: any) {
