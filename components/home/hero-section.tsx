@@ -281,8 +281,15 @@ export function HeroSection({ initialHeroPhoto }: HeroSectionProps) {
         />
       </div>
 
+      {/* ── 3D Floating Elements ── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-10" style={{ transformStyle: "preserve-3d" }}>
+        {ELEMENTS.map((el) => (
+          <FloatingEl key={el.id} el={el} mx={mx} my={my} scrollY={scrollY} />
+        ))}
+      </div>
+
       <motion.div
-        className="relative z-20 text-center px-6 sm:px-10 max-w-3xl w-full group"
+        className="relative z-20 text-center px-6 sm:px-10 pt-32 md:pt-48 max-w-4xl w-full group mx-4"
         style={{ 
           rotateX: tiltX, 
           rotateY: tiltY, 
@@ -293,29 +300,44 @@ export function HeroSection({ initialHeroPhoto }: HeroSectionProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
       >
+        {/* Eyebrow */}
+        <motion.div
+          className="mb-6 flex items-center justify-center gap-4"
+          style={{ transform: "translateZ(30px)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.7 }}
+        >
+          <div className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent to-[#D4A373]" />
+          <span className="text-[#D4A373] text-[10px] sm:text-xs md:text-sm font-bold tracking-[0.3em] uppercase">Snapp.frame Studio</span>
+          <div className="w-8 sm:w-12 h-px bg-gradient-to-l from-transparent to-[#D4A373]" />
+        </motion.div>
+
         {/* Heading */}
         <motion.h1
-          className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5"
+          className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.15] mb-6"
           style={{
             fontFamily: "var(--font-playfair), serif",
             color: "#FFF",
-            letterSpacing: "-0.015em",
-            textShadow: "0 8px 30px rgba(0,0,0,0.7)",
-            transform: "translateZ(40px)",
+            letterSpacing: "-0.02em",
+            textShadow: "0 10px 40px rgba(0,0,0,0.8)",
+            transform: "translateZ(50px)",
             transformStyle: "preserve-3d",
           }}
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
+          transition={{ duration: 1, delay: 0.8, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] }}
         >
           {/* Watermark Quote Tipis di Belakang Teks */}
-          <span className="absolute -top-12 sm:-top-16 -left-4 sm:-left-10 text-[100px] sm:text-[140px] text-white/[0.04] pointer-events-none select-none font-serif leading-none">
+          <span className="absolute -top-16 sm:-top-24 left-1/2 -translate-x-1/2 text-[120px] sm:text-[180px] text-white/[0.03] pointer-events-none select-none font-serif leading-none">
             &ldquo;
           </span>
           
-          Yang Kamu Lihat <em className="italic font-normal">Hari Ini</em>,
+          <span className="inline-block">Yang Kamu Lihat</span>{" "}
+          <em className="italic font-medium text-[#D4A373]">Hari Ini</em>
           <br />
-          Akan Kamu Rindukan <em className="italic font-normal">Di Masa Depan Nanti</em>
+          <span className="inline-block mt-2 sm:mt-4">Akan Kamu Rindukan</span>{" "}
+          <em className="italic font-medium text-[#D4A373]">Nanti</em>
         </motion.h1>
 
         {/* CTA */}

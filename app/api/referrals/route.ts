@@ -8,12 +8,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     
     const referralSchema = z.object({
-      code: z.string().min(3).toUpperCase(),
-      label: z.string().optional().default(""),
-      type: z.enum(["PERCENTAGE", "FIXED"]),
-      value: z.number().min(0),
-      usageLimit: z.number().optional(),
-      expiryDate: z.string().optional(),
+      code: z.string().min(1).max(10).toUpperCase().trim(),
+      marketerName: z.string().min(1).trim(),
+      discountPercentage: z.coerce.number().min(0).max(100),
+      maxDiscountAmount: z.coerce.number().min(0).default(0),
+      feePercentage: z.coerce.number().min(0).max(100).default(0),
+      bankName: z.string().nullable().optional(),
+      bankAccount: z.string().nullable().optional(),
+      usageLimit: z.coerce.number().nullable().optional(),
+      expiryDate: z.string().nullable().optional(),
     });
 
     const validatedData = referralSchema.parse(body);
@@ -21,9 +24,12 @@ export async function POST(req: Request) {
     const referral = await prisma.referralCode.create({
       data: {
         code: validatedData.code,
-        label: validatedData.label,
-        type: validatedData.type,
-        value: validatedData.value,
+        marketerName: validatedData.marketerName,
+        discountPct: validatedData.discountPercentage,
+        maxDiscountAmount: validatedData.maxDiscountAmount,
+        feePercentage: validatedData.feePercentage,
+        bankName: validatedData.bankName,
+        bankAccount: validatedData.bankAccount,
         usageLimit: validatedData.usageLimit,
         expiryDate: validatedData.expiryDate ? new Date(validatedData.expiryDate) : null,
       },

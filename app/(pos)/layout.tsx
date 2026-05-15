@@ -35,6 +35,7 @@ const navItems = [
   { label: "Affiliator", icon: HeartHandshake, href: "/admin/affiliators" },
   { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
   { label: "Laporan", icon: History, href: "/admin/reports" },
+  { label: "Pengaturan Web", icon: Settings, href: "/admin/settings" },
 ];
 
 export default function POSLayout({ children }: { children: React.ReactNode }) {

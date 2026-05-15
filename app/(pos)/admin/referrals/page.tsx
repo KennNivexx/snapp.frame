@@ -7,35 +7,30 @@ import {
   Plus, 
   Trash2, 
   Copy, 
-  CheckCircle2, 
-  AlertCircle,
-  X,
   Search,
-  ChevronDown,
   Calendar,
   Sparkles,
-  Power,
-  PowerOff,
-  RefreshCw,
-  Gift,
-  TrendingUp,
   Target,
   Zap,
-  ArrowRight,
   ShieldCheck,
-  Command,
-  Scissors
+  RefreshCw,
+  X,
+  CreditCard,
+  Percent,
+  Banknote
 } from "lucide-react";
 import { getReferrals, createReferral, toggleReferralStatus, deleteReferral } from "@/app/actions/referrals";
 import { createClient } from "@/lib/supabase/client";
-import { ReferralType } from "@/prisma/generated/client";
 
 interface ReferralCode {
   id: string;
   code: string;
-  label: string;
-  type: ReferralType;
-  value: number;
+  marketerName: string;
+  discountPct: number;
+  maxDiscountAmount: number;
+  feePercentage: number;
+  bankName: string | null;
+  bankAccount: string | null;
   usageCount: number;
   usageLimit: number | null;
   expiryDate: string | null;
@@ -52,9 +47,12 @@ export default function ReferralManagement() {
   
   const [formData, setFormData] = useState({
     code: "",
-    label: "",
-    type: "PERCENTAGE" as ReferralType,
-    value: 10,
+    marketerName: "",
+    discountPercentage: 10,
+    maxDiscountAmount: 0,
+    feePercentage: 0,
+    bankName: "",
+    bankAccount: "",
     usageLimit: "",
     expiryDate: ""
   });
@@ -111,7 +109,13 @@ export default function ReferralManagement() {
     setIsSubmitting(true);
     try {
       const res = await createReferral({
-        ...formData,
+        code: formData.code,
+        marketerName: formData.marketerName,
+        discountPercentage: formData.discountPercentage,
+        maxDiscountAmount: formData.maxDiscountAmount,
+        feePercentage: formData.feePercentage,
+        bankName: formData.bankName,
+        bankAccount: formData.bankAccount,
         usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : null,
         expiryDate: formData.expiryDate || null
       });
@@ -120,9 +124,12 @@ export default function ReferralManagement() {
         setIsModalOpen(false);
         setFormData({
           code: "",
-          label: "",
-          type: "PERCENTAGE",
-          value: 10,
+          marketerName: "",
+          discountPercentage: 10,
+          maxDiscountAmount: 0,
+          feePercentage: 0,
+          bankName: "",
+          bankAccount: "",
           usageLimit: "",
           expiryDate: ""
         });
@@ -163,7 +170,7 @@ export default function ReferralManagement() {
 
   const filteredReferrals = referrals.filter(r => 
     r.code.toLowerCase().includes(search.toLowerCase()) || 
-    r.label.toLowerCase().includes(search.toLowerCase())
+    r.marketerName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -178,14 +185,14 @@ export default function ReferralManagement() {
              </div>
              <h1 className="text-4xl font-black text-[#3B2211] tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>Kode Promo</h1>
           </div>
-          <p className="text-sm text-gray-400 font-medium max-w-md">Kelola kode referral, diskon musiman, dan kampanye promosi studio Sneapici.</p>
+          <p className="text-sm text-gray-400 font-medium max-w-md">Kelola kode referral, marketer, diskon, dan komisi.</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#3B2211] transition-colors" size={16} />
             <input 
               type="text" 
-              placeholder="Cari kode promo..."
+              placeholder="Cari kode atau marketer..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-11 pr-6 py-3.5 bg-white border border-[#3B2211]/5 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-[#3B2211]/2 w-full md:w-64 transition-all shadow-sm"
@@ -238,8 +245,8 @@ export default function ReferralManagement() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-[#F8F6F4]/50 text-[10px] text-gray-400 uppercase tracking-[0.2em]">
-                <th className="px-8 py-5 font-black">Identitas Kode</th>
-                <th className="px-8 py-5 font-black">Value Diskon</th>
+                <th className="px-8 py-5 font-black">Identitas / Marketer</th>
+                <th className="px-8 py-5 font-black">Detail Diskon & Komisi</th>
                 <th className="px-8 py-5 font-black">Masa Berlaku</th>
                 <th className="px-8 py-5 font-black text-center">Status</th>
                 <th className="px-8 py-5 font-black text-right">Aksi</th>
@@ -269,16 +276,25 @@ export default function ReferralManagement() {
                           </div>
                           <div>
                             <p className="font-black text-[#3B2211] tracking-widest">{r.code}</p>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{r.label}</p>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{r.marketerName}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <div className="flex items-center gap-3">
-                           <div className="px-3 py-1.5 rounded-lg bg-[#3B2211] text-white text-[10px] font-black">
-                             {r.type === "PERCENTAGE" ? `${r.value}%` : `Rp ${r.value.toLocaleString()}`}
-                           </div>
-                           <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Discount</span>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-3">
+                            <div className="px-2 py-1 rounded-md bg-[#3B2211] text-white text-[10px] font-black">
+                              Diskon {r.discountPct}%
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400">
+                              {r.maxDiscountAmount > 0 ? `(Maks Rp ${r.maxDiscountAmount.toLocaleString()})` : "(Tanpa Batas)"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[10px] text-[#C88A58] font-bold">
+                            <Banknote size={12} />
+                            Fee: {r.feePercentage}% 
+                            {r.bankName && r.bankAccount && ` | ${r.bankName} - ${r.bankAccount}`}
+                          </div>
                         </div>
                       </td>
                       <td className="px-8 py-6">
@@ -359,17 +375,17 @@ export default function ReferralManagement() {
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="w-full max-w-xl bg-white rounded-[48px] shadow-5xl relative z-10 overflow-hidden border border-white/20"
+              className="w-full max-w-2xl bg-white rounded-[48px] shadow-5xl relative z-10 overflow-y-auto max-h-[90vh] border border-white/20"
             >
-               <form onSubmit={handleCreate} className="p-12">
-                  <div className="flex items-center justify-between mb-12">
+               <form onSubmit={handleCreate} className="p-10">
+                  <div className="flex items-center justify-between mb-10">
                     <div className="flex items-center gap-5">
                        <div className="w-14 h-14 rounded-2xl bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211]">
                          <Sparkles size={28} />
                        </div>
                        <div>
                           <h2 className="text-2xl font-bold text-[#3B2211]" style={{ fontFamily: "var(--font-playfair)" }}>Buat Kode Baru</h2>
-                          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Konfigurasi Promo Sneapici</p>
+                          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#3B2211]/30">Konfigurasi Referral & Marketer</p>
                        </div>
                     </div>
                     <button 
@@ -381,61 +397,104 @@ export default function ReferralManagement() {
                     </button>
                   </div>
 
-                  <div className="space-y-8">
-                     <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Kode Akses</label>
-                        <div className="relative">
-                          <input 
-                            required
-                            type="text" 
-                            value={formData.code}
-                            onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                            className="w-full px-6 py-5 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 font-black tracking-widest text-[#3B2211]"
-                            placeholder="Contoh: MERDEKA20"
-                          />
-                          <button 
-                            type="button"
-                            onClick={generateCode}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white rounded-xl border border-[#3B2211]/5 text-[#3B2211]/40 hover:text-[#3B2211] transition-all shadow-lg"
-                          >
-                            <RefreshCw size={14} />
-                          </button>
+                  <div className="space-y-6">
+                     <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Kode Akses</label>
+                           <div className="relative">
+                             <input 
+                               required
+                               type="text" 
+                               maxLength={10}
+                               value={formData.code}
+                               onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
+                               className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 font-black tracking-widest text-[#3B2211] text-sm"
+                               placeholder="Contoh: PROMO10"
+                             />
+                             <button 
+                               type="button"
+                               onClick={generateCode}
+                               className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white rounded-lg border border-[#3B2211]/5 text-[#3B2211]/40 hover:text-[#3B2211] transition-all shadow-sm"
+                             >
+                               <RefreshCw size={14} />
+                             </button>
+                           </div>
                         </div>
-                     </div>
 
-                     <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Nama Promo / Label</label>
-                        <input 
-                          required
-                          type="text" 
-                          value={formData.label}
-                          onChange={(e) => setFormData({...formData, label: e.target.value})}
-                          className="w-full px-6 py-5 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 font-bold text-[#3B2211]" 
-                          placeholder="Contoh: Diskon Grand Opening" 
-                        />
+                        <div className="space-y-3">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Nama Marketer</label>
+                           <input 
+                             required
+                             type="text" 
+                             value={formData.marketerName}
+                             onChange={(e) => setFormData({...formData, marketerName: e.target.value})}
+                             className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 font-bold text-[#3B2211] text-sm" 
+                             placeholder="Nama Marketer" 
+                           />
+                        </div>
                      </div>
 
                      <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-3">
-                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Tipe Diskon</label>
-                           <select 
-                            value={formData.type}
-                            onChange={(e) => setFormData({...formData, type: e.target.value as ReferralType})}
-                            className="w-full px-6 py-5 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[24px] focus:outline-none font-bold text-[#3B2211] appearance-none"
-                           >
-                             <option value="PERCENTAGE">Persentase (%)</option>
-                             <option value="FIXED">Nominal (Rp)</option>
-                           </select>
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Diskon (%)</label>
+                           <div className="relative">
+                              <Percent className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                              <input 
+                               required
+                               type="number" 
+                               min={0} max={100}
+                               value={formData.discountPercentage}
+                               onChange={(e) => setFormData({...formData, discountPercentage: parseFloat(e.target.value) || 0})}
+                               className="w-full pl-11 pr-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
+                               placeholder="Contoh: 10" 
+                              />
+                           </div>
                         </div>
                         <div className="space-y-3">
-                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Nilai</label>
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Maks Diskon (Rp)</label>
                            <input 
                             required
                             type="number" 
-                            value={formData.value}
-                            onChange={(e) => setFormData({...formData, value: e.target.value === "" ? 0 : parseInt(e.target.value)})}
-                            className="w-full px-6 py-5 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[24px] focus:outline-none font-bold text-[#3B2211]" 
-                            placeholder="Contoh: 10 atau 5000" 
+                            min={0}
+                            value={formData.maxDiscountAmount}
+                            onChange={(e) => setFormData({...formData, maxDiscountAmount: parseInt(e.target.value) || 0})}
+                            className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
+                            placeholder="0 = Tanpa batas" 
+                           />
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-3">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Fee Marketer (%)</label>
+                           <input 
+                            required
+                            type="number" 
+                            min={0} max={100}
+                            value={formData.feePercentage}
+                            onChange={(e) => setFormData({...formData, feePercentage: parseFloat(e.target.value) || 0})}
+                            className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
+                            placeholder="Contoh: 5" 
+                           />
+                        </div>
+                        <div className="space-y-3">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">Nama Bank</label>
+                           <input 
+                            type="text" 
+                            value={formData.bankName}
+                            onChange={(e) => setFormData({...formData, bankName: e.target.value})}
+                            className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
+                            placeholder="Contoh: BCA" 
+                           />
+                        </div>
+                        <div className="space-y-3">
+                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3B2211]/40 ml-2">No. Rekening</label>
+                           <input 
+                            type="text" 
+                            value={formData.bankAccount}
+                            onChange={(e) => setFormData({...formData, bankAccount: e.target.value})}
+                            className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
+                            placeholder="Contoh: 1234567890" 
                            />
                         </div>
                      </div>
@@ -447,7 +506,7 @@ export default function ReferralManagement() {
                             type="number" 
                             value={formData.usageLimit}
                             onChange={(e) => setFormData({...formData, usageLimit: e.target.value})}
-                            className="w-full px-6 py-5 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[24px] focus:outline-none font-bold text-[#3B2211]" 
+                            className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
                             placeholder="Kosongkan jika tak terbatas" 
                            />
                         </div>
@@ -457,14 +516,14 @@ export default function ReferralManagement() {
                             type="date" 
                             value={formData.expiryDate}
                             onChange={(e) => setFormData({...formData, expiryDate: e.target.value})}
-                            className="w-full px-6 py-5 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[24px] focus:outline-none font-bold text-[#3B2211]" 
+                            className="w-full px-6 py-4 bg-[#FAFAF8] border border-[#3B2211]/5 rounded-[20px] focus:outline-none font-bold text-[#3B2211] text-sm" 
                            />
                         </div>
                      </div>
 
                      <button 
                       disabled={isSubmitting}
-                      className="w-full py-6 bg-[#3B2211] text-white rounded-[28px] text-[11px] font-black uppercase tracking-[0.5em] shadow-2xl shadow-[#3B2211]/40 hover:scale-[1.02] active:scale-[0.98] transition-all mt-6 disabled:opacity-50"
+                      className="w-full py-5 bg-[#3B2211] text-white rounded-[24px] text-[11px] font-black uppercase tracking-[0.5em] shadow-2xl shadow-[#3B2211]/40 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4 disabled:opacity-50"
                      >
                        {isSubmitting ? "Memproses..." : "Simpan & Aktifkan"}
                      </button>

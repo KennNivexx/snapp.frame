@@ -7,7 +7,11 @@ import {
   Plus,
   Minus,
   CreditCard,
+  User,
+  Phone,
   ShoppingCart,
+  Calendar,
+  Clock,
   ChevronRight
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
@@ -19,12 +23,17 @@ export default function Cart() {
     removeItem,
     updateQty,
     clearCart,
+    customerName,
+    customerPhone,
+    bookingDate,
+    bookingTime,
+    setCustomerInfo,
   } = useCartStore();
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const finalTotal = subtotal;
+  const finalTotal = subtotal; // Referral diurus di CheckoutModal
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -104,10 +113,65 @@ export default function Cart() {
         )}
       </div>
 
+      {/* ── Informasi Pelanggan ── */}
+      <div className="px-5 py-4 border-t border-[#3B2211]/5 bg-[#FAFAF8] space-y-3 shrink-0">
+        <p className="text-[9px] font-black text-[#3B2211]/40 uppercase tracking-[0.25em] ml-0.5">Informasi Sesi</p>
+
+        {/* Nama & Telepon */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
+            <input
+              type="text"
+              placeholder="Nama pelanggan"
+              value={customerName}
+              onChange={(e) => setCustomerInfo({ customerName: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-[#3B2211]/8 rounded-xl text-[11px] font-medium text-[#3B2211] placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 focus:border-[#C88A58]/30 transition-all"
+            />
+          </div>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
+            <input
+              type="text"
+              placeholder="No. HP"
+              value={customerPhone}
+              onChange={(e) => setCustomerInfo({ customerPhone: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-[#3B2211]/8 rounded-xl text-[11px] font-medium text-[#3B2211] placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 focus:border-[#C88A58]/30 transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Tanggal & Jam */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
+            <input
+              type="date"
+              value={bookingDate}
+              onChange={(e) => setCustomerInfo({ bookingDate: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-[#3B2211]/8 rounded-xl text-[11px] font-medium text-[#3B2211] focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 focus:border-[#C88A58]/30 transition-all"
+            />
+          </div>
+          <div className="relative">
+            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3B2211]/25" size={13} />
+            <input
+              type="time"
+              value={bookingTime}
+              onChange={(e) => setCustomerInfo({ bookingTime: e.target.value })}
+              className="w-full pl-9 pr-3 py-2.5 bg-white border border-[#3B2211]/8 rounded-xl text-[11px] font-medium text-[#3B2211] focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 focus:border-[#C88A58]/30 transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* ── Ringkasan & Bayar ── */}
       <div className="p-5 border-t border-[#3B2211]/5 bg-white shrink-0">
         <div className="space-y-2 mb-5">
-          <div className="flex justify-between items-center pt-3 mt-1">
+          <div className="flex justify-between text-[11px] text-gray-400">
+            <span className="font-medium">Subtotal</span>
+            <span className="font-bold text-[#3B2211]">Rp {subtotal.toLocaleString("id-ID")}</span>
+          </div>
+          <div className="flex justify-between items-center pt-3 border-t border-[#3B2211]/5 mt-1">
             <span className="text-[11px] font-black text-[#3B2211] uppercase tracking-widest">Total Akhir</span>
             <span className="text-xl font-black text-[#3B2211]">Rp {finalTotal.toLocaleString("id-ID")}</span>
           </div>

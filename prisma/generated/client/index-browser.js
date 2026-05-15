@@ -123,9 +123,12 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.ReferralCodeScalarFieldEnum = {
   id: 'id',
   code: 'code',
-  label: 'label',
-  type: 'type',
-  value: 'value',
+  marketerName: 'marketerName',
+  discountPct: 'discountPct',
+  maxDiscountAmount: 'maxDiscountAmount',
+  feePercentage: 'feePercentage',
+  bankName: 'bankName',
+  bankAccount: 'bankAccount',
   expiryDate: 'expiryDate',
   usageLimit: 'usageLimit',
   usageCount: 'usageCount',
@@ -233,6 +236,13 @@ exports.Prisma.GalleryPhotoScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SiteSettingScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -247,11 +257,6 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.ReferralType = exports.$Enums.ReferralType = {
-  PERCENTAGE: 'PERCENTAGE',
-  FIXED: 'FIXED'
-};
-
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   CASH: 'CASH',
   TRANSFER: 'TRANSFER',
@@ -278,7 +283,8 @@ exports.Prisma.ModelName = {
   TransactionItem: 'TransactionItem',
   Transaction: 'Transaction',
   User: 'User',
-  GalleryPhoto: 'GalleryPhoto'
+  GalleryPhoto: 'GalleryPhoto',
+  SiteSetting: 'SiteSetting'
 };
 
 /**

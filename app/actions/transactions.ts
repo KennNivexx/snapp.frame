@@ -9,7 +9,7 @@ export async function saveTransaction(data: {
   invoiceNumber: string;
   items: { id: string; qty: number; price: number; name: string }[];
   paymentMethod: "CASH" | "TRANSFER" | "QRIS";
-  referralCode?: string | null;
+  referralCodeId?: string | null;
   total: number;
   discount: number;
   tax: number;
@@ -83,21 +83,16 @@ export async function saveTransaction(data: {
       }
     }
 
-    // 2. Find referral code
-    let referralCodeId = null;
-    const normalizedReferralCode = data.referralCode?.trim().toUpperCase();
+    // 2. Process referral code
+    let referralCodeId = data.referralCodeId;
+    let normalizedReferralCode: string | null = null;
 
-    if (normalizedReferralCode) {
-      const ref = await prisma.referralCode.findUnique({
-        where: { code: normalizedReferralCode }
+    if (referralCodeId) {
+      const ref = await prisma.referralCode.update({
+        where: { id: referralCodeId },
+        data: { usageCount: { increment: 1 } }
       });
-      if (ref) {
-        referralCodeId = ref.id;
-        await prisma.referralCode.update({
-          where: { id: ref.id },
-          data: { usageCount: { increment: 1 } }
-        });
-      }
+      normalizedReferralCode = ref.code;
     }
 
     // 3. Pastikan invoiceNumber unik untuk menghindari error duplikasi
