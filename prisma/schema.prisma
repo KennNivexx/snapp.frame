@@ -158,6 +158,7 @@ enum PaymentMethod {
   CASH
   TRANSFER
   QRIS
+  EWALLET
 }
 
 model GalleryPhoto {

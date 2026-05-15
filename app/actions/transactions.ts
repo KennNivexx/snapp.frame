@@ -17,6 +17,7 @@ export async function saveTransaction(data: {
   customerPhone?: string;
   bookingDate?: string;
   bookingTime?: string;
+  paymentRef?: string;
 }) {
   console.log("Saving transaction data:", JSON.stringify(data, null, 2));
   try {
@@ -114,7 +115,7 @@ export async function saveTransaction(data: {
         total: data.total,
         tax: data.tax,
         discount: data.discount,
-        paymentMethod: data.paymentMethod,
+        paymentMethod: data.paymentMethod as any,
         referralCodeId: referralCodeId,
         status: "COMPLETED",
         updatedAt: new Date(),

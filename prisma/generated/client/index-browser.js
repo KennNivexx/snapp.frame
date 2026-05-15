@@ -260,7 +260,8 @@ exports.Prisma.NullsOrder = {
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   CASH: 'CASH',
   TRANSFER: 'TRANSFER',
-  QRIS: 'QRIS'
+  QRIS: 'QRIS',
+  EWALLET: 'EWALLET'
 };
 
 exports.TransactionStatus = exports.$Enums.TransactionStatus = {

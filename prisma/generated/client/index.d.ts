@@ -88,7 +88,8 @@ export type TransactionStatus = (typeof TransactionStatus)[keyof typeof Transact
 export const PaymentMethod: {
   CASH: 'CASH',
   TRANSFER: 'TRANSFER',
-  QRIS: 'QRIS'
+  QRIS: 'QRIS',
+  EWALLET: 'EWALLET'
 };
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
