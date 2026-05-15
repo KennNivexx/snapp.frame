@@ -1,7 +1,7 @@
 import { site } from "@/data/site";
 import { env } from "@/lib/env";
 
-export type WaContext = "general" | "package" | "gallery" | "checkout";
+export type WaContext = "general" | "package" | "gallery" | "checkout" | "affiliate";
 
 /**
  * Generate WhatsApp URL dengan pesan template sesuai konteks.
@@ -42,6 +42,9 @@ export function getWhatsAppUrl(
       break;
     case "package":
       message = `Halo Snapp.frame Studio! Saya tertarik dengan ${data ?? "paket foto"} yang ada di website. Bisa info lebih lanjut?`;
+      break;
+    case "affiliate":
+      message = `Halo Snapp.frame Studio! 👋\n\nSaya tertarik untuk mendaftar sebagai *Affiliate Partner* Snapp.frame.\n\nNama: ${data?.name ?? "-"}\nInstagram: ${data?.instagram ?? "-"}\nNo. HP: ${data?.phone ?? "-"}\n\nMohon info lebih lanjut mengenai program affiliate. Terima kasih! 🙏`;
       break;
     case "checkout":
       if (data) {

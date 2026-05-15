@@ -1,9 +1,10 @@
 constructor
-user
+referralCode
+booking
 category
 product
-transaction
-transactionItem
-referralCode
 referralUsage
-booking
+transactionItem
+transaction
+user
+galleryPhoto

@@ -56,9 +56,11 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
 
   const [formData, setFormData] = useState({
     name: "",
+    sku: "",
     price: "",
     category: "Layanan",
     isActive: true,
+    stock: "0",
     image: "",
     duration: "",
     photoCount: "",
@@ -143,9 +145,10 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
     e.preventDefault();
     const payload = {
       name: formData.name,
-      sku: `STUDIO-${Date.now()}`,
+      sku: formData.sku || (editingProduct ? editingProduct.sku : `STUDIO-${Date.now()}`),
       price: parseFloat(formData.price),
-      stock: 999, // Default stock for studio packages
+      stock: parseInt(formData.stock) || 999,
+
       image: formData.image || null,
       isActive: formData.isActive,
       duration: formData.duration || null,
@@ -166,7 +169,7 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
     setIsModalOpen(false);
     setEditingProduct(null);
     setFormData({ 
-      name: "", price: "", category: "Layanan", isActive: true, image: "",
+      name: "", sku: "", price: "", category: "Layanan", isActive: true, stock: "0", image: "",
       duration: "", photoCount: "", features: "", isPopular: false, sortOrder: "0"
     });
     fetchProducts();
