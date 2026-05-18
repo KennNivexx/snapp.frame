@@ -18,7 +18,6 @@ import {
   Package,
   History,
   Image as ImageIcon,
-  HeartHandshake,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -32,7 +31,7 @@ const navItems = [
   { label: "Kelola Galeri", icon: ImageIcon, href: "/admin/gallery" },
   { label: "Booking", icon: Calendar, href: "/admin/bookings" },
   { label: "Pelanggan", icon: Users, href: "/admin/customers" },
-  { label: "Affiliator", icon: HeartHandshake, href: "/admin/affiliators" },
+
   { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
   { label: "Laporan", icon: History, href: "/admin/reports" },
   { label: "Pengaturan Web", icon: Settings, href: "/admin/settings" },

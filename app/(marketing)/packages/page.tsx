@@ -1,6 +1,9 @@
 // app/packages/page.tsx — Server Component
-// Data packages dan FAQ di-fetch saat build time
-// Accordion FAQ ada di FaqAccordion (client component)
+// Data packages di-fetch fresh dari database setiap request
+
+// Force dynamic rendering — produk dari admin harus selalu tampil terbaru
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { MessageCircle, CalendarCheck } from "lucide-react";
 import { packages } from "@/data/packages";

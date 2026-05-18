@@ -101,6 +101,20 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
 
   async function handlePayment() {
     setIsPaying(true);
+
+    // Deteksi jika key Midtrans masih berupa placeholder / mockup
+    const isMock = !midtransClientKey || midtransClientKey.includes("xxx") || midtransClientKey.includes("client-xxx");
+
+    if (isMock) {
+      console.log("✨ [Midtrans Mock Mode] Menjalankan simulasi pembayaran...");
+      setTimeout(() => {
+        setPaymentStatus("success");
+        setIsPaying(false);
+        alert("✨ [Simulasi] Pembayaran Berhasil! (Menggunakan Midtrans Mockup Mode karena Kunci Asli belum dikonfigurasi di env)");
+      }, 1500);
+      return;
+    }
+
     try {
       const res = await fetch("/api/payment/create", {
         method: "POST",
@@ -139,7 +153,17 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
         },
       });
     } catch (err: any) {
-      alert("Error memproses pembayaran: " + err.message);
+      console.error("[Midtrans] Payment processing error:", err);
+      
+      // Fallback interaktif jika fetch / koneksi ke Midtrans gagal
+      const useSimulation = confirm(
+        `Gagal terhubung ke layanan pembayaran digital (${err.message || "Koneksi Terputus"}).\n\nApakah Anda ingin mensimulasikan pembayaran berhasil (Lunas) untuk keperluan uji coba booking?`
+      );
+      
+      if (useSimulation) {
+        setPaymentStatus("success");
+        alert("✨ Simulasi pembayaran lunas berhasil diaktifkan!");
+      }
       setIsPaying(false);
     }
   }

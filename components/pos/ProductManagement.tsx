@@ -27,7 +27,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { getProducts } from "@/app/actions/products";
+import { getProducts, createProduct, updateProduct, deleteProduct } from "@/app/actions/products";
 
 interface Product {
   id: string;
@@ -56,11 +56,9 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
 
   const [formData, setFormData] = useState({
     name: "",
-    sku: "",
     price: "",
     category: "Layanan",
     isActive: true,
-    stock: "0",
     image: "",
     duration: "",
     photoCount: "",
@@ -70,34 +68,53 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
   });
 
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validasi tipe file di client
+    if (!file.type.startsWith("image/")) {
+      alert("Hanya file gambar yang diperbolehkan (JPG, PNG, WEBP, dll)");
+      return;
+    }
+
+    // Validasi ukuran (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran file maksimal 5MB");
+      return;
+    }
+
     setUploading(true);
+    setUploadError(null);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `products/${fileName}`;
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("bucket", "products");
 
-      const { error: uploadError, data } = await supabase.storage
-        .from('products')
-        .upload(filePath, file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+      });
 
-      if (uploadError) throw uploadError;
+      const data = await res.json();
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('products')
-        .getPublicUrl(filePath);
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Gagal mengunggah gambar");
+      }
 
-      setFormData(prev => ({ ...prev, image: publicUrl }));
+      setFormData(prev => ({ ...prev, image: data.url }));
+      setUploadError(null);
     } catch (error: any) {
-      alert(error.message || "Gagal mengunggah gambar");
+      const msg = error.message || "Gagal mengunggah gambar";
+      setUploadError(msg);
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
+
 
   useEffect(() => {
     if (isModalOpen) {
@@ -143,33 +160,50 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const payload = {
-      name: formData.name,
-      sku: formData.sku || (editingProduct ? editingProduct.sku : `STUDIO-${Date.now()}`),
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock) || 999,
-
-      image: formData.image || null,
-      isActive: formData.isActive,
-      duration: formData.duration || null,
-      photoCount: formData.photoCount || null,
-      features: formData.features.split(",").map(f => f.trim()).filter(Boolean),
-      isPopular: formData.isPopular,
-      sortOrder: parseInt(formData.sortOrder) || 0
-    };
+    const featuresList = formData.features.split(",").map(f => f.trim()).filter(Boolean);
 
     if (editingProduct) {
-      await supabase.from("products").update(payload).eq("id", editingProduct.id);
+      const res = await updateProduct(editingProduct.id, {
+        name: formData.name,
+        price: parseFloat(formData.price),
+        categoryName: formData.category,
+        image: formData.image || undefined,
+        isActive: formData.isActive,
+        duration: formData.duration || undefined,
+        photoCount: formData.photoCount || undefined,
+        features: featuresList,
+        isPopular: formData.isPopular,
+        sortOrder: parseInt(formData.sortOrder) || 0
+      });
+
+      if (!res.success) {
+        alert("Gagal memperbarui produk: " + (res.error || "Error tidak diketahui"));
+        return;
+      }
     } else {
-      // For insert, we also need to handle category association usually,
-      // but for fallback we assume simple mapping or existing categoryId
-      await supabase.from("products").insert([payload]);
+      const res = await createProduct({
+        name: formData.name,
+        sku: `STUDIO-${Date.now()}`,
+        price: parseFloat(formData.price),
+        categoryName: formData.category,
+        image: formData.image || undefined,
+        duration: formData.duration || undefined,
+        photoCount: formData.photoCount || undefined,
+        features: featuresList,
+        isPopular: formData.isPopular,
+        sortOrder: parseInt(formData.sortOrder) || 0
+      });
+
+      if (!res.success) {
+        alert("Gagal menambahkan produk: " + (res.error || "Error tidak diketahui"));
+        return;
+      }
     }
 
     setIsModalOpen(false);
     setEditingProduct(null);
     setFormData({ 
-      name: "", sku: "", price: "", category: "Layanan", isActive: true, stock: "0", image: "",
+      name: "", price: "", category: "Layanan", isActive: true, image: "",
       duration: "", photoCount: "", features: "", isPopular: false, sortOrder: "0"
     });
     fetchProducts();
@@ -177,8 +211,15 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
 
   const handleDelete = async (id: string) => {
     if (confirm("Hapus produk ini?")) {
-      await supabase.from("products").delete().eq("id", id);
-      fetchProducts();
+      const res = await deleteProduct(id);
+      if (res.success) {
+        fetchProducts();
+      } else {
+        alert(
+          "Gagal menghapus produk.\n\n" +
+          "Catatan: Produk yang sudah memiliki riwayat transaksi atau booking tidak bisa dihapus demi menjaga integritas data. Silakan ubah status ketersediaan produk menjadi 'Nonaktif' saja."
+        );
+      }
     }
   };
 
@@ -509,12 +550,30 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
                                   <Plus size={20} />
                                 </div>
                                 <div className="text-center">
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-[#3B2211]">Klik untuk Upload</span>
-                                  <p className="text-[9px] text-[#3B2211]/30 mt-1 uppercase tracking-wider">Format: JPG, PNG (Max 5MB)</p>
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-[#3B2211]">Klik untuk Upload Foto</span>
+                                  <p className="text-[9px] text-[#3B2211]/30 mt-1 uppercase tracking-wider">Format: JPG, PNG, WEBP (Max 5MB)</p>
                                 </div>
                               </div>
                             )}
                           </label>
+                          {uploadError && (
+                            <div className="mt-3 p-4 bg-red-50 border border-red-100 rounded-2xl">
+                              <p className="text-[10px] font-bold text-red-600 mb-2">⚠️ Upload Gagal</p>
+                              <p className="text-[9px] text-red-500 leading-relaxed">{uploadError}</p>
+                              {uploadError.includes("Bucket not found") || uploadError.includes("bucket") ? (
+                                <div className="mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                                  <p className="text-[9px] font-black text-amber-700 uppercase tracking-wider mb-1">📋 Langkah Setup Supabase Storage:</p>
+                                  <ol className="text-[9px] text-amber-600 space-y-1 list-decimal list-inside">
+                                    <li>Buka <strong>app.supabase.com</strong> → project Anda</li>
+                                    <li>Klik menu <strong>Storage</strong> di sidebar kiri</li>
+                                    <li>Klik <strong>New Bucket</strong></li>
+                                    <li>Name: <code className="bg-amber-100 px-1 rounded">products</code>, centang <strong>Public bucket</strong></li>
+                                    <li>Klik <strong>Create bucket</strong> → selesai!</li>
+                                  </ol>
+                                </div>
+                              ) : null}
+                            </div>
+                          )}
                         </div>
                      </div>
 

@@ -79,6 +79,9 @@ export async function createProduct(data: {
 
     revalidatePath("/admin/products");
     revalidatePath("/kasir");
+    revalidatePath("/packages");
+    revalidatePath("/booking");
+    revalidatePath("/");
     return { success: true, data: product };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -93,6 +96,9 @@ export async function toggleProductStatus(id: string, isActive: boolean) {
     });
     revalidatePath("/admin/products");
     revalidatePath("/kasir");
+    revalidatePath("/packages");
+    revalidatePath("/booking");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -106,6 +112,9 @@ export async function deleteProduct(id: string) {
     });
     revalidatePath("/admin/products");
     revalidatePath("/kasir");
+    revalidatePath("/packages");
+    revalidatePath("/booking");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -162,6 +171,9 @@ export async function updateProduct(id: string, data: {
 
     revalidatePath("/admin/products");
     revalidatePath("/kasir");
+    revalidatePath("/packages");
+    revalidatePath("/booking");
+    revalidatePath("/");
     return { success: true, data: product };
   } catch (error: any) {
     return { success: false, error: error.message };

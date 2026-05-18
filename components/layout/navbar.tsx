@@ -15,9 +15,6 @@ import {
   Package,
   MessageCircle,
   User,
-  Menu,
-  X,
-  HeartHandshake,
 } from "lucide-react";
 
 /* ─── Nav Links ────────────────────────────────────────────── */
@@ -26,7 +23,6 @@ const NAV_LINKS = [
   { label: "Tentang", href: "/#about", icon: User, isHidden: false },
   { label: "Galeri", href: "/gallery", icon: ImageIcon, isHidden: false },
   { label: "Paket", href: "/packages", icon: Package, isHidden: false },
-  { label: "Affiliate", href: "/affiliate", icon: HeartHandshake, isHidden: false },
   { label: "Kontak", href: "/#contact", icon: MessageCircle, isHidden: false },
   { label: "Kasir", href: "/kasir", icon: Home, isHidden: true },
 ] as const;
