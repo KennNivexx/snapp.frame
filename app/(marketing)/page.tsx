@@ -13,6 +13,10 @@ import { ContactSection } from "@/components/home/contact-section";
 import { FaqSection } from "@/components/home/faq-section";
 import { getFeaturedPhotos, getGalleryPhotos } from "@/app/actions/gallery";
 import { getProducts } from "@/app/actions/products";
+import { packages } from "@/data/packages";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: `${site.name} — Studio Foto Minimalis Modern`,
@@ -63,7 +67,7 @@ export default async function HomePage() {
 
   const featuredPhotos = (featuredRes.success && Array.isArray(featuredRes.data)) ? featuredRes.data : [];
   const heroPhoto = (allRes.success && Array.isArray(allRes.data)) ? allRes.data.find((p: any) => p.isHero) : null;
-  const packagesData = (productsRes.success && Array.isArray(productsRes.data)) ? (productsRes.data as any) : [];
+  const packagesData = (productsRes.success && Array.isArray(productsRes.data) && productsRes.data.length > 0) ? (productsRes.data as any) : packages;
   return (
     <>
       {/* JSON-LD Schema untuk SEO lokal */}

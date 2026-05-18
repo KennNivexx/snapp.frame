@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check } from "lucide-react";
-import { Package } from "@/data/packages";
+import { Package, packages } from "@/data/packages";
+import { getProducts } from "@/app/actions/products";
 import { ReferralCode } from "@/lib/referral";
 import { BookingFormData } from "./step2-personal";
 import { PaymentMethod } from "./step4-payment";
@@ -70,6 +71,28 @@ export default function BookingFlow() {
   const [referral, setReferral] = useState<ReferralCode | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
 
+  const [packagesList, setPackagesList] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDbPackages() {
+      try {
+        const res = await getProducts();
+        if (res.success && res.data && res.data.length > 0) {
+          setPackagesList(res.data as any[]);
+        } else {
+          setPackagesList(packages);
+        }
+      } catch (err) {
+        console.error("Gagal memuat paket dari database, fallback ke statis:", err);
+        setPackagesList(packages);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDbPackages();
+  }, []);
+
   function reset() {
     setStep(0);
     setSelectedPkg(null);
@@ -100,6 +123,8 @@ export default function BookingFlow() {
         {/* Step panels */}
         {step === 0 && (
           <Step1Package
+            packagesList={packagesList}
+            loading={loading}
             selected={selectedPkg}
             onSelect={setSelectedPkg}
             onNext={() => setStep(1)}
