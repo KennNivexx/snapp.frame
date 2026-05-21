@@ -15,6 +15,7 @@ import {
   Package,
   MessageCircle,
   User,
+  HeartHandshake,
 } from "lucide-react";
 
 /* ─── Nav Links ────────────────────────────────────────────── */
@@ -23,8 +24,9 @@ const NAV_LINKS = [
   { label: "Tentang", href: "/#about", icon: User, isHidden: false },
   { label: "Galeri", href: "/gallery", icon: ImageIcon, isHidden: false },
   { label: "Paket", href: "/packages", icon: Package, isHidden: false },
+  { label: "Affiliate", href: "/affiliate", icon: HeartHandshake, isHidden: false },
   { label: "Kontak", href: "/#contact", icon: MessageCircle, isHidden: false },
-  { label: "Kasir", href: "/kasir", icon: Home, isHidden: true },
+  { label: "Kasir", href: "/kasir", icon: Home, isHidden: false },
 ] as const;
 
 /* ─── Component ────────────────────────────────────────────── */
@@ -92,10 +94,10 @@ export function Navbar() {
             backdropFilter: scrolled ? "blur(16px)" : "blur(0px)",
             boxShadow: scrolled
               ? "0 20px 40px -15px rgba(59, 34, 17, 0.12)"
-              : "0 0 0 0 transparent",
+              : "0 0 0 0 rgba(59, 34, 17, 0)",
             border: scrolled
               ? "1px solid rgba(59, 34, 17, 0.06)"
-              : "1px solid transparent",
+              : "1px solid rgba(59, 34, 17, 0)",
           }}
           transition={{
             type: "spring",
@@ -123,7 +125,7 @@ export function Navbar() {
                     role="menuitem"
                     onClick={(e) => handleNavClick(e, link.href)}
                     className={[
-                      "relative text-base md:text-lg font-bold tracking-[0.18em] uppercase transition-all duration-300",
+                      "relative text-xs md:text-sm font-bold tracking-[0.18em] uppercase transition-all duration-300",
                       "font-[family-name:var(--font-heading)]",
                       link.isHidden
                         ? "opacity-0 hover:opacity-100 !text-near-black"

@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LogIn, Mail, Lock, Loader2, Zap, Eye, EyeOff } from "lucide-react";
+import { LogIn, Mail, Lock, Loader2, Zap, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -40,90 +41,177 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0905] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#090503] flex items-center justify-center p-6 relative overflow-hidden font-[family-name:var(--font-lato)]">
+      
+      {/* ── Background Mesh & Ambient Glow Orbs ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Deep background gradient */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1F120A] via-[#090503] to-[#050302]" />
+        
+        {/* Elegant floating abstract ambient lights */}
+        <motion.div
+          animate={{
+            x: [0, 40, -20, 0],
+            y: [0, -60, 30, 0],
+            scale: [1, 1.15, 0.9, 1],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-[-10%] left-[10%] w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#C88A58]/12 to-transparent blur-[130px]"
+        />
+        
+        <motion.div
+          animate={{
+            x: [0, -30, 40, 0],
+            y: [0, 50, -40, 0],
+            scale: [1, 0.9, 1.1, 1],
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute bottom-[-20%] right-[5%] w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-[#9B5F34]/8 to-transparent blur-[140px]"
+        />
 
-      {/* ── Ambient Background ── */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#C88A58]/6 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#3B2211]/40 rounded-full blur-[100px]" />
-        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#C88A58]/4 rounded-full blur-[80px]" />
-        {/* Subtle grid */}
+        <motion.div
+          animate={{
+            y: [0, -30, 20, 0],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[350px] h-[350px] rounded-full bg-[#C88A58]/5 blur-[90px]"
+        />
+
+        {/* Premium Grid overlay */}
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(200,138,88,1) 1px, transparent 1px), linear-gradient(90deg, rgba(200,138,88,1) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
+              "linear-gradient(rgba(200, 138, 88, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(200, 138, 88, 0.15) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
           }}
         />
       </div>
 
-      {/* ── Card ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md relative z-10"
-      >
-        {/* Logo & Title */}
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="w-28 h-28 rounded-[36px] bg-[#1A110B] border border-[#C88A58]/20 flex items-center justify-center shadow-2xl shadow-black/40">
-                <Logo height={72} className="brightness-0 invert opacity-90" />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#C88A58] rounded-full flex items-center justify-center shadow-lg">
-                <Zap size={14} className="text-white fill-white" />
+      {/* ── Main Container ── */}
+      <div className="w-full max-w-[450px] relative z-10">
+        
+        {/* ── Top Back Button ── */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="mb-8 flex justify-start"
+        >
+          <Link
+            href="/"
+            className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.05] text-white/50 hover:text-white transition-all duration-300 text-xs font-bold tracking-wider uppercase"
+          >
+            <ArrowLeft size={13} className="group-hover:-translate-x-1 transition-transform" />
+            Kembali ke Beranda
+          </Link>
+        </motion.div>
+
+        {/* ── Branding Header ── */}
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="inline-block relative mb-5"
+          >
+            <div className="relative group">
+              <div className="absolute inset-0 bg-[#C88A58]/20 rounded-[30px] blur-md opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="w-24 h-24 rounded-[30px] bg-[#120B07] border border-white/[0.08] flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-10 transition-transform duration-500 group-hover:scale-[1.03]">
+                <Logo height={56} className="brightness-0 invert opacity-95" />
               </div>
             </div>
-          </div>
-          <h1 className="text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-playfair)" }}>
-            Sneapici Studio
-          </h1>
-          <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.35em] mt-2">
-            Admin System — Secure Access
-          </p>
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 15 }}
+              className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-gradient-to-br from-[#D49A6E] to-[#B07043] rounded-full flex items-center justify-center shadow-lg border border-black/30 z-20"
+            >
+              <Zap size={12} className="text-white fill-white" />
+            </motion.div>
+          </motion.div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-3xl font-extrabold text-white tracking-tight leading-none" 
+            style={{ fontFamily: "var(--font-playfair)" }}
+          >
+            Snapp.frame Studio
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.4 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="text-[10px] font-black text-white uppercase tracking-[0.4em] mt-3"
+          >
+            Admin & Kasir Gatekeeper
+          </motion.p>
         </div>
 
-        {/* Form Card */}
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/8 rounded-[32px] p-8 shadow-2xl shadow-black/40">
+        {/* ── Glassmorphic Login Form Card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="relative bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[32px] p-8 md:p-10 shadow-[0_30px_70px_-10px_rgba(0,0,0,0.6)] overflow-hidden"
+        >
+          {/* Card subtle lighting border reflex */}
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#C88A58]/20 to-transparent" />
           
-          {/* Card Header */}
-          <div className="mb-8">
-            <p className="text-[10px] font-black text-[#C88A58] uppercase tracking-[0.35em] mb-1">Selamat Datang</p>
-            <h2 className="text-xl font-black text-white">Masuk ke Dashboard</h2>
+          <div className="mb-7">
+            <span className="text-[9px] font-black text-[#C88A58] uppercase tracking-[0.3em] block mb-1">
+              Secure Auth
+            </span>
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              Masuk ke Portal
+            </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
+            {/* Email Field */}
             <div className="space-y-2">
-              <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.25em] ml-1">
+              <label className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1 block">
                 Alamat Email
               </label>
               <div className="relative group">
                 <Mail
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#C88A58] transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#C88A58] transition-colors duration-300"
                   size={16}
                 />
                 <input
                   type="email"
                   required
-                  placeholder="admin@sneapici.studio"
+                  placeholder="admin@snappframe.id"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/8 rounded-2xl py-4 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#C88A58]/30 focus:border-[#C88A58]/40 transition-all"
+                  className="w-full bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] focus:border-[#C88A58] rounded-2xl py-4 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-4 focus:ring-[#C88A58]/10 transition-all duration-300"
                 />
               </div>
             </div>
 
-            {/* Password */}
+            {/* Password Field */}
             <div className="space-y-2">
-              <label className="text-[9px] font-black text-white/30 uppercase tracking-[0.25em] ml-1">
+              <label className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1 block">
                 Kata Sandi
               </label>
               <div className="relative group">
                 <Lock
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#C88A58] transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#C88A58] transition-colors duration-300"
                   size={16}
                 />
                 <input
@@ -132,52 +220,62 @@ export default function LoginPage() {
                   placeholder="••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/8 rounded-2xl py-4 pl-12 pr-12 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#C88A58]/30 focus:border-[#C88A58]/40 transition-all"
+                  className="w-full bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] focus:border-[#C88A58] rounded-2xl py-4 pl-12 pr-12 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-4 focus:ring-[#C88A58]/10 transition-all duration-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/60 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/60 transition-colors duration-300 focus:outline-none"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
-            {/* Error */}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-red-400 text-[11px] font-bold text-center"
-              >
-                {error}
-              </motion.div>
-            )}
+            {/* Error Notification */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, y: -10 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -10 }}
+                  className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3.5 text-rose-400 text-xs font-semibold text-center leading-normal"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* Submit */}
-            <button
+            {/* Submit Button */}
+            <motion.button
+              whileHover={{ scale: 1.01, translateY: -1 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-4 bg-[#C88A58] hover:bg-[#D99A68] text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-[#C88A58]/20 flex items-center justify-center gap-3 disabled:opacity-60 active:scale-[0.98] transition-all"
+              className="w-full mt-4 py-4 bg-gradient-to-r from-[#B57545] via-[#C88A58] to-[#D99A68] hover:from-[#C88A58] hover:to-[#E5AB7A] text-white rounded-2xl font-black text-xs uppercase tracking-[0.25em] shadow-[0_12px_24px_-8px_rgba(200,138,88,0.4)] hover:shadow-[0_15px_30px_-5px_rgba(200,138,88,0.5)] flex items-center justify-center gap-3 disabled:opacity-60 transition-all duration-300 relative overflow-hidden"
             >
               {loading ? (
-                <Loader2 size={18} className="animate-spin" />
+                <Loader2 size={16} className="animate-spin" />
               ) : (
                 <>
-                  <LogIn size={16} />
-                  Masuk Sekarang
+                  <LogIn size={15} />
+                  Akses Dashboard
                 </>
               )}
-            </button>
+            </motion.button>
           </form>
-        </div>
+        </motion.div>
 
-        {/* Footer */}
-        <p className="text-center mt-8 text-white/20 text-[10px] font-bold uppercase tracking-[0.25em]">
-          Snapp.Frame Studio — Secured Access Only
-        </p>
-      </motion.div>
+        {/* Footer Credits */}
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.2 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="text-center mt-8 text-white text-[9px] font-bold uppercase tracking-[0.3em]"
+        >
+          © {new Date().getFullYear()} Snapp.Frame Studio · All Rights Reserved
+        </motion.p>
+      </div>
     </div>
   );
 }

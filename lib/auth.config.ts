@@ -19,6 +19,15 @@ export const authConfig = {
       }
       return session;
     },
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnProtected = nextUrl.pathname.startsWith("/admin") || nextUrl.pathname.startsWith("/kasir");
+      if (isOnProtected) {
+        if (isLoggedIn) return true;
+        return false; // Redirects to /login
+      }
+      return true;
+    },
   },
   pages: {
     signIn: "/login",

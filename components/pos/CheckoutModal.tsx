@@ -18,6 +18,7 @@ import {
   Calendar,
   Clock,
   AlertCircle,
+  XCircle,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { saveTransaction } from "@/app/actions/transactions";
@@ -100,6 +101,23 @@ export default function CheckoutModal({
   const [isSuccess, setIsSuccess] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState("");
 
+  // Custom Toast State
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   // Referral State
   const [referralInput, setReferralInput] = useState("");
   const [referralData, setReferralData] = useState<{
@@ -180,11 +198,11 @@ export default function CheckoutModal({
         setInvoiceNumber(inv);
         setIsSuccess(true);
       } else {
-        alert("Gagal menyimpan transaksi: " + res.error);
+        showToast("Gagal menyimpan transaksi: " + res.error, "error");
       }
     } catch (error) {
       console.error(error);
-      alert("Terjadi kesalahan sistem saat memproses pembayaran.");
+      showToast("Terjadi kesalahan sistem saat memproses pembayaran.", "error");
     } finally {
       setIsProcessing(false);
     }
@@ -524,15 +542,41 @@ export default function CheckoutModal({
                           className="pt-2 overflow-hidden"
                         >
                           <p className="text-[9px] font-black text-[#3B2211]/40 uppercase tracking-[0.25em] ml-1 mb-2">
-                            {method === "E-Wallet" ? "Nomor Pembayaran" : "Nomor Rekening"}
+                            {method === "E-Wallet" ? "Informasi E-Wallet" : "Informasi Rekening"}
                           </p>
-                          <input
-                            type="text"
-                            placeholder={method === "E-Wallet" ? "Contoh: 081234567890" : "Contoh: 1234567890 (BCA)"}
-                            value={paymentRef}
-                            onChange={(e) => setPaymentRef(e.target.value)}
-                            className="w-full px-3 py-2 bg-[#FAFAF8] border border-[#3B2211]/8 rounded-xl text-[11px] font-bold text-[#3B2211] placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C88A58]/20 transition-all"
-                          />
+                          <div className="w-full px-4 py-3 bg-[#FAFAF8] border border-[#3B2211]/8 rounded-xl flex flex-col gap-2">
+                            {method === "E-Wallet" ? (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[11px] font-bold text-[#3B2211]">GoPay / OVO / Dana</span>
+                                  <span className="text-[11px] font-black text-[#3B2211] font-mono tracking-wide">0812-3456-7890</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[11px] font-bold text-[#3B2211]">ShopeePay</span>
+                                  <span className="text-[11px] font-black text-[#3B2211] font-mono tracking-wide">0812-3456-7890</span>
+                                </div>
+                                <div className="pt-2 mt-1 border-t border-[#3B2211]/5 flex justify-between items-center">
+                                  <span className="text-[9px] font-bold text-gray-400">Atas Nama</span>
+                                  <span className="text-[9px] font-black text-[#3B2211]">SNEAPICI STUDIO</span>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[11px] font-bold text-[#3B2211]">BCA</span>
+                                  <span className="text-[11px] font-black text-[#3B2211] font-mono tracking-wide">1234-5678-90</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[11px] font-bold text-[#3B2211]">Mandiri</span>
+                                  <span className="text-[11px] font-black text-[#3B2211] font-mono tracking-wide">0987-6543-21</span>
+                                </div>
+                                <div className="pt-2 mt-1 border-t border-[#3B2211]/5 flex justify-between items-center">
+                                  <span className="text-[9px] font-bold text-gray-400">Atas Nama</span>
+                                  <span className="text-[9px] font-black text-[#3B2211]">SNEAPICI STUDIO</span>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -561,6 +605,24 @@ export default function CheckoutModal({
           </AnimatePresence>
         </motion.div>
       </div>
+      {/* ── CUSTOM TOAST ── */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[150] pointer-events-none flex items-center justify-center"
+          >
+            <div className="bg-[#1A110B] text-white px-6 py-3.5 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md">
+              {toast.type === "success" && <CheckCircle2 className="text-emerald-400 shrink-0" size={18} />}
+              {toast.type === "error" && <XCircle className="text-red-400 shrink-0" size={18} />}
+              {toast.type === "info" && <AlertCircle className="text-amber-400 shrink-0" size={18} />}
+              <span className="text-xs font-bold tracking-wide">{toast.message}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 }

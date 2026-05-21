@@ -5,8 +5,17 @@ import { NextResponse } from "next/server";
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  // Login dimatikan sementara sesuai permintaan
-  return null;
+  const isLoggedIn = !!req.auth;
+  const isProtected = req.nextUrl.pathname.startsWith("/admin") || req.nextUrl.pathname.startsWith("/kasir");
+  const isLoginPage = req.nextUrl.pathname.startsWith("/login");
+
+  if (isProtected && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  }
+
+  if (isLoginPage && isLoggedIn) {
+    return NextResponse.redirect(new URL("/kasir", req.nextUrl));
+  }
 });
 
 export const config = {

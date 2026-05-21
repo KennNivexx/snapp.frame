@@ -54,6 +54,34 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
   
   const supabase = createClient();
 
+  // Custom Toast State
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+
+  // Custom Confirmation Dialog State
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    type: "danger" | "warning" | "info" | "success";
+    onConfirm: () => void;
+  } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" | "info" = "success") => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -76,13 +104,13 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
 
     // Validasi tipe file di client
     if (!file.type.startsWith("image/")) {
-      alert("Hanya file gambar yang diperbolehkan (JPG, PNG, WEBP, dll)");
+      showToast("Hanya file gambar yang diperbolehkan (JPG, PNG, WEBP, dll)", "error");
       return;
     }
 
     // Validasi ukuran (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran file maksimal 5MB");
+      showToast("Ukuran file maksimal 5MB", "error");
       return;
     }
 
@@ -177,7 +205,7 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
       });
 
       if (!res.success) {
-        alert("Gagal memperbarui produk: " + (res.error || "Error tidak diketahui"));
+        showToast("Gagal memperbarui produk: " + (res.error || "Error tidak diketahui"), "error");
         return;
       }
     } else {
@@ -195,7 +223,7 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
       });
 
       if (!res.success) {
-        alert("Gagal menambahkan produk: " + (res.error || "Error tidak diketahui"));
+        showToast("Gagal menambahkan produk: " + (res.error || "Error tidak diketahui"), "error");
         return;
       }
     }
@@ -206,21 +234,36 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
       name: "", price: "", category: "Layanan", isActive: true, image: "",
       duration: "", photoCount: "", features: "", isPopular: false, sortOrder: "0"
     });
+    showToast(editingProduct ? "Produk berhasil diperbarui!" : "Produk baru berhasil ditambahkan!", "success");
     fetchProducts();
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Hapus produk ini?")) {
-      const res = await deleteProduct(id);
-      if (res.success) {
-        fetchProducts();
-      } else {
-        alert(
-          "Gagal menghapus produk.\n\n" +
-          "Catatan: Produk yang sudah memiliki riwayat transaksi atau booking tidak bisa dihapus demi menjaga integritas data. Silakan ubah status ketersediaan produk menjadi 'Nonaktif' saja."
-        );
+  const handleDelete = (p: Product) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: "Hapus Produk?",
+      message: `Apakah Anda yakin ingin menghapus "${p.name}" dari katalog? Tindakan ini tidak dapat dibatalkan.`,
+      confirmText: "Hapus",
+      cancelText: "Batal",
+      type: "danger",
+      onConfirm: async () => {
+        setConfirmDialog(null);
+        const res = await deleteProduct(p.id);
+        if (res.success) {
+          showToast("Produk berhasil dihapus!", "success");
+          fetchProducts();
+        } else {
+          setConfirmDialog({
+            isOpen: true,
+            title: "Gagal Menghapus",
+            message: "Produk yang sudah memiliki riwayat transaksi atau booking tidak bisa dihapus demi menjaga integritas data. Silakan ubah status ketersediaan produk menjadi 'Nonaktif' saja.",
+            confirmText: "Mengerti",
+            type: "warning",
+            onConfirm: () => setConfirmDialog(null)
+          });
+        }
       }
-    }
+    });
   };
 
   const filteredProducts = products.filter(p => {
@@ -286,14 +329,25 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
 
               <button 
                 onClick={async () => {
-                  if(confirm("Impor data dari file statis?")) {
-                    const { seedProductsFromStatic } = await import("@/app/actions/products");
-                    const res = await seedProductsFromStatic();
-                    if(res.success) {
-                      alert(res.message);
-                      fetchProducts();
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: "Impor Data?",
+                    message: "Apakah Anda yakin ingin mengimpor data produk dari file statis?",
+                    confirmText: "Impor",
+                    cancelText: "Batal",
+                    type: "info",
+                    onConfirm: async () => {
+                      setConfirmDialog(null);
+                      const { seedProductsFromStatic } = await import("@/app/actions/products");
+                      const res = await seedProductsFromStatic();
+                      if(res.success) {
+                        showToast(res.message ?? "Berhasil mengimpor data", "success");
+                        fetchProducts();
+                      } else {
+                        showToast("Gagal mengimpor data", "error");
+                      }
                     }
-                  }
+                  });
                 }}
                 className="flex items-center gap-4 px-6 py-5 bg-amber-500 !text-white rounded-[24px] text-[11px] font-black uppercase tracking-[0.3em] shadow-xl hover:scale-105 active:scale-95 transition-all select-none"
               >
@@ -422,7 +476,7 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
                         <Edit size={16} />
                       </button>
                       <button 
-                        onClick={() => handleDelete(p.id)}
+                        onClick={() => handleDelete(p)}
                         className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm"
                       >
                         <Trash2 size={16} />
@@ -644,6 +698,94 @@ export default function ProductManagement({ hideHeader = false }: { hideHeader?:
                     </button>
                   </div>
                </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── CUSTOM TOAST ── */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[150] pointer-events-none flex items-center justify-center"
+          >
+            <div className="bg-[#1A110B] text-white px-6 py-3.5 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md">
+              {toast.type === "success" && <CheckCircle2 className="text-emerald-400 shrink-0" size={18} />}
+              {toast.type === "error" && <XCircle className="text-red-400 shrink-0" size={18} />}
+              {toast.type === "info" && <AlertCircle className="text-amber-400 shrink-0" size={18} />}
+              <span className="text-xs font-bold tracking-wide">{toast.message}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── CUSTOM CONFIRMATION DIALOG ── */}
+      <AnimatePresence>
+        {confirmDialog && confirmDialog.isOpen && (
+          <div className="fixed inset-0 z-[140] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                if (confirmDialog.cancelText) setConfirmDialog(null);
+              }}
+              className="absolute inset-0 bg-[#1A110B]/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-md bg-white rounded-[32px] p-6 shadow-2xl relative z-10 border border-[#3B2211]/5 flex flex-col items-center text-center space-y-5"
+            >
+              {/* Icon */}
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-md ${
+                confirmDialog.type === "danger" ? "bg-red-50 text-red-500" :
+                confirmDialog.type === "warning" ? "bg-amber-50 text-amber-500" :
+                confirmDialog.type === "success" ? "bg-emerald-50 text-emerald-500" :
+                "bg-blue-50 text-blue-500"
+              }`}>
+                {confirmDialog.type === "danger" && <Trash2 size={28} />}
+                {confirmDialog.type === "warning" && <AlertCircle size={28} />}
+                {confirmDialog.type === "success" && <CheckCircle2 size={28} />}
+                {confirmDialog.type === "info" && <AlertCircle size={28} />}
+              </div>
+
+              {/* Title & Description */}
+              <div className="space-y-2">
+                <h3 className="text-xl font-black text-[#3B2211]" style={{ fontFamily: "var(--font-playfair)" }}>
+                  {confirmDialog.title}
+                </h3>
+                <p className="text-[11px] font-medium text-gray-400 leading-relaxed px-2">
+                  {confirmDialog.message}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex w-full gap-3 pt-2">
+                {confirmDialog.cancelText && (
+                  <button
+                    onClick={() => setConfirmDialog(null)}
+                    className="flex-1 py-3.5 bg-[#FAFAF8] text-[#3B2211]/60 border border-[#3B2211]/5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-[#F0EDE9] hover:text-[#3B2211] transition-all"
+                  >
+                    {confirmDialog.cancelText}
+                  </button>
+                )}
+                <button
+                  onClick={confirmDialog.onConfirm}
+                  className={`flex-1 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] text-white shadow-lg transition-all ${
+                    confirmDialog.type === "danger" ? "bg-red-500 hover:bg-red-600 shadow-red-500/10" :
+                    confirmDialog.type === "warning" ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/10" :
+                    confirmDialog.type === "success" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/10" :
+                    "bg-[#3B2211] hover:bg-[#C88A58] shadow-[#3B2211]/10"
+                  }`}
+                >
+                  {confirmDialog.confirmText || "OK"}
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
