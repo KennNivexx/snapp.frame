@@ -154,11 +154,11 @@ export function Navbar() {
       </header>
 
       {/* ── Mobile Android-style Bottom Navbar ──────────────── */}
-      <div className="lg:hidden fixed bottom-6 left-0 right-0 z-50 px-6 flex justify-center pointer-events-none">
+      <div className="lg:hidden fixed bottom-6 left-0 right-0 z-50 px-4 sm:px-6 flex justify-center pointer-events-none">
         <motion.nav
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-warm-white/90 backdrop-blur-xl border border-near-black/10 rounded-[2.5rem] px-4 py-3 flex items-center justify-around w-full max-w-[500px] shadow-2xl pointer-events-auto"
+          className="bg-warm-white/90 backdrop-blur-xl border border-near-black/10 rounded-[2.5rem] px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-around w-full max-w-[480px] shadow-2xl pointer-events-auto"
         >
           {NAV_LINKS.filter((l) => !l.isHidden).map((link) => {
             const Icon = link.icon;
@@ -169,21 +169,21 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="relative flex flex-col items-center gap-1 px-3 py-1 transition-all duration-300 group"
+                className="relative flex flex-col items-center gap-0.5 px-1 sm:px-2.5 py-0.5 transition-all duration-300 group"
               >
                 <div
                   className={[
-                    "w-12 h-8 flex items-center justify-center rounded-2xl transition-all duration-300",
+                    "w-9 h-7 sm:w-12 sm:h-8 flex items-center justify-center rounded-2xl transition-all duration-300",
                     active
                       ? "bg-gold/15 text-gold"
                       : "text-near-black/60 group-active:scale-90",
                   ].join(" ")}
                 >
-                  <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+                  <Icon size={18} className="sm:w-[22px] sm:h-[22px]" strokeWidth={active ? 2.5 : 2} />
                 </div>
                 <span
                   className={[
-                    "text-xs font-bold uppercase tracking-widest transition-colors duration-300 mt-1",
+                    "text-[8px] sm:text-[10px] font-black uppercase tracking-wide transition-colors duration-300 mt-0.5",
                     active ? "text-gold" : "text-near-black/60",
                   ].join(" ")}
                 >

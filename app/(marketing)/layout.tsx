@@ -14,7 +14,7 @@ export default function MarketingLayout({
       <Navbar />
 
       {/* Page Content */}
-      <main className="flex-grow w-full max-w-full">{children}</main>
+      <div className="flex-grow w-full max-w-full overflow-x-hidden">{children}</div>
 
       {/* Global Footer */}
       <Footer />

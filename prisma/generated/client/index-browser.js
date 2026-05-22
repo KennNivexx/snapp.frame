@@ -243,6 +243,18 @@ exports.Prisma.SiteSettingScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AffiliatePostScalarFieldEnum = {
+  id: 'id',
+  imageUrl: 'imageUrl',
+  caption: 'caption',
+  hashtags: 'hashtags',
+  likeCount: 'likeCount',
+  isPublished: 'isPublished',
+  postedBy: 'postedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -285,7 +297,8 @@ exports.Prisma.ModelName = {
   Transaction: 'Transaction',
   User: 'User',
   GalleryPhoto: 'GalleryPhoto',
-  SiteSetting: 'SiteSetting'
+  SiteSetting: 'SiteSetting',
+  AffiliatePost: 'AffiliatePost'
 };
 
 /**

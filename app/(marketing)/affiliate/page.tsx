@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Coffee, Camera, Presentation, Recycle, MonitorPlay,
   GraduationCap, Users, Building, ShoppingBag, Handshake,
   BadgeDollarSign, TrendingUp, Award, CheckCircle2,
   ChevronRight, Gift, ArrowRight, X, MessageCircle,
+  Heart, Copy, Check, Share2, Calendar, Sparkles,
 } from "lucide-react";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { getAffiliatePosts } from "@/app/actions/affiliate-posts";
+import { toast } from "sonner";
 
 const products = [
   { name: "Rata Coffee", fee: "1.000", unit: "gelas", icon: Coffee },
@@ -32,6 +35,39 @@ const discountData = [
   { name: "Sewa Meeting Room", maxDiscount: "Rp20.000", fee: "Rp30.000" },
   { name: "Virtual Office", maxDiscount: "Rp50.000", fee: "Rp30.000" },
   { name: "Produk UMKM", maxDiscount: "Menyesuaikan", fee: "Rp2.000" },
+];
+
+const fallbackPosts = [
+  {
+    id: "fb-1",
+    imageUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop",
+    caption: "Keseruan photobooth Snapp.frame di acara Rata Coffee! 📸 Temen-temen seneng banget bisa langsung cetak foto strip kece dengan warna sepia khas kita. Buruan share kode referral-mu biar temen-temen dapet diskon dan kamu dapet cuan!",
+    hashtags: ["snappframe", "ratacoffee", "photoboothhits", "cuanbareng"],
+    likeCount: 142,
+    postedBy: "Snapp.frame Studio",
+    category: "kegiatan",
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+  },
+  {
+    id: "fb-2",
+    imageUrl: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=600&auto=format&fit=crop",
+    caption: "Affiliate Partners Gathering #1! 🤝 Tempat di mana kita bertukar ide, sharing tips cara promosi kreatif di Instagram & Tiktok, dan tentunya ngerayain bonus pencapaian bulanan. Ingin gabung komunitas seru ini? Daftar gratis sekarang!",
+    hashtags: ["snappframe", "affiliatepartner", "gatheringseru", "belajardigital"],
+    likeCount: 98,
+    postedBy: "Snapp.frame Studio",
+    category: "kegiatan",
+    createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+  },
+  {
+    id: "fb-3",
+    imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop",
+    caption: "📢 PROMO BUNDLING SPESIAL KELOMPOK! Buat kalian yang mau foto grup bareng sahabat, gunakan kode referral dari affiliate partner kami untuk mendapatkan potongan langsung Rp20.000 + cetakan tambahan gratis!",
+    hashtags: ["promostudio", "fotogrup", "graduationphoto", "diskonspesial"],
+    likeCount: 215,
+    postedBy: "Marketing Snapp.frame",
+    category: "promo",
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+  },
 ];
 
 function RegisterModal({ onClose }: { onClose: () => void }) {
@@ -118,21 +154,105 @@ function RegisterModal({ onClose }: { onClose: () => void }) {
 
 export default function AffiliatePage() {
   const [showModal, setShowModal] = useState(false);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<"semua" | "kegiatan" | "promo">("semua");
+  const [likedPosts, setLikedPosts] = useState<Record<string, boolean>>({});
+  const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await getAffiliatePosts();
+        if (res.success && res.data && res.data.length > 0) {
+          const published = res.data.filter((p: any) => p.isPublished);
+          const formatted = published.map((p: any) => {
+            let category = "promo";
+            const tagsLower = (p.hashtags || []).map((t: string) => t.toLowerCase());
+            if (
+              tagsLower.includes("kegiatan") ||
+              tagsLower.includes("gathering") ||
+              tagsLower.includes("event") ||
+              p.caption.toLowerCase().includes("gathering") ||
+              p.caption.toLowerCase().includes("kegiatan") ||
+              p.caption.toLowerCase().includes("keseruan")
+            ) {
+              category = "kegiatan";
+            }
+            return {
+              ...p,
+              category,
+            };
+          });
+          setPosts(formatted);
+        } else {
+          setPosts(fallbackPosts);
+        }
+      } catch (err) {
+        console.error("Gagal memuat affiliate posts:", err);
+        setPosts(fallbackPosts);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, []);
+
+  const handleLike = (postId: string) => {
+    setLikedPosts((prev) => {
+      const isLiked = !prev[postId];
+      setPosts((currentPosts) =>
+        currentPosts.map((p) => {
+          if (p.id === postId) {
+            return {
+              ...p,
+              likeCount: isLiked ? p.likeCount + 1 : p.likeCount - 1,
+            };
+          }
+          return p;
+        })
+      );
+      return { ...prev, [postId]: isLiked };
+    });
+  };
+
+  const handleCopyCaption = (post: any) => {
+    const fullText = `${post.caption}\n\n${(post.hashtags || []).map((h: string) => `#${h}`).join(" ")}`;
+    navigator.clipboard.writeText(fullText);
+    setCopiedPostId(post.id);
+    toast.success("Caption & Hashtags berhasil disalin!");
+    setTimeout(() => {
+      setCopiedPostId(null);
+    }, 2000);
+  };
+
+  const handleShare = (post: any) => {
+    const text = encodeURIComponent(
+      `Yuk gabung Snapp.frame Affiliate! Lihat materi promosi ini:\n\n"${post.caption}"`
+    );
+    const url = `https://wa.me/?text=${text}`;
+    window.open(url, "_blank");
+  };
+
+  const filteredPosts = posts.filter((post) => {
+    if (activeFilter === "semua") return true;
+    return post.category === activeFilter;
+  });
 
   return (
-    <main className="min-h-screen bg-warm-white">
+    <main className="min-h-screen bg-warm-white overflow-x-hidden w-full">
       <AnimatePresence>{showModal && <RegisterModal onClose={() => setShowModal(false)} />}</AnimatePresence>
 
       {/* ── Hero ── */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-24 overflow-hidden bg-near-black text-white border-b border-near-black/5">
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:32px_32px]" />
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-24 overflow-hidden bg-near-black text-white border-b border-near-black/5 w-full">
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
         <div className="max-w-6xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 text-center md:text-left">
             <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-gold/20 border border-gold/40">
               <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
               <span className="text-[10px] font-black tracking-[0.2em] text-gold uppercase">Lowongan Kerja</span>
             </div>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.1] tracking-tighter uppercase" style={{ fontFamily: "var(--font-heading)" }}>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white mb-6 leading-[1.05] tracking-tighter uppercase break-words" style={{ fontFamily: "var(--font-heading)" }}>
               Affiliate <br /><span className="text-gold">Partner</span>
             </h1>
             <p className="text-white/80 text-lg font-bold max-w-xl leading-relaxed mb-8">
@@ -236,32 +356,233 @@ export default function AffiliatePage() {
                 </tbody>
               </table>
             </div>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 bg-white/5 rounded-xl p-6 border border-white/10">
+            <div className="flex flex-col items-center gap-4 mt-8 bg-white/5 rounded-xl p-6 border border-white/10">
               <span className="text-[10px] text-white/50 font-bold uppercase">Contoh Cara Kerja:</span>
-              <div className="flex items-center gap-3 flex-wrap justify-center">
+              <div className="grid grid-cols-2 sm:flex sm:flex-row items-center gap-3 justify-center w-full">
                 <div className="bg-white/10 px-4 py-2 rounded-lg text-center">
                   <span className="block text-[9px] text-white/60">Harga Normal</span>
                   <span className="block text-sm font-bold line-through text-white/40">Rp99.000</span>
                 </div>
-                <ChevronRight className="text-gold/40" size={16} />
+                <ChevronRight className="text-gold/40 hidden sm:block" size={16} />
                 <div className="bg-gold/20 border border-gold/30 px-4 py-2 rounded-lg text-center">
                   <span className="block text-[9px] text-gold">Kode Referral</span>
                   <span className="block text-sm font-black text-gold">NAMA10</span>
                   <span className="block text-[9px] text-white/70">Diskon Rp10.000</span>
                 </div>
-                <ChevronRight className="text-gold/40" size={16} />
+                <ChevronRight className="text-gold/40 hidden sm:block" size={16} />
                 <div className="bg-white/10 px-4 py-2 rounded-lg text-center">
                   <span className="block text-[9px] text-white/60">Customer Bayar</span>
                   <span className="block text-sm font-black text-white">Rp89.000</span>
                 </div>
-                <ChevronRight className="text-gold/40" size={16} />
-                <div className="bg-green-500/20 border border-green-500/30 px-4 py-2 rounded-lg text-center">
+                <ChevronRight className="text-gold/40 hidden sm:block" size={16} />
+                <div className="col-span-2 sm:col-span-1 bg-green-500/20 border border-green-500/30 px-4 py-2 rounded-lg text-center">
                   <span className="block text-[9px] text-green-400">Affiliate Dapat</span>
                   <span className="block text-sm font-black text-green-400">Rp10.000 ✓</span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Galeri Kegiatan & Materi Promosi ── */}
+      <section className="py-20 bg-warm-light/40 border-y border-border/40">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12 flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-gold/15 border border-gold/30 text-[10px] font-black uppercase tracking-[0.2em] text-gold">
+              <Sparkles size={12} className="animate-pulse" />
+              <span>Galeri & Bahan Promosi</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-near-black uppercase tracking-wider mb-4" style={{ fontFamily: "var(--font-heading)" }}>
+              Galeri Kegiatan <span className="text-gold">& Materi</span>
+            </h2>
+            <p className="text-near-black/60 text-sm font-bold max-w-xl leading-relaxed text-center">
+              Lihat keseruan event kami atau langsung salin materi promosi (foto & caption) di bawah ini untuk dibagikan ke media sosial Anda!
+            </p>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="flex items-center justify-center gap-3 mb-12 flex-wrap">
+            {[
+              { id: "semua", label: "Semua Materi" },
+              { id: "kegiatan", label: "Kegiatan Studio" },
+              { id: "promo", label: "Materi Promo" },
+            ].map((tabItem) => (
+              <button
+                key={tabItem.id}
+                onClick={() => setActiveFilter(tabItem.id as any)}
+                className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 border ${
+                  activeFilter === tabItem.id
+                    ? "bg-near-black text-white border-near-black shadow-md scale-[1.02]"
+                    : "bg-white text-near-black/60 border-near-black/10 hover:border-near-black/20 hover:text-near-black"
+                }`}
+              >
+                {tabItem.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Grid Container */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-3xl border border-border/30 overflow-hidden shadow-sm p-4 space-y-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full skeleton" />
+                    <div className="space-y-2 flex-1">
+                      <div className="h-3 w-24 skeleton" />
+                      <div className="h-2 w-16 skeleton" />
+                    </div>
+                  </div>
+                  <div className="aspect-square w-full rounded-2xl skeleton" />
+                  <div className="space-y-2">
+                    <div className="h-3 w-1/3 skeleton" />
+                    <div className="h-3 w-full skeleton" />
+                    <div className="h-3 w-3/4 skeleton" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-3xl border border-border/30">
+              <Camera size={48} className="text-near-black/20 mx-auto mb-4" />
+              <h3 className="text-lg font-black text-near-black uppercase mb-1">Belum Ada Postingan</h3>
+              <p className="text-xs text-near-black/50 font-bold">Kategori ini belum memiliki postingan materi promosi.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredPosts.map((post) => {
+                const isLiked = !!likedPosts[post.id];
+                const isCopied = copiedPostId === post.id;
+                const formattedDate = post.createdAt
+                  ? new Date(post.createdAt).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "";
+
+                return (
+                  <motion.div
+                    key={post.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-white rounded-3xl border border-border/30 shadow-sm hover:shadow-xl hover:shadow-near-black/5 transition-all duration-300 overflow-hidden flex flex-col"
+                  >
+                    {/* Header Card */}
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-warm-white">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold to-near-black flex items-center justify-center text-white font-black text-xs shadow-sm">
+                          SF
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-near-black leading-none">snapp.frame</p>
+                          <p className="text-[9px] text-near-black/40 font-bold mt-1 flex items-center gap-1">
+                            <Calendar size={10} />
+                            {formattedDate}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 bg-gold/10 text-gold rounded-full text-[9px] font-black uppercase tracking-wider">
+                        {post.category === "kegiatan" ? "Kegiatan" : "Materi Promo"}
+                      </span>
+                    </div>
+
+                    {/* Image Area */}
+                    <div className="relative aspect-square bg-warm-white overflow-hidden group">
+                      <img
+                        src={post.imageUrl}
+                        alt="Materi Promosi"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => handleCopyCaption(post)}
+                          className="bg-white text-near-black p-3 rounded-full hover:scale-110 active:scale-95 transition-all shadow-lg cursor-pointer"
+                          title="Salin Caption"
+                        >
+                          {isCopied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
+                        </button>
+                        <button
+                          onClick={() => handleShare(post)}
+                          className="bg-white text-near-black p-3 rounded-full hover:scale-110 active:scale-95 transition-all shadow-lg cursor-pointer"
+                          title="Bagikan ke WhatsApp"
+                        >
+                          <Share2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="px-5 pt-4 pb-2 flex items-center justify-between border-t border-warm-white">
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => handleLike(post.id)}
+                          className="flex items-center gap-1.5 group/like cursor-pointer"
+                        >
+                          <Heart
+                            size={20}
+                            className={`transition-all duration-300 group-hover/like:scale-110 ${
+                              isLiked ? "fill-rose-500 text-rose-500" : "text-near-black/40 hover:text-rose-500"
+                            }`}
+                          />
+                          <span className="text-xs font-black text-near-black/70">
+                            {post.likeCount}
+                          </span>
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => handleCopyCaption(post)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                          isCopied
+                            ? "bg-green-50 text-green-700 border border-green-200"
+                            : "bg-gold/10 text-gold hover:bg-gold/20 border border-transparent"
+                        }`}
+                      >
+                        {isCopied ? (
+                          <>
+                            <Check size={12} />
+                            Tersalin
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={12} />
+                            Salin Caption
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Caption / Content */}
+                    <div className="px-5 pb-5 flex-1 flex flex-col justify-between">
+                      <div className="space-y-2 mt-2">
+                        <p className="text-xs text-near-black/80 font-bold leading-relaxed line-clamp-3">
+                          <span className="font-black text-near-black mr-1">snapp.frame</span>
+                          {post.caption}
+                        </p>
+                        {post.hashtags && post.hashtags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {post.hashtags.map((tag: string) => (
+                              <span key={tag} className="text-[10px] font-black text-gold/95">
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -317,12 +638,11 @@ export default function AffiliatePage() {
             <div className="text-center mb-6">
               <span className="bg-gold text-near-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Cara Bergabung</span>
             </div>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="grid grid-cols-2 sm:flex sm:flex-row items-center justify-between gap-4 sm:gap-2">
               {["Daftar via WhatsApp", "Dapatkan kode referral", "Promosikan produk", "Dapat komisi!"].map((step, i) => (
-                <div key={i} className="flex flex-col items-center text-center flex-1">
+                <div key={i} className="flex flex-col items-center text-center flex-1 relative">
                   <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black text-gold mb-3 text-lg">{i + 1}</div>
                   <span className="text-[10px] font-bold text-white/80 max-w-[90px]">{step}</span>
-                  {i < 3 && <ChevronRight className="text-white/20 hidden sm:block mt-2 absolute" />}
                 </div>
               ))}
             </div>
