@@ -1,6 +1,9 @@
+// NOTE: File ini sebelumnya bernama middleware.ts.
+// Dinonaktifkan dengan mengubah nama menjadi proxy.ts agar tidak terjadi redirect otomatis ke localhost:3000 saat mengakses /kasir.
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
+
 
 const { auth } = NextAuth(authConfig);
 

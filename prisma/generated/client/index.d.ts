@@ -63,6 +63,11 @@ export type GalleryPhoto = $Result.DefaultSelection<Prisma.$GalleryPhotoPayload>
  * 
  */
 export type SiteSetting = $Result.DefaultSelection<Prisma.$SiteSettingPayload>
+/**
+ * Model AffiliatePost
+ * 
+ */
+export type AffiliatePost = $Result.DefaultSelection<Prisma.$AffiliatePostPayload>
 
 /**
  * Enums
@@ -328,6 +333,16 @@ export class PrismaClient<
     * ```
     */
   get siteSetting(): Prisma.SiteSettingDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.affiliatePost`: Exposes CRUD operations for the **AffiliatePost** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AffiliatePosts
+    * const affiliatePosts = await prisma.affiliatePost.findMany()
+    * ```
+    */
+  get affiliatePost(): Prisma.AffiliatePostDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -771,7 +786,8 @@ export namespace Prisma {
     Transaction: 'Transaction',
     User: 'User',
     GalleryPhoto: 'GalleryPhoto',
-    SiteSetting: 'SiteSetting'
+    SiteSetting: 'SiteSetting',
+    AffiliatePost: 'AffiliatePost'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -787,7 +803,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "referralCode" | "booking" | "category" | "product" | "referralUsage" | "transactionItem" | "transaction" | "user" | "galleryPhoto" | "siteSetting"
+      modelProps: "referralCode" | "booking" | "category" | "product" | "referralUsage" | "transactionItem" | "transaction" | "user" | "galleryPhoto" | "siteSetting" | "affiliatePost"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1531,6 +1547,80 @@ export namespace Prisma {
           }
         }
       }
+      AffiliatePost: {
+        payload: Prisma.$AffiliatePostPayload<ExtArgs>
+        fields: Prisma.AffiliatePostFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AffiliatePostFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AffiliatePostFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>
+          }
+          findFirst: {
+            args: Prisma.AffiliatePostFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AffiliatePostFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>
+          }
+          findMany: {
+            args: Prisma.AffiliatePostFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>[]
+          }
+          create: {
+            args: Prisma.AffiliatePostCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>
+          }
+          createMany: {
+            args: Prisma.AffiliatePostCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AffiliatePostCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>[]
+          }
+          delete: {
+            args: Prisma.AffiliatePostDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>
+          }
+          update: {
+            args: Prisma.AffiliatePostUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>
+          }
+          deleteMany: {
+            args: Prisma.AffiliatePostDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AffiliatePostUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AffiliatePostUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>[]
+          }
+          upsert: {
+            args: Prisma.AffiliatePostUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliatePostPayload>
+          }
+          aggregate: {
+            args: Prisma.AffiliatePostAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAffiliatePost>
+          }
+          groupBy: {
+            args: Prisma.AffiliatePostGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AffiliatePostGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AffiliatePostCountArgs<ExtArgs>
+            result: $Utils.Optional<AffiliatePostCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1649,6 +1739,7 @@ export namespace Prisma {
     user?: UserOmit
     galleryPhoto?: GalleryPhotoOmit
     siteSetting?: SiteSettingOmit
+    affiliatePost?: AffiliatePostOmit
   }
 
   /* Types for Logging */
@@ -13384,6 +13475,1088 @@ export namespace Prisma {
 
 
   /**
+   * Model AffiliatePost
+   */
+
+  export type AggregateAffiliatePost = {
+    _count: AffiliatePostCountAggregateOutputType | null
+    _avg: AffiliatePostAvgAggregateOutputType | null
+    _sum: AffiliatePostSumAggregateOutputType | null
+    _min: AffiliatePostMinAggregateOutputType | null
+    _max: AffiliatePostMaxAggregateOutputType | null
+  }
+
+  export type AffiliatePostAvgAggregateOutputType = {
+    likeCount: number | null
+  }
+
+  export type AffiliatePostSumAggregateOutputType = {
+    likeCount: number | null
+  }
+
+  export type AffiliatePostMinAggregateOutputType = {
+    id: string | null
+    imageUrl: string | null
+    caption: string | null
+    likeCount: number | null
+    isPublished: boolean | null
+    postedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AffiliatePostMaxAggregateOutputType = {
+    id: string | null
+    imageUrl: string | null
+    caption: string | null
+    likeCount: number | null
+    isPublished: boolean | null
+    postedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AffiliatePostCountAggregateOutputType = {
+    id: number
+    imageUrl: number
+    caption: number
+    hashtags: number
+    likeCount: number
+    isPublished: number
+    postedBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AffiliatePostAvgAggregateInputType = {
+    likeCount?: true
+  }
+
+  export type AffiliatePostSumAggregateInputType = {
+    likeCount?: true
+  }
+
+  export type AffiliatePostMinAggregateInputType = {
+    id?: true
+    imageUrl?: true
+    caption?: true
+    likeCount?: true
+    isPublished?: true
+    postedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AffiliatePostMaxAggregateInputType = {
+    id?: true
+    imageUrl?: true
+    caption?: true
+    likeCount?: true
+    isPublished?: true
+    postedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AffiliatePostCountAggregateInputType = {
+    id?: true
+    imageUrl?: true
+    caption?: true
+    hashtags?: true
+    likeCount?: true
+    isPublished?: true
+    postedBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AffiliatePostAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AffiliatePost to aggregate.
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliatePosts to fetch.
+     */
+    orderBy?: AffiliatePostOrderByWithRelationInput | AffiliatePostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AffiliatePostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliatePosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliatePosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AffiliatePosts
+    **/
+    _count?: true | AffiliatePostCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AffiliatePostAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AffiliatePostSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AffiliatePostMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AffiliatePostMaxAggregateInputType
+  }
+
+  export type GetAffiliatePostAggregateType<T extends AffiliatePostAggregateArgs> = {
+        [P in keyof T & keyof AggregateAffiliatePost]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAffiliatePost[P]>
+      : GetScalarType<T[P], AggregateAffiliatePost[P]>
+  }
+
+
+
+
+  export type AffiliatePostGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AffiliatePostWhereInput
+    orderBy?: AffiliatePostOrderByWithAggregationInput | AffiliatePostOrderByWithAggregationInput[]
+    by: AffiliatePostScalarFieldEnum[] | AffiliatePostScalarFieldEnum
+    having?: AffiliatePostScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AffiliatePostCountAggregateInputType | true
+    _avg?: AffiliatePostAvgAggregateInputType
+    _sum?: AffiliatePostSumAggregateInputType
+    _min?: AffiliatePostMinAggregateInputType
+    _max?: AffiliatePostMaxAggregateInputType
+  }
+
+  export type AffiliatePostGroupByOutputType = {
+    id: string
+    imageUrl: string
+    caption: string
+    hashtags: string[]
+    likeCount: number
+    isPublished: boolean
+    postedBy: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AffiliatePostCountAggregateOutputType | null
+    _avg: AffiliatePostAvgAggregateOutputType | null
+    _sum: AffiliatePostSumAggregateOutputType | null
+    _min: AffiliatePostMinAggregateOutputType | null
+    _max: AffiliatePostMaxAggregateOutputType | null
+  }
+
+  type GetAffiliatePostGroupByPayload<T extends AffiliatePostGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AffiliatePostGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AffiliatePostGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AffiliatePostGroupByOutputType[P]>
+            : GetScalarType<T[P], AffiliatePostGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AffiliatePostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    imageUrl?: boolean
+    caption?: boolean
+    hashtags?: boolean
+    likeCount?: boolean
+    isPublished?: boolean
+    postedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["affiliatePost"]>
+
+  export type AffiliatePostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    imageUrl?: boolean
+    caption?: boolean
+    hashtags?: boolean
+    likeCount?: boolean
+    isPublished?: boolean
+    postedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["affiliatePost"]>
+
+  export type AffiliatePostSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    imageUrl?: boolean
+    caption?: boolean
+    hashtags?: boolean
+    likeCount?: boolean
+    isPublished?: boolean
+    postedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["affiliatePost"]>
+
+  export type AffiliatePostSelectScalar = {
+    id?: boolean
+    imageUrl?: boolean
+    caption?: boolean
+    hashtags?: boolean
+    likeCount?: boolean
+    isPublished?: boolean
+    postedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AffiliatePostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "imageUrl" | "caption" | "hashtags" | "likeCount" | "isPublished" | "postedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["affiliatePost"]>
+
+  export type $AffiliatePostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AffiliatePost"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      imageUrl: string
+      caption: string
+      hashtags: string[]
+      likeCount: number
+      isPublished: boolean
+      postedBy: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["affiliatePost"]>
+    composites: {}
+  }
+
+  type AffiliatePostGetPayload<S extends boolean | null | undefined | AffiliatePostDefaultArgs> = $Result.GetResult<Prisma.$AffiliatePostPayload, S>
+
+  type AffiliatePostCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AffiliatePostFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AffiliatePostCountAggregateInputType | true
+    }
+
+  export interface AffiliatePostDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AffiliatePost'], meta: { name: 'AffiliatePost' } }
+    /**
+     * Find zero or one AffiliatePost that matches the filter.
+     * @param {AffiliatePostFindUniqueArgs} args - Arguments to find a AffiliatePost
+     * @example
+     * // Get one AffiliatePost
+     * const affiliatePost = await prisma.affiliatePost.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AffiliatePostFindUniqueArgs>(args: SelectSubset<T, AffiliatePostFindUniqueArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AffiliatePost that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AffiliatePostFindUniqueOrThrowArgs} args - Arguments to find a AffiliatePost
+     * @example
+     * // Get one AffiliatePost
+     * const affiliatePost = await prisma.affiliatePost.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AffiliatePostFindUniqueOrThrowArgs>(args: SelectSubset<T, AffiliatePostFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AffiliatePost that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostFindFirstArgs} args - Arguments to find a AffiliatePost
+     * @example
+     * // Get one AffiliatePost
+     * const affiliatePost = await prisma.affiliatePost.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AffiliatePostFindFirstArgs>(args?: SelectSubset<T, AffiliatePostFindFirstArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AffiliatePost that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostFindFirstOrThrowArgs} args - Arguments to find a AffiliatePost
+     * @example
+     * // Get one AffiliatePost
+     * const affiliatePost = await prisma.affiliatePost.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AffiliatePostFindFirstOrThrowArgs>(args?: SelectSubset<T, AffiliatePostFindFirstOrThrowArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AffiliatePosts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AffiliatePosts
+     * const affiliatePosts = await prisma.affiliatePost.findMany()
+     * 
+     * // Get first 10 AffiliatePosts
+     * const affiliatePosts = await prisma.affiliatePost.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const affiliatePostWithIdOnly = await prisma.affiliatePost.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AffiliatePostFindManyArgs>(args?: SelectSubset<T, AffiliatePostFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AffiliatePost.
+     * @param {AffiliatePostCreateArgs} args - Arguments to create a AffiliatePost.
+     * @example
+     * // Create one AffiliatePost
+     * const AffiliatePost = await prisma.affiliatePost.create({
+     *   data: {
+     *     // ... data to create a AffiliatePost
+     *   }
+     * })
+     * 
+     */
+    create<T extends AffiliatePostCreateArgs>(args: SelectSubset<T, AffiliatePostCreateArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AffiliatePosts.
+     * @param {AffiliatePostCreateManyArgs} args - Arguments to create many AffiliatePosts.
+     * @example
+     * // Create many AffiliatePosts
+     * const affiliatePost = await prisma.affiliatePost.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AffiliatePostCreateManyArgs>(args?: SelectSubset<T, AffiliatePostCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AffiliatePosts and returns the data saved in the database.
+     * @param {AffiliatePostCreateManyAndReturnArgs} args - Arguments to create many AffiliatePosts.
+     * @example
+     * // Create many AffiliatePosts
+     * const affiliatePost = await prisma.affiliatePost.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AffiliatePosts and only return the `id`
+     * const affiliatePostWithIdOnly = await prisma.affiliatePost.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AffiliatePostCreateManyAndReturnArgs>(args?: SelectSubset<T, AffiliatePostCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AffiliatePost.
+     * @param {AffiliatePostDeleteArgs} args - Arguments to delete one AffiliatePost.
+     * @example
+     * // Delete one AffiliatePost
+     * const AffiliatePost = await prisma.affiliatePost.delete({
+     *   where: {
+     *     // ... filter to delete one AffiliatePost
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AffiliatePostDeleteArgs>(args: SelectSubset<T, AffiliatePostDeleteArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AffiliatePost.
+     * @param {AffiliatePostUpdateArgs} args - Arguments to update one AffiliatePost.
+     * @example
+     * // Update one AffiliatePost
+     * const affiliatePost = await prisma.affiliatePost.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AffiliatePostUpdateArgs>(args: SelectSubset<T, AffiliatePostUpdateArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AffiliatePosts.
+     * @param {AffiliatePostDeleteManyArgs} args - Arguments to filter AffiliatePosts to delete.
+     * @example
+     * // Delete a few AffiliatePosts
+     * const { count } = await prisma.affiliatePost.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AffiliatePostDeleteManyArgs>(args?: SelectSubset<T, AffiliatePostDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AffiliatePosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AffiliatePosts
+     * const affiliatePost = await prisma.affiliatePost.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AffiliatePostUpdateManyArgs>(args: SelectSubset<T, AffiliatePostUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AffiliatePosts and returns the data updated in the database.
+     * @param {AffiliatePostUpdateManyAndReturnArgs} args - Arguments to update many AffiliatePosts.
+     * @example
+     * // Update many AffiliatePosts
+     * const affiliatePost = await prisma.affiliatePost.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AffiliatePosts and only return the `id`
+     * const affiliatePostWithIdOnly = await prisma.affiliatePost.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AffiliatePostUpdateManyAndReturnArgs>(args: SelectSubset<T, AffiliatePostUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AffiliatePost.
+     * @param {AffiliatePostUpsertArgs} args - Arguments to update or create a AffiliatePost.
+     * @example
+     * // Update or create a AffiliatePost
+     * const affiliatePost = await prisma.affiliatePost.upsert({
+     *   create: {
+     *     // ... data to create a AffiliatePost
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AffiliatePost we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AffiliatePostUpsertArgs>(args: SelectSubset<T, AffiliatePostUpsertArgs<ExtArgs>>): Prisma__AffiliatePostClient<$Result.GetResult<Prisma.$AffiliatePostPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AffiliatePosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostCountArgs} args - Arguments to filter AffiliatePosts to count.
+     * @example
+     * // Count the number of AffiliatePosts
+     * const count = await prisma.affiliatePost.count({
+     *   where: {
+     *     // ... the filter for the AffiliatePosts we want to count
+     *   }
+     * })
+    **/
+    count<T extends AffiliatePostCountArgs>(
+      args?: Subset<T, AffiliatePostCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AffiliatePostCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AffiliatePost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AffiliatePostAggregateArgs>(args: Subset<T, AffiliatePostAggregateArgs>): Prisma.PrismaPromise<GetAffiliatePostAggregateType<T>>
+
+    /**
+     * Group by AffiliatePost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliatePostGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AffiliatePostGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AffiliatePostGroupByArgs['orderBy'] }
+        : { orderBy?: AffiliatePostGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AffiliatePostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAffiliatePostGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AffiliatePost model
+   */
+  readonly fields: AffiliatePostFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AffiliatePost.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AffiliatePostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AffiliatePost model
+   */
+  interface AffiliatePostFieldRefs {
+    readonly id: FieldRef<"AffiliatePost", 'String'>
+    readonly imageUrl: FieldRef<"AffiliatePost", 'String'>
+    readonly caption: FieldRef<"AffiliatePost", 'String'>
+    readonly hashtags: FieldRef<"AffiliatePost", 'String[]'>
+    readonly likeCount: FieldRef<"AffiliatePost", 'Int'>
+    readonly isPublished: FieldRef<"AffiliatePost", 'Boolean'>
+    readonly postedBy: FieldRef<"AffiliatePost", 'String'>
+    readonly createdAt: FieldRef<"AffiliatePost", 'DateTime'>
+    readonly updatedAt: FieldRef<"AffiliatePost", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AffiliatePost findUnique
+   */
+  export type AffiliatePostFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliatePost to fetch.
+     */
+    where: AffiliatePostWhereUniqueInput
+  }
+
+  /**
+   * AffiliatePost findUniqueOrThrow
+   */
+  export type AffiliatePostFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliatePost to fetch.
+     */
+    where: AffiliatePostWhereUniqueInput
+  }
+
+  /**
+   * AffiliatePost findFirst
+   */
+  export type AffiliatePostFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliatePost to fetch.
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliatePosts to fetch.
+     */
+    orderBy?: AffiliatePostOrderByWithRelationInput | AffiliatePostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AffiliatePosts.
+     */
+    cursor?: AffiliatePostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliatePosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliatePosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliatePosts.
+     */
+    distinct?: AffiliatePostScalarFieldEnum | AffiliatePostScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliatePost findFirstOrThrow
+   */
+  export type AffiliatePostFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliatePost to fetch.
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliatePosts to fetch.
+     */
+    orderBy?: AffiliatePostOrderByWithRelationInput | AffiliatePostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AffiliatePosts.
+     */
+    cursor?: AffiliatePostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliatePosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliatePosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliatePosts.
+     */
+    distinct?: AffiliatePostScalarFieldEnum | AffiliatePostScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliatePost findMany
+   */
+  export type AffiliatePostFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliatePosts to fetch.
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliatePosts to fetch.
+     */
+    orderBy?: AffiliatePostOrderByWithRelationInput | AffiliatePostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AffiliatePosts.
+     */
+    cursor?: AffiliatePostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliatePosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliatePosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliatePosts.
+     */
+    distinct?: AffiliatePostScalarFieldEnum | AffiliatePostScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliatePost create
+   */
+  export type AffiliatePostCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AffiliatePost.
+     */
+    data: XOR<AffiliatePostCreateInput, AffiliatePostUncheckedCreateInput>
+  }
+
+  /**
+   * AffiliatePost createMany
+   */
+  export type AffiliatePostCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AffiliatePosts.
+     */
+    data: AffiliatePostCreateManyInput | AffiliatePostCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AffiliatePost createManyAndReturn
+   */
+  export type AffiliatePostCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * The data used to create many AffiliatePosts.
+     */
+    data: AffiliatePostCreateManyInput | AffiliatePostCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AffiliatePost update
+   */
+  export type AffiliatePostUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AffiliatePost.
+     */
+    data: XOR<AffiliatePostUpdateInput, AffiliatePostUncheckedUpdateInput>
+    /**
+     * Choose, which AffiliatePost to update.
+     */
+    where: AffiliatePostWhereUniqueInput
+  }
+
+  /**
+   * AffiliatePost updateMany
+   */
+  export type AffiliatePostUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AffiliatePosts.
+     */
+    data: XOR<AffiliatePostUpdateManyMutationInput, AffiliatePostUncheckedUpdateManyInput>
+    /**
+     * Filter which AffiliatePosts to update
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * Limit how many AffiliatePosts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliatePost updateManyAndReturn
+   */
+  export type AffiliatePostUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * The data used to update AffiliatePosts.
+     */
+    data: XOR<AffiliatePostUpdateManyMutationInput, AffiliatePostUncheckedUpdateManyInput>
+    /**
+     * Filter which AffiliatePosts to update
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * Limit how many AffiliatePosts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliatePost upsert
+   */
+  export type AffiliatePostUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AffiliatePost to update in case it exists.
+     */
+    where: AffiliatePostWhereUniqueInput
+    /**
+     * In case the AffiliatePost found by the `where` argument doesn't exist, create a new AffiliatePost with this data.
+     */
+    create: XOR<AffiliatePostCreateInput, AffiliatePostUncheckedCreateInput>
+    /**
+     * In case the AffiliatePost was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AffiliatePostUpdateInput, AffiliatePostUncheckedUpdateInput>
+  }
+
+  /**
+   * AffiliatePost delete
+   */
+  export type AffiliatePostDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+    /**
+     * Filter which AffiliatePost to delete.
+     */
+    where: AffiliatePostWhereUniqueInput
+  }
+
+  /**
+   * AffiliatePost deleteMany
+   */
+  export type AffiliatePostDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AffiliatePosts to delete
+     */
+    where?: AffiliatePostWhereInput
+    /**
+     * Limit how many AffiliatePosts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliatePost without action
+   */
+  export type AffiliatePostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliatePost
+     */
+    select?: AffiliatePostSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliatePost
+     */
+    omit?: AffiliatePostOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13548,6 +14721,21 @@ export namespace Prisma {
   };
 
   export type SiteSettingScalarFieldEnum = (typeof SiteSettingScalarFieldEnum)[keyof typeof SiteSettingScalarFieldEnum]
+
+
+  export const AffiliatePostScalarFieldEnum: {
+    id: 'id',
+    imageUrl: 'imageUrl',
+    caption: 'caption',
+    hashtags: 'hashtags',
+    likeCount: 'likeCount',
+    isPublished: 'isPublished',
+    postedBy: 'postedBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AffiliatePostScalarFieldEnum = (typeof AffiliatePostScalarFieldEnum)[keyof typeof AffiliatePostScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -14482,6 +15670,80 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"SiteSetting"> | Date | string
   }
 
+  export type AffiliatePostWhereInput = {
+    AND?: AffiliatePostWhereInput | AffiliatePostWhereInput[]
+    OR?: AffiliatePostWhereInput[]
+    NOT?: AffiliatePostWhereInput | AffiliatePostWhereInput[]
+    id?: StringFilter<"AffiliatePost"> | string
+    imageUrl?: StringFilter<"AffiliatePost"> | string
+    caption?: StringFilter<"AffiliatePost"> | string
+    hashtags?: StringNullableListFilter<"AffiliatePost">
+    likeCount?: IntFilter<"AffiliatePost"> | number
+    isPublished?: BoolFilter<"AffiliatePost"> | boolean
+    postedBy?: StringFilter<"AffiliatePost"> | string
+    createdAt?: DateTimeFilter<"AffiliatePost"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliatePost"> | Date | string
+  }
+
+  export type AffiliatePostOrderByWithRelationInput = {
+    id?: SortOrder
+    imageUrl?: SortOrder
+    caption?: SortOrder
+    hashtags?: SortOrder
+    likeCount?: SortOrder
+    isPublished?: SortOrder
+    postedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliatePostWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AffiliatePostWhereInput | AffiliatePostWhereInput[]
+    OR?: AffiliatePostWhereInput[]
+    NOT?: AffiliatePostWhereInput | AffiliatePostWhereInput[]
+    imageUrl?: StringFilter<"AffiliatePost"> | string
+    caption?: StringFilter<"AffiliatePost"> | string
+    hashtags?: StringNullableListFilter<"AffiliatePost">
+    likeCount?: IntFilter<"AffiliatePost"> | number
+    isPublished?: BoolFilter<"AffiliatePost"> | boolean
+    postedBy?: StringFilter<"AffiliatePost"> | string
+    createdAt?: DateTimeFilter<"AffiliatePost"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliatePost"> | Date | string
+  }, "id">
+
+  export type AffiliatePostOrderByWithAggregationInput = {
+    id?: SortOrder
+    imageUrl?: SortOrder
+    caption?: SortOrder
+    hashtags?: SortOrder
+    likeCount?: SortOrder
+    isPublished?: SortOrder
+    postedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AffiliatePostCountOrderByAggregateInput
+    _avg?: AffiliatePostAvgOrderByAggregateInput
+    _max?: AffiliatePostMaxOrderByAggregateInput
+    _min?: AffiliatePostMinOrderByAggregateInput
+    _sum?: AffiliatePostSumOrderByAggregateInput
+  }
+
+  export type AffiliatePostScalarWhereWithAggregatesInput = {
+    AND?: AffiliatePostScalarWhereWithAggregatesInput | AffiliatePostScalarWhereWithAggregatesInput[]
+    OR?: AffiliatePostScalarWhereWithAggregatesInput[]
+    NOT?: AffiliatePostScalarWhereWithAggregatesInput | AffiliatePostScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AffiliatePost"> | string
+    imageUrl?: StringWithAggregatesFilter<"AffiliatePost"> | string
+    caption?: StringWithAggregatesFilter<"AffiliatePost"> | string
+    hashtags?: StringNullableListFilter<"AffiliatePost">
+    likeCount?: IntWithAggregatesFilter<"AffiliatePost"> | number
+    isPublished?: BoolWithAggregatesFilter<"AffiliatePost"> | boolean
+    postedBy?: StringWithAggregatesFilter<"AffiliatePost"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AffiliatePost"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AffiliatePost"> | Date | string
+  }
+
   export type ReferralCodeCreateInput = {
     id?: string
     code: string
@@ -15367,6 +16629,90 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AffiliatePostCreateInput = {
+    id?: string
+    imageUrl: string
+    caption: string
+    hashtags?: AffiliatePostCreatehashtagsInput | string[]
+    likeCount?: number
+    isPublished?: boolean
+    postedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliatePostUncheckedCreateInput = {
+    id?: string
+    imageUrl: string
+    caption: string
+    hashtags?: AffiliatePostCreatehashtagsInput | string[]
+    likeCount?: number
+    isPublished?: boolean
+    postedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliatePostUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    caption?: StringFieldUpdateOperationsInput | string
+    hashtags?: AffiliatePostUpdatehashtagsInput | string[]
+    likeCount?: IntFieldUpdateOperationsInput | number
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    postedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliatePostUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    caption?: StringFieldUpdateOperationsInput | string
+    hashtags?: AffiliatePostUpdatehashtagsInput | string[]
+    likeCount?: IntFieldUpdateOperationsInput | number
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    postedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliatePostCreateManyInput = {
+    id?: string
+    imageUrl: string
+    caption: string
+    hashtags?: AffiliatePostCreatehashtagsInput | string[]
+    likeCount?: number
+    isPublished?: boolean
+    postedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliatePostUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    caption?: StringFieldUpdateOperationsInput | string
+    hashtags?: AffiliatePostUpdatehashtagsInput | string[]
+    likeCount?: IntFieldUpdateOperationsInput | number
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    postedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliatePostUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    caption?: StringFieldUpdateOperationsInput | string
+    hashtags?: AffiliatePostUpdatehashtagsInput | string[]
+    likeCount?: IntFieldUpdateOperationsInput | number
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    postedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16159,6 +17505,48 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type AffiliatePostCountOrderByAggregateInput = {
+    id?: SortOrder
+    imageUrl?: SortOrder
+    caption?: SortOrder
+    hashtags?: SortOrder
+    likeCount?: SortOrder
+    isPublished?: SortOrder
+    postedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliatePostAvgOrderByAggregateInput = {
+    likeCount?: SortOrder
+  }
+
+  export type AffiliatePostMaxOrderByAggregateInput = {
+    id?: SortOrder
+    imageUrl?: SortOrder
+    caption?: SortOrder
+    likeCount?: SortOrder
+    isPublished?: SortOrder
+    postedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliatePostMinOrderByAggregateInput = {
+    id?: SortOrder
+    imageUrl?: SortOrder
+    caption?: SortOrder
+    likeCount?: SortOrder
+    isPublished?: SortOrder
+    postedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliatePostSumOrderByAggregateInput = {
+    likeCount?: SortOrder
+  }
+
   export type ReferralUsageCreateNestedManyWithoutReferralCodeInput = {
     create?: XOR<ReferralUsageCreateWithoutReferralCodeInput, ReferralUsageUncheckedCreateWithoutReferralCodeInput> | ReferralUsageCreateWithoutReferralCodeInput[] | ReferralUsageUncheckedCreateWithoutReferralCodeInput[]
     connectOrCreate?: ReferralUsageCreateOrConnectWithoutReferralCodeInput | ReferralUsageCreateOrConnectWithoutReferralCodeInput[]
@@ -16662,6 +18050,15 @@ export namespace Prisma {
     update?: TransactionUpdateWithWhereUniqueWithoutCashierInput | TransactionUpdateWithWhereUniqueWithoutCashierInput[]
     updateMany?: TransactionUpdateManyWithWhereWithoutCashierInput | TransactionUpdateManyWithWhereWithoutCashierInput[]
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type AffiliatePostCreatehashtagsInput = {
+    set: string[]
+  }
+
+  export type AffiliatePostUpdatehashtagsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
