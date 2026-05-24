@@ -83,6 +83,7 @@ export function Navbar() {
           layout
           initial={false}
           animate={{
+            height: scrolled ? "4rem" : "5.5rem",
             width: scrolled ? "min(1400px, 92%)" : "100%",
             marginTop: scrolled ? "1.25rem" : "0rem",
             paddingLeft: scrolled ? "2.5rem" : "0rem",
@@ -106,15 +107,14 @@ export function Navbar() {
           }}
           className="relative pointer-events-auto overflow-hidden group w-auto"
         >
-          <nav className="max-w-[1600px] mx-auto px-12 flex items-center justify-between h-24">
+          <nav className="max-w-[1600px] mx-auto px-12 flex items-center justify-between h-full">
             <Link
               href="/"
               onClick={(e) => handleNavClick(e, "/")}
-              className="flex-shrink-0 focus:outline-none transition-all duration-500 ml-8"
-              style={{ transform: scrolled ? "scale(1.1)" : "scale(1.3)" }}
+              className="flex-shrink-0 focus:outline-none transition-all duration-300 ml-8"
               aria-label="Snapp.frame Studio"
             >
-              <Logo height={scrolled ? 80 : 80} />
+              <Logo height={scrolled ? 36 : 46} />
             </Link>
 
             <ul className="flex items-center gap-10" role="menubar">

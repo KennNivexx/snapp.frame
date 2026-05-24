@@ -23,9 +23,13 @@
   --color-foreground: var(--color-near-black);
 
   /* Fonts */
-  --font-heading: var(--font-playfair);
-  --font-body: var(--font-lato);
-  --font-sans: var(--font-lato);
+  --font-syne: var(--font-syne);
+  --font-outfit: var(--font-outfit);
+  --font-playfair: var(--font-syne);
+  --font-lato: var(--font-outfit);
+  --font-heading: var(--font-syne);
+  --font-body: var(--font-outfit);
+  --font-sans: var(--font-outfit);
 }
 
 /* =============================================
@@ -54,7 +58,7 @@ html::-webkit-scrollbar {
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-lato), system-ui, sans-serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.7;
@@ -88,7 +92,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-playfair), serif;
+  font-family: var(--font-syne), sans-serif;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.01em;
