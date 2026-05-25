@@ -66,8 +66,14 @@ export default function SettingsPage() {
         const currentVal = settings[key] || "";
         const urls = currentVal.split(",").map(u => u.trim()).filter(Boolean);
         urls.push(data.url);
-        handleChange(key, urls.join(","));
-        toast.success("Poster berhasil diunggah!", { id: "upload" });
+        const newValue = urls.join(",");
+        handleChange(key, newValue);
+        const saveRes = await updateSiteSettings({ [key]: newValue });
+        if (saveRes.success) {
+          toast.success("Poster berhasil diunggah!", { id: "upload" });
+        } else {
+          toast.error("Poster terunggah tapi gagal disimpan. Klik Simpan.", { id: "upload" });
+        }
       } else {
         toast.error("Gagal mengunggah gambar.", { id: "upload" });
       }
