@@ -2,11 +2,11 @@
 
 import React, { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn, Mail, Lock, Loader2, Zap, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
+import { loginUser } from "@/app/actions/auth";
 
 function LoginContent() {
   const [email, setEmail] = useState("");
@@ -25,27 +25,12 @@ function LoginContent() {
     setError("");
 
     try {
-      const res = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (res?.error) {
-        setError("Email atau password salah. Silakan coba lagi.");
-      } else {
-        const session = await getSession();
-        const role = (session?.user as any)?.role;
-        
-        if (role === "ADMIN") {
-          router.push("/admin");
-        } else if (role === "SNAPPER") {
-          router.push("/snapper");
-        } else {
-          router.push("/kasir");
-        }
+      const res = await loginUser({ email, password });
+      if (res && !res.success) {
+        setError(res.error || "Email atau password salah. Silakan coba lagi.");
       }
-    } catch {
+    } catch (err: any) {
+      console.error("Login client error:", err);
       setError("Terjadi kesalahan sistem. Coba lagi sebentar.");
     } finally {
       setLoading(false);
