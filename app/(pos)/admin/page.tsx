@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -75,9 +75,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<"daily" | "weekly" | "monthly">("daily");
 
-  const supabase = createClient();
+  const supabaseRef = useRef(createClient());
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [statsRes, trxRes, chartRes, upcomingRes] = await Promise.all([
@@ -96,25 +96,31 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
 
   useEffect(() => {
     setMounted(true);
     fetchData();
 
+    const supabase = supabaseRef.current;
     const channel = supabase
       .channel("dashboard-realtime")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "Transaction" },
-        fetchData
+        { event: "*", schema: "public", table: "transactions" },
+        () => fetchData()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => fetchData()
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [period]);
+  }, [period, fetchData]);
 
   if (!mounted) return null;
 
@@ -286,19 +292,19 @@ export default function AdminDashboard() {
 
             <div className="space-y-4">
               {upcomingBookings.length > 0 ? (
-                upcomingBookings.map((booking, i) => (
+                upcomingBookings.map((booking: any, i: number) => (
                   <div key={i} className="group p-4 rounded-[1.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[10px] font-black text-gold uppercase tracking-widest">{booking.package_name}</p>
+                      <p className="text-[10px] font-black text-gold uppercase tracking-widest">{booking.packageName}</p>
                       <div className="flex items-center gap-1 text-[10px] font-bold text-white/40">
                         <Clock size={10} />
-                        {booking.time}
+                        {booking.sessionTime}
                       </div>
                     </div>
-                    <p className="text-sm font-black text-white mb-1">{booking.customer_name}</p>
+                    <p className="text-sm font-black text-white mb-1">{booking.customerName}</p>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-white/40">
                       <CalendarIcon size={10} />
-                      {new Date(booking.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })}
+                      {new Date(booking.sessionDate + "T00:00:00").toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })}
                     </div>
                   </div>
                 ))

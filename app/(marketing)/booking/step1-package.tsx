@@ -30,7 +30,7 @@ export default function Step1Package({ packagesList, loading, selected, onSelect
     if (loading) return;
     const pkgId = searchParams.get("pkg");
     if (pkgId && !selected) {
-      const found = sortedPackages.find((p) => p.id === pkgId);
+      const found = sortedPackages.find((p) => p.id === pkgId || (p as any).sku === pkgId);
       if (found) onSelect(found);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

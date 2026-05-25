@@ -12,7 +12,7 @@ import { site } from "@/data/site";
 import { btn } from "@/lib/button-classes";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/lib/env";
-import { createBooking } from "@/app/actions/bookings";
+import { createBooking, getBookingStatus } from "@/app/actions/bookings";
 import { toast } from "sonner";
 
 /* ─── Helpers ─────────────────────────── */
@@ -38,11 +38,12 @@ interface Step5Props {
   referral: ReferralCode | null;
   paymentMethod: PaymentMethod;
   onReset: () => void;
+  siteSettings?: Record<string, string>;
 }
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
-export default function Step5Receipt({ pkg, formData, referral, paymentMethod, onReset }: Step5Props) {
+export default function Step5Receipt({ pkg, formData, referral, paymentMethod, onReset, siteSettings = {} }: Step5Props) {
   const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.maxDiscountAmount) : pkg.price;
   const discount = pkg.price - finalPrice;
   const [invoice] = useState(generateInvoice);
@@ -50,7 +51,58 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   const [saveError, setSaveError] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "failed">("pending");
+  const [dbStatus, setDbStatus] = useState<string>("pending");
   const hasSaved = useRef(false);
+
+  // Listen to realtime status updates from database with a robust polling fallback
+  useEffect(() => {
+    if (saveState !== "saved") return;
+
+    // 1. Supabase Realtime Listener
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`booking-status-${invoice}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "bookings",
+          filter: `invoice_no=eq.${invoice}`,
+        },
+        (payload) => {
+          console.log("Realtime status update received:", payload.new);
+          if (payload.new && payload.new.status) {
+            setDbStatus(payload.new.status);
+            if (payload.new.status === "confirmed" || payload.new.status === "completed") {
+              setPaymentStatus("success");
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    // 2. Database Polling Fallback (runs every 3 seconds to guarantee updates)
+    const interval = setInterval(async () => {
+      try {
+        const res = await getBookingStatus(invoice);
+        if (res.success && res.status) {
+          console.log("Polled booking status:", res.status);
+          setDbStatus(res.status);
+          if (res.status === "confirmed" || res.status === "completed") {
+            setPaymentStatus("success");
+          }
+        }
+      } catch (err) {
+        console.error("Error polling booking status:", err);
+      }
+    }, 3000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
+  }, [saveState, invoice]);
 
   // Environment variables Midtrans client
   const midtransClientKey = env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
@@ -205,22 +257,70 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
       <Script src={snapSrc} data-client-key={midtransClientKey} strategy="lazyOnload" />
 
       <div className="mb-8 text-center">
-        <div className={["w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4",
-          saveState === "saving" ? "bg-[#E0E0DA]" : "bg-[#1A1A1A]"
+        <div className={["w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-500",
+          saveState === "saving"
+            ? "bg-[#E0E0DA]"
+            : dbStatus === "confirmed" || dbStatus === "completed"
+            ? "bg-emerald-500"
+            : dbStatus === "cancelled"
+            ? "bg-red-500"
+            : "bg-amber-500"
         ].join(" ")}>
-          {saveState === "saving"
-            ? <Loader2 size={24} className="text-[#888888] animate-spin" />
-            : <Check size={26} className="text-[#FAFAF8]" />
-          }
+          {saveState === "saving" ? (
+            <Loader2 size={24} className="text-[#888888] animate-spin" />
+          ) : dbStatus === "confirmed" || dbStatus === "completed" ? (
+            <Check size={26} className="text-white" />
+          ) : (
+            <AlertCircle size={26} className="text-white" />
+          )}
         </div>
-        <h2 className="text-2xl sm:text-3xl font-semibold text-[#1A1A1A]" style={{ fontFamily: "var(--font-heading)" }}>
-          {saveState === "saving" ? "Menyimpan Booking..." : "Booking Berhasil!"}
+        <h2 className="text-2xl sm:text-3xl font-semibold text-[#1A1A1A] tracking-tight transition-all duration-300" style={{ fontFamily: "var(--font-heading)" }}>
+          {saveState === "saving"
+            ? "Menyimpan Booking..."
+            : dbStatus === "confirmed"
+            ? "Booking Dikonfirmasi!"
+            : dbStatus === "completed"
+            ? "Sesi Foto Selesai!"
+            : dbStatus === "cancelled"
+            ? "Booking Dibatalkan"
+            : "Pesanan Menunggu Konfirmasi"}
         </h2>
-        <p className="text-[#5A5A5A] text-sm mt-2">
+        <p className="text-[#5A5A5A] text-sm mt-2 transition-all duration-300">
           {saveState === "saving"
             ? "Mohon tunggu sebentar."
-            : "Silakan selesaikan pembayaran dan konfirmasi via WhatsApp."}
+            : dbStatus === "confirmed"
+            ? "Pembayaran Anda telah diverifikasi. Sampai jumpa di studio sesuai jadwal!"
+            : dbStatus === "completed"
+            ? "Terima kasih telah melakukan pemotretan di Snapp.frame Studio."
+            : dbStatus === "cancelled"
+            ? "Booking Anda telah dibatalkan. Silakan hubungi admin jika ada pertanyaan."
+            : "Selesaikan pembayaran dan konfirmasi via WhatsApp. Admin akan memverifikasi pesanan Anda."}
         </p>
+        {saveState === "saved" && (
+          <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-500 bg-amber-50 border-amber-200">
+            {dbStatus === "confirmed" ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-xs font-semibold text-emerald-700">Pembayaran Dikonfirmasi</span>
+              </>
+            ) : dbStatus === "completed" ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-xs font-semibold text-blue-700">Sesi Selesai</span>
+              </>
+            ) : dbStatus === "cancelled" ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="text-xs font-semibold text-red-700">Dibatalkan</span>
+              </>
+            ) : (
+              <>
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-xs font-semibold text-amber-700">Menunggu Konfirmasi Admin</span>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Error banner — non-blocking */}
@@ -301,14 +401,80 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           </p>
 
           {paymentMethod === "qris" ? (
-            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3 px-4 text-center">
-              <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Pembayaran via QRIS</p>
-              <p className="text-xs text-[#5A5A5A] max-w-[200px] mb-3">
-                Mendukung Gopay, ShopeePay, Dana, LinkAja, dan bank transfer scan.
+            <div className="flex flex-col items-center py-5 bg-[#FAF9F5] border border-[#E2CFBF] rounded-2xl mt-3 px-4 text-center shadow-inner relative overflow-hidden">
+              {/* QRIS Header branding */}
+              <div className="flex justify-between items-center w-full px-2 mb-3">
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] font-black text-red-600 italic tracking-tighter">QR</span>
+                  <span className="text-[10px] font-black text-blue-800 italic tracking-tighter">IS</span>
+                </div>
+                <div className="text-[7px] font-black text-[#5D4037]/40 uppercase tracking-widest">
+                  GPN / Indonesian QR Code
+                </div>
+              </div>
+
+              {/* Dynamic or Uploaded QR Code Image */}
+              <div className="p-3 bg-white rounded-2xl shadow-md border border-[#E2CFBF]/50 mb-3 relative group">
+                {siteSettings.payment_qris_image ? (
+                  <img
+                    src={siteSettings.payment_qris_image}
+                    alt="QRIS Merchant"
+                    className="w-40 h-40 object-contain"
+                  />
+                ) : (
+                  <>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=5D4037&data=QRIS_DUMMY_SNEAPICI_STUDIO_INVOICE_${invoice}_TOTAL_${finalPrice}`}
+                      alt="QRIS Code Dummy"
+                      className="w-40 h-40 object-contain mix-blend-multiply"
+                    />
+                    <div className="absolute inset-0 bg-white/95 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 rounded-2xl">
+                      <p className="text-[10px] font-black text-[#5D4037]">QRIS DUMMY</p>
+                      <p className="text-[8px] text-[#5D4037]/60 mt-1">Hanya untuk simulasi uji coba</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Merchant Details */}
+              <p className="text-xs font-black text-[#3B2211] uppercase tracking-wider mb-1">
+                {siteSettings.payment_bank_owner || "SNAPP.FRAME STUDIO"}
               </p>
-              <p className="text-xs font-bold text-[#3B2211]">
-                Total Transfer: <span className="text-[#C88A58]">{formatPrice(finalPrice)}</span>
+              {!siteSettings.payment_qris_image && (
+                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-3">NMID: ID1020304050</p>
+              )}
+              
+              <div className="w-full border-t border-dashed border-[#E2CFBF] my-2" />
+
+              <p className="text-[11px] font-bold text-[#3B2211] mb-3">
+                Total Transfer: <span className="text-[#C88A58] font-mono text-xs">{formatPrice(finalPrice)}</span>
               </p>
+
+              {/* DEV SIMULATOR BUTTON */}
+              {dbStatus === "pending" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const confirmSim = confirm("✨ [SIMULASI DEV] Apakah Anda ingin menyimulasikan pembayaran QRIS ini berhasil (Lunas)?\n\nTindakan ini akan langsung mengonfirmasi booking di database.");
+                    if (!confirmSim) return;
+                    
+                    try {
+                      const { updateBookingStatusByInvoice } = await import("@/app/actions/bookings");
+                      const res = await updateBookingStatusByInvoice(invoice, "confirmed");
+                      if (res.success) {
+                        toast.success("✨ Simulasi Pembayaran QRIS Lunas Berhasil!");
+                      } else {
+                        toast.error("Gagal menjalankan simulasi: " + res.error);
+                      }
+                    } catch (err: any) {
+                      toast.error("Error simulasi: " + err.message);
+                    }
+                  }}
+                  className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300"
+                >
+                  ⚡ Simulasikan Pembayaran Lunas (Dev)
+                </button>
+              )}
             </div>
           ) : (
             <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3 px-4 text-center space-y-2">
@@ -323,15 +489,15 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
               <div className="text-xs text-left w-full space-y-1 py-2 px-3 bg-white/50 rounded-lg font-medium">
                 <div className="flex justify-between">
                   <span className="text-[#888888]">Bank:</span>
-                  <span className="text-[#1A1A1A] font-bold">{(site as any).payment.bankName}</span>
+                  <span className="text-[#1A1A1A] font-bold">{siteSettings.payment_bank_name || site.payment.bankName}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[#888888]">No. Rekening:</span>
                   <span className="text-[#1A1A1A] font-bold font-mono flex items-center gap-1">
-                    {(site as any).payment.bankAccount}
+                    {siteSettings.payment_bank_account || site.payment.bankAccount}
                     <button 
                       onClick={() => {
-                        navigator.clipboard.writeText((site as any).payment.bankAccount);
+                        navigator.clipboard.writeText(siteSettings.payment_bank_account || site.payment.bankAccount);
                         toast.success("Nomor rekening disalin!");
                       }}
                       className="p-1 hover:bg-[#F0EFE9] rounded text-[#C88A58] transition-colors"
@@ -343,7 +509,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#888888]">Atas Nama:</span>
-                  <span className="text-[#1A1A1A] font-bold">{(site as any).payment.bankOwner}</span>
+                  <span className="text-[#1A1A1A] font-bold">{siteSettings.payment_bank_owner || site.payment.bankOwner}</span>
                 </div>
               </div>
               <p className="text-[9px] text-[#A0A0A0] italic">

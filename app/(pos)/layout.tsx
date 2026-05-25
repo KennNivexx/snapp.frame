@@ -253,11 +253,6 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
                 <div className="w-px h-8 bg-[#3B2211]/10" />
               </div>
-
-              <button className="p-2.5 text-[#3B2211]/30 hover:text-[#3B2211] hover:bg-[#3B2211]/5 rounded-xl transition-all relative">
-                <Settings size={20} />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-[#C88A58] rounded-full border-2 border-white" />
-              </button>
             </div>
           </header>
         )}

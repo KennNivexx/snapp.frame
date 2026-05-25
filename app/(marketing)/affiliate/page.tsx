@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import {
   Coffee, Camera, Presentation, Recycle, MonitorPlay,
   GraduationCap, Users, Building, ShoppingBag, Handshake,
@@ -874,8 +875,19 @@ function ProgramPosterCarousel({ urls, productName }: { urls: string[]; productN
   );
 }
 
-// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
-export default function AffiliatePage() {
+const pkgSlugMap: Record<string, string> = {
+  "lp-academic-partner": "LP Academic Partner",
+  "lp-career-ready": "LP Career Ready",
+  "lp-entrepreneur-launchpad": "LP Entrepreneur Launchpad",
+  "bisapreneur-academy": "Bisapreneur Academy",
+  "baristara-academy": "Baristara Academy",
+  "cuan-creator-academy": "Cuan Creator Academy",
+  "tekno-ai-academy": "Tekno AI Academy",
+  "mental-bahasa-academy": "Mental Bahasa Academy",
+};
+
+// ─── MAIN PAGE CONTENT ────────────────────────────────────────────────────────
+function AffiliateContent() {
   const [activeProduct, setActiveProduct] = useState<(typeof products)[0] | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -886,9 +898,25 @@ export default function AffiliatePage() {
   const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
   const [settings, setSettings] = useState<Record<string, string>>({});
 
+  const searchParams = useSearchParams();
+
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Auto-open detailed program modal if pkg is passed in URL
+  useEffect(() => {
+    const pkg = searchParams.get("pkg");
+    if (pkg) {
+      const targetName = pkgSlugMap[pkg.toLowerCase()];
+      if (targetName) {
+        const found = products.find((p) => p.name === targetName);
+        if (found) {
+          setActiveProduct(found);
+        }
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -1467,5 +1495,18 @@ export default function AffiliatePage() {
         </section>
       </main>
     </>
+  );
+}
+
+export default function AffiliatePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#090503] flex flex-col items-center justify-center space-y-4">
+        <div className="w-12 h-12 rounded-full border-4 border-[#C88A58]/20 border-t-[#C88A58] animate-spin" />
+        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Memuat Halaman Affiliate...</p>
+      </div>
+    }>
+      <AffiliateContent />
+    </Suspense>
   );
 }

@@ -48,6 +48,12 @@ import {
   updateApplicationStatus,
   deleteAffiliateApplication,
 } from "@/app/actions/affiliate-applications";
+import {
+  getAffiliators,
+  updateAffiliator,
+  createAffiliator,
+  deleteAffiliator,
+} from "@/app/actions/affiliators";
 import { toast } from "sonner";
 
 /* ─────────────────────────── Types ─────────────────────────── */
@@ -64,6 +70,10 @@ interface Affiliator {
   totalReferrals: number;
   totalEarnings: number;
   notes: string;
+  bankName?: string;
+  bankAccount?: string;
+  feePercentage?: number;
+  discountPct?: number;
 }
 
 interface AffiliatePost {
@@ -550,7 +560,7 @@ function PostModal({
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             <div className={`grid ${preview ? "grid-cols-2" : "grid-cols-1"} h-full`}>
               {/* Form */}
               <div className="p-8 space-y-6 border-r border-[#F8F6F4]">
@@ -752,7 +762,8 @@ function PostModal({
 
 export default function AffiliatorsPage() {
   // ── Affiliator state ──
-  const [affiliators, setAffiliators] = useState<Affiliator[]>(MOCK_DATA);
+  const [affiliators, setAffiliators] = useState<Affiliator[]>([]);
+  const [affiliatorsLoading, setAffiliatorsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "active" | "pending" | "inactive"
@@ -767,6 +778,10 @@ export default function AffiliatorsPage() {
     email: "",
     referralCode: "",
     status: "pending",
+    bankName: "",
+    bankAccount: "",
+    feePercentage: 10.0,
+    discountPct: 10.0,
     notes: "",
   });
 
@@ -783,6 +798,18 @@ export default function AffiliatorsPage() {
   const [appsLoading, setAppsLoading] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AffiliateApplication | null>(null);
   const [appStatusFilter, setAppStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+
+  // ── Affiliator actions ──
+  const fetchAffiliators = async () => {
+    setAffiliatorsLoading(true);
+    const res = await getAffiliators();
+    if (res.success && res.data) {
+      setAffiliators(res.data as any);
+    } else {
+      toast.error(res.error || "Gagal memuat data affiliator.");
+    }
+    setAffiliatorsLoading(false);
+  };
 
   // ── Affiliator computed ──
   const filtered = affiliators.filter((a) => {
@@ -804,46 +831,107 @@ export default function AffiliatorsPage() {
   // ── Affiliator actions ──
   const openAdd = () => {
     setEditingItem(null);
-    setForm({ name: "", phone: "", instagram: "", email: "", referralCode: "", status: "pending", notes: "" });
+    setForm({
+      name: "",
+      phone: "",
+      instagram: "",
+      email: "",
+      referralCode: "",
+      status: "active",
+      bankName: "",
+      bankAccount: "",
+      feePercentage: 10.0,
+      discountPct: 10.0,
+      notes: "",
+    });
     setShowModal(true);
   };
+
   const openEdit = (a: Affiliator) => {
     setEditingItem(a);
     setForm({ ...a });
     setShowModal(true);
     setActiveMenu(null);
   };
-  const handleDelete = (id: string) => {
-    setAffiliators((prev) => prev.filter((a) => a.id !== id));
-    setActiveMenu(null);
-  };
-  const handleStatusChange = (id: string, status: Affiliator["status"]) => {
-    setAffiliators((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
-    setActiveMenu(null);
-  };
-  const handleSave = () => {
-    if (!form.name || !form.phone || !form.referralCode) return;
-    if (editingItem) {
-      setAffiliators((prev) =>
-        prev.map((a) => (a.id === editingItem.id ? { ...a, ...form } : a))
-      );
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Hapus affiliator ini secara permanen beserta datanya?")) return;
+    const res = await deleteAffiliator(id);
+    if (res.success) {
+      toast.success("Affiliator berhasil dihapus!");
+      fetchAffiliators();
     } else {
-      const newAff: Affiliator = {
-        id: `AFF-${String(affiliators.length + 1).padStart(3, "0")}`,
-        name: form.name!,
-        phone: form.phone!,
-        instagram: form.instagram || "",
-        email: form.email || "",
-        joinDate: new Date().toISOString().split("T")[0],
-        referralCode: form.referralCode!.toUpperCase(),
-        status: (form.status as Affiliator["status"]) || "pending",
-        totalReferrals: 0,
-        totalEarnings: 0,
-        notes: form.notes || "",
-      };
-      setAffiliators((prev) => [newAff, ...prev]);
+      toast.error(res.error || "Gagal menghapus.");
     }
-    setShowModal(false);
+    setActiveMenu(null);
+  };
+
+  const handleStatusChange = async (id: string, status: "active" | "inactive") => {
+    const aff = affiliators.find(a => a.id === id);
+    if (!aff) return;
+
+    const res = await updateAffiliator(id, {
+      name: aff.name,
+      phone: aff.phone,
+      email: aff.email,
+      referralCode: aff.referralCode,
+      status: status,
+      bankName: aff.bankName,
+      bankAccount: aff.bankAccount,
+      feePercentage: aff.feePercentage,
+      discountPct: aff.discountPct,
+    });
+
+    if (res.success) {
+      toast.success(status === "active" ? "Affiliator diaktifkan!" : "Affiliator dinonaktifkan.");
+      fetchAffiliators();
+    } else {
+      toast.error(res.error || "Gagal memperbarui status.");
+    }
+    setActiveMenu(null);
+  };
+
+  const handleSave = async () => {
+    if (!form.name || !form.phone || !form.referralCode || !form.email) {
+      toast.error("Nama, email, WhatsApp, dan kode referral wajib diisi.");
+      return;
+    }
+    
+    let res;
+    if (editingItem) {
+      res = await updateAffiliator(editingItem.id, {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        referralCode: form.referralCode,
+        status: (form.status as any) === "active" ? "active" : "inactive",
+        bankName: form.bankName || "",
+        bankAccount: form.bankAccount || "",
+        feePercentage: form.feePercentage ? Number(form.feePercentage) : undefined,
+        discountPct: form.discountPct ? Number(form.discountPct) : undefined,
+      });
+    } else {
+      res = await createAffiliator({
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        referralCode: form.referralCode,
+        status: (form.status as any) === "active" ? "active" : "inactive",
+        bankName: form.bankName || "",
+        bankAccount: form.bankAccount || "",
+        password: (form as any).password || undefined,
+        feePercentage: form.feePercentage ? Number(form.feePercentage) : undefined,
+        discountPct: form.discountPct ? Number(form.discountPct) : undefined,
+      });
+    }
+
+    if (res.success) {
+      toast.success(editingItem ? "Data berhasil disimpan!" : "Affiliator baru berhasil ditambahkan!");
+      setShowModal(false);
+      fetchAffiliators();
+    } else {
+      toast.error(res.error || "Terjadi kesalahan.");
+    }
   };
 
   // ── Post actions ──
@@ -871,8 +959,9 @@ export default function AffiliatorsPage() {
       );
       setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
       if (selectedApp?.id === id) setSelectedApp((a) => a ? { ...a, status } : null);
+      fetchAffiliators();
     } else {
-      toast.error("Gagal mengubah status.");
+      toast.error(res.error || "Gagal mengubah status.");
     }
   };
 
@@ -891,11 +980,13 @@ export default function AffiliatorsPage() {
   useEffect(() => {
     if (tab === "posts") fetchPosts();
     if (tab === "pendaftaran") fetchApplications();
+    if (tab === "affiliators") fetchAffiliators();
   }, [tab]);
 
-  // Auto-load applications on first mount
+  // Auto-load applications and affiliators on first mount
   useEffect(() => {
     fetchApplications();
+    fetchAffiliators();
   }, []);
 
   const handleDeletePost = async (id: string) => {
@@ -1439,15 +1530,7 @@ export default function AffiliatorsPage() {
                                           </button>
                                         </>
                                       )}
-                                      {app.status !== "pending" && (
-                                        <button
-                                          onClick={() => handleAppStatus(app.id, "pending")}
-                                          className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
-                                          title="Kembalikan ke Pending"
-                                        >
-                                          <Clock size={15} />
-                                        </button>
-                                      )}
+
                                       <button
                                         onClick={() => handleDeleteApp(app.id)}
                                         className="p-2 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
@@ -1525,31 +1608,22 @@ export default function AffiliatorsPage() {
                       </div>
                     )}
 
-                    <div className="flex gap-2 pt-2">
-                      {selectedApp.status === "pending" ? (
-                        <>
-                          <button
-                            onClick={() => handleAppStatus(selectedApp.id, "approved")}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                          >
-                            <CheckCircle2 size={13} /> Setujui
-                          </button>
-                          <button
-                            onClick={() => handleAppStatus(selectedApp.id, "rejected")}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                          >
-                            <XCircle size={13} /> Tolak
-                          </button>
-                        </>
-                      ) : (
+                    {selectedApp.status === "pending" && (
+                      <div className="flex gap-2 pt-2">
                         <button
-                          onClick={() => handleAppStatus(selectedApp.id, "pending")}
-                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                          onClick={() => handleAppStatus(selectedApp.id, "approved")}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                         >
-                          <Clock size={13} /> Kembalikan ke Pending
+                          <CheckCircle2 size={13} /> Setujui
                         </button>
-                      )}
-                    </div>
+                        <button
+                          onClick={() => handleAppStatus(selectedApp.id, "rejected")}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                        >
+                          <XCircle size={13} /> Tolak
+                        </button>
+                      </div>
+                    )}
                     <a
                       href={`https://wa.me/${selectedApp.phone.replace(/^0/, "62").replace(/\D/g, "")}`}
                       target="_blank"
@@ -1740,13 +1814,14 @@ export default function AffiliatorsPage() {
                     <X size={20} />
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-8 py-6 space-y-4">
                   {[
                     { label: "Nama Lengkap *", key: "name", placeholder: "Nama lengkap affiliator" },
                     { label: "Nomor WhatsApp *", key: "phone", placeholder: "08xxxxxxxxxx" },
-                    { label: "Instagram", key: "instagram", placeholder: "@username" },
-                    { label: "Email", key: "email", placeholder: "email@gmail.com" },
+                    { label: "Email *", key: "email", placeholder: "email@gmail.com" },
                     { label: "Kode Referral *", key: "referralCode", placeholder: "NAMA10" },
+                    { label: "Nama Bank", key: "bankName", placeholder: "Contoh: BCA, Mandiri" },
+                    { label: "Nomor Rekening", key: "bankAccount", placeholder: "1234567890" },
                   ].map(({ label, key, placeholder }) => (
                     <div key={key}>
                       <label className="block text-[10px] font-black text-[#3B2211] uppercase tracking-widest mb-2">
@@ -1761,6 +1836,46 @@ export default function AffiliatorsPage() {
                       />
                     </div>
                   ))}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-[#3B2211] uppercase tracking-widest mb-2">
+                        Komisi Marketer (%)
+                      </label>
+                      <input
+                        type="number"
+                        value={(form as any).feePercentage ?? ""}
+                        onChange={(e) => setForm((f) => ({ ...f, feePercentage: parseFloat(e.target.value) || 0 }))}
+                        placeholder="10"
+                        className="w-full px-5 py-3.5 bg-[#F8F6F4] border border-transparent rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-[#3B2211] uppercase tracking-widest mb-2">
+                        Diskon Customer (%)
+                      </label>
+                      <input
+                        type="number"
+                        value={(form as any).discountPct ?? ""}
+                        onChange={(e) => setForm((f) => ({ ...f, discountPct: parseFloat(e.target.value) || 0 }))}
+                        placeholder="10"
+                        className="w-full px-5 py-3.5 bg-[#F8F6F4] border border-transparent rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 transition-all"
+                      />
+                    </div>
+                  </div>
+                  {!editingItem && (
+                    <div>
+                      <label className="block text-[10px] font-black text-[#3B2211] uppercase tracking-widest mb-2">
+                        Kata Sandi Login *
+                      </label>
+                      <input
+                        type="password"
+                        value={(form as any).password || ""}
+                        onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                        placeholder="Minimal 6 karakter"
+                        className="w-full px-5 py-3.5 bg-[#F8F6F4] border border-transparent rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 transition-all"
+                      />
+                    </div>
+                  )}
                   <div>
                     <label className="block text-[10px] font-black text-[#3B2211] uppercase tracking-widest mb-2">
                       Status
@@ -1770,7 +1885,6 @@ export default function AffiliatorsPage() {
                       onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as any }))}
                       className="w-full px-5 py-3.5 bg-[#F8F6F4] border border-transparent rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#3B2211]/10 transition-all"
                     >
-                      <option value="pending">Pending</option>
                       <option value="active">Aktif</option>
                       <option value="inactive">Nonaktif</option>
                     </select>
@@ -1797,7 +1911,7 @@ export default function AffiliatorsPage() {
                   </button>
                   <button
                     onClick={handleSave}
-                    disabled={!form.name || !form.phone || !form.referralCode}
+                    disabled={!form.name || !form.phone || !form.referralCode || !form.email || (!editingItem && !(form as any).password)}
                     className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#3B2211] text-white text-[11px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none shadow-xl shadow-[#3B2211]/20"
                   >
                     <Save size={14} />

@@ -13,6 +13,7 @@ import Step2PersonalData from "./step2-personal";
 import Step3Summary from "./step3-summary";
 import Step4Payment from "./step4-payment";
 import Step5Receipt from "./step5-receipt";
+import { getSiteSettings } from "@/app/actions/settings";
 
 const STEPS = ["Paket", "Data Diri", "Ringkasan", "Bayar", "Selesai"];
 
@@ -60,8 +61,7 @@ function StepIndicator({ current }: { current: number }) {
 }
 
 export default function BookingFlow() {
-  // suppress unused warning — searchParams used in Step1
-  useSearchParams();
+  const searchParams = useSearchParams();
 
   const [step, setStep] = useState(0);
   const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
@@ -73,6 +73,20 @@ export default function BookingFlow() {
 
   const [packagesList, setPackagesList] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasAutoAdvanced, setHasAutoAdvanced] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    async function loadSiteSettings() {
+      try {
+        const data = await getSiteSettings();
+        setSiteSettings(data);
+      } catch (err) {
+        console.error("Gagal memuat pengaturan website:", err);
+      }
+    }
+    loadSiteSettings();
+  }, []);
 
   useEffect(() => {
     async function loadDbPackages() {
@@ -92,6 +106,20 @@ export default function BookingFlow() {
     }
     loadDbPackages();
   }, []);
+
+  // Auto-select package and auto-advance to step 1 (Data Diri) if pkg matches
+  useEffect(() => {
+    if (loading || hasAutoAdvanced || packagesList.length === 0) return;
+    const pkgId = searchParams.get("pkg");
+    if (pkgId) {
+      const found = packagesList.find((p) => p.id === pkgId || (p as any).sku === pkgId);
+      if (found) {
+        setSelectedPkg(found);
+        setStep(1); // Langsung ke langkah "Data Diri"
+        setHasAutoAdvanced(true);
+      }
+    }
+  }, [loading, packagesList, hasAutoAdvanced, searchParams]);
 
   function reset() {
     setStep(0);
@@ -163,6 +191,7 @@ export default function BookingFlow() {
             referral={referral}
             paymentMethod={paymentMethod}
             onReset={reset}
+            siteSettings={siteSettings}
           />
         )}
       </div>

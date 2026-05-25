@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getSiteSettings, updateSiteSettings } from "@/app/actions/settings";
-import { Save, Loader2, Globe, Mail, Phone, Clock, Type, Upload, Image as ImageIcon, X } from "lucide-react";
+import { Save, Loader2, Globe, Mail, Phone, Clock, Type, Upload, Image as ImageIcon, X, CreditCard, QrCode } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -40,6 +40,10 @@ export default function SettingsPage() {
         affiliate_poster_cuan_creator: data.affiliate_poster_cuan_creator || "",
         affiliate_poster_tekno_ai: data.affiliate_poster_tekno_ai || "",
         affiliate_poster_mental_bahasa: data.affiliate_poster_mental_bahasa || "",
+        payment_bank_name: data.payment_bank_name || "BCA (Bank Central Asia)",
+        payment_bank_account: data.payment_bank_account || "7771234567",
+        payment_bank_owner: data.payment_bank_owner || "Snapp.frame Owner",
+        payment_qris_image: data.payment_qris_image || "",
       });
     } catch (error) {
       toast.error("Gagal memuat pengaturan");
@@ -80,6 +84,28 @@ export default function SettingsPage() {
     } catch (err) {
       console.error(err);
       toast.error("Terjadi kesalahan saat mengunggah.", { id: "upload" });
+    }
+  };
+
+  const handleQrisUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      toast.loading("Mengunggah QRIS...", { id: "upload_qris" });
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        handleChange("payment_qris_image", data.url);
+        toast.success("QRIS berhasil diunggah!", { id: "upload_qris" });
+      } else {
+        toast.error("Gagal mengunggah QRIS.", { id: "upload_qris" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Terjadi kesalahan saat mengunggah QRIS.", { id: "upload_qris" });
     }
   };
 
@@ -133,63 +159,159 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Contact Info */}
-        <div className="bg-white p-6 rounded-2xl border border-near-black/5 shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-near-black/5">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Mail className="w-5 h-5" />
+        {/* Left Column */}
+        <div className="space-y-8">
+          {/* Contact Info */}
+          <div className="bg-white p-6 rounded-2xl border border-near-black/5 shadow-sm">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-near-black/5">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Mail className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-near-black uppercase tracking-widest">Informasi Kontak</h2>
+                <p className="text-[11px] text-near-black/50 font-medium">Email, Telepon, dan Lokasi</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-sm font-bold text-near-black uppercase tracking-widest">Informasi Kontak</h2>
-              <p className="text-[11px] text-near-black/50 font-medium">Email, Telepon, dan Lokasi</p>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Email Publik</label>
+                <input
+                  type="text"
+                  value={settings.contact_email}
+                  onChange={(e) => handleChange("contact_email", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor Telepon (Tampilan)</label>
+                <input
+                  type="text"
+                  value={settings.contact_phone}
+                  onChange={(e) => handleChange("contact_phone", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor WhatsApp (Untuk Tombol/Link, tanpa +)</label>
+                <input
+                  type="text"
+                  value={settings.contact_wa}
+                  onChange={(e) => handleChange("contact_wa", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                  placeholder="6281234567890"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Username Instagram</label>
+                <input
+                  type="text"
+                  value={settings.contact_ig}
+                  onChange={(e) => handleChange("contact_ig", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Alamat Studio</label>
+                <textarea
+                  value={settings.contact_address}
+                  onChange={(e) => handleChange("contact_address", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all min-h-[80px]"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div>
-              <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Email Publik</label>
-              <input
-                type="text"
-                value={settings.contact_email}
-                onChange={(e) => handleChange("contact_email", e.target.value)}
-                className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-              />
+          {/* Payment Settings */}
+          <div className="bg-white p-6 rounded-2xl border border-near-black/5 shadow-sm">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-near-black/5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-near-black uppercase tracking-widest">Informasi Pembayaran</h2>
+                <p className="text-[11px] text-near-black/50 font-medium">Rekening Bank & Gambar QRIS</p>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor Telepon (Tampilan)</label>
-              <input
-                type="text"
-                value={settings.contact_phone}
-                onChange={(e) => handleChange("contact_phone", e.target.value)}
-                className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor WhatsApp (Untuk Tombol/Link, tanpa +)</label>
-              <input
-                type="text"
-                value={settings.contact_wa}
-                onChange={(e) => handleChange("contact_wa", e.target.value)}
-                className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-                placeholder="6281234567890"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Username Instagram</label>
-              <input
-                type="text"
-                value={settings.contact_ig}
-                onChange={(e) => handleChange("contact_ig", e.target.value)}
-                className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Alamat Studio</label>
-              <textarea
-                value={settings.contact_address}
-                onChange={(e) => handleChange("contact_address", e.target.value)}
-                className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all min-h-[80px]"
-              />
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nama Bank</label>
+                <input
+                  type="text"
+                  value={settings.payment_bank_name || ""}
+                  onChange={(e) => handleChange("payment_bank_name", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                  placeholder="Contoh: BCA (Bank Central Asia)"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor Rekening</label>
+                <input
+                  type="text"
+                  value={settings.payment_bank_account || ""}
+                  onChange={(e) => handleChange("payment_bank_account", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                  placeholder="Contoh: 7771234567"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nama Pemilik Rekening</label>
+                <input
+                  type="text"
+                  value={settings.payment_bank_owner || ""}
+                  onChange={(e) => handleChange("payment_bank_owner", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                  placeholder="Contoh: Snapp.frame Studio Owner"
+                />
+              </div>
+
+              <div className="border-t border-near-black/5 pt-4">
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Gambar Kode QRIS</label>
+                <div className="space-y-3">
+                  {settings.payment_qris_image ? (
+                    <div className="relative w-36 h-36 rounded-xl bg-near-black/5 border border-near-black/10 overflow-hidden group shadow-sm flex items-center justify-center">
+                      <img src={settings.payment_qris_image} alt="QRIS Merchant" className="w-full h-full object-contain p-2" />
+                      <button
+                        type="button"
+                        onClick={() => handleChange("payment_qris_image", "")}
+                        className="absolute top-1.5 right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md cursor-pointer flex items-center justify-center"
+                        title="Hapus QRIS"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-36 h-36 rounded-xl bg-near-black/5 border border-near-black/10 flex items-center justify-center text-near-black/25">
+                      <QrCode className="w-8 h-8 animate-pulse" />
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={settings.payment_qris_image || ""}
+                      onChange={(e) => handleChange("payment_qris_image", e.target.value)}
+                      placeholder="Link Gambar URL QRIS..."
+                      className="w-full px-3 py-2 bg-warm-white/50 border border-near-black/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all font-mono"
+                    />
+                    <div>
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-near-black/5 hover:bg-near-black/10 text-near-black text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                        <Upload className="w-3 h-3" /> Unggah QRIS Baru
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleQrisUpload(file);
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

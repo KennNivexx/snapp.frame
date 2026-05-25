@@ -143,14 +143,14 @@ img {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f0efe9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d0cfc9;
-  border-radius: 3px;
+  background: rgba(93, 64, 55, 0.15);
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a5a5a;
+  background: rgba(93, 64, 55, 0.35);
 }
 
 /* =============================================
@@ -289,4 +289,23 @@ body.modal-open main > div {
   background: #fffbeb;
   color: #d97706;
   border: 1px solid #fef3c7;
+}
+
+/* =============================================
+   Browser Autofill Style Override (Anti-White Autocomplete)
+   ============================================= */
+
+/* Memaksa background autocomplete tetap cokelat gelap premium pada halaman login/register */
+input.text-white:-webkit-autofill,
+input.text-white:-webkit-autofill:hover, 
+input.text-white:-webkit-autofill:focus, 
+input.text-white:-webkit-autofill:active,
+.text-white input:-webkit-autofill,
+.text-white input:-webkit-autofill:hover,
+.text-white input:-webkit-autofill:focus,
+.text-white input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 100px #160f0c inset !important; /* Cokelat gelap serasi */
+  -webkit-text-fill-color: #fcf9f6 !important; /* Warm White text */
+  caret-color: #fcf9f6 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

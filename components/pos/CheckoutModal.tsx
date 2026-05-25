@@ -237,7 +237,7 @@ export default function CheckoutModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 24 }}
           transition={{ type: "spring", stiffness: 280, damping: 28 }}
-          className="w-full max-w-md bg-white rounded-[32px] shadow-2xl relative z-10 overflow-y-auto max-h-[90vh] border border-white/20"
+          className="w-full max-w-md bg-white rounded-[32px] shadow-2xl relative z-10 overflow-y-auto max-h-[90vh] border border-white/20 custom-scrollbar"
         >
           <AnimatePresence mode="wait">
             {/* ── SUCCESS STATE ── */}

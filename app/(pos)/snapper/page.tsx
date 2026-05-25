@@ -40,6 +40,17 @@ interface AffiliatePost {
   createdAt: Date | string;
 }
 
+const AFFILIATE_PROGRAMS = [
+  { sku: "lp-academic-partner", name: "LP Academic Partner" },
+  { sku: "lp-career-ready", name: "LP Career Ready" },
+  { sku: "lp-entrepreneur-launchpad", name: "LP Entrepreneur Launchpad" },
+  { sku: "bisapreneur-academy", name: "Bisapreneur Academy" },
+  { sku: "baristara-academy", name: "Baristara Academy" },
+  { sku: "cuan-creator-academy", name: "Cuan Creator Academy" },
+  { sku: "tekno-ai-academy", name: "Tekno AI Academy" },
+  { sku: "mental-bahasa-academy", name: "Mental Bahasa Academy" },
+];
+
 export default function SnapperDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -142,10 +153,29 @@ export default function SnapperDashboard() {
   // Copy referral link
   const handleCopyLink = (code: string) => {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
-    let shareUrl = `${origin}/booking?ref=${code}`;
-    if (dashboardData?.referralCode?.targetProductId) {
-      shareUrl += `&pkg=${dashboardData.referralCode.targetProductId}`;
+    const target = dashboardData?.referralCode?.targetProductId || "";
+    
+    const isAffiliateProg = [
+      "lp-academic-partner",
+      "lp-career-ready",
+      "lp-entrepreneur-launchpad",
+      "bisapreneur-academy",
+      "baristara-academy",
+      "cuan-creator-academy",
+      "tekno-ai-academy",
+      "mental-bahasa-academy"
+    ].includes(target);
+
+    let shareUrl = "";
+    if (isAffiliateProg) {
+      shareUrl = `${origin}/affiliate?ref=${code}&pkg=${target}`;
+    } else {
+      shareUrl = `${origin}/booking?ref=${code}`;
+      if (target) {
+        shareUrl += `&pkg=${target}`;
+      }
     }
+
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
     toast.success("Link referral berhasil disalin!");
@@ -295,11 +325,22 @@ export default function SnapperDashboard() {
                     className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-[#C88A58] transition-colors"
                   >
                     <option value="" className="bg-[#1E110A] text-white/50">Semua Produk/Layanan (General)</option>
-                    {productsList.map((p) => (
-                      <option key={p.id} value={p.sku} className="bg-[#1E110A] text-white">
-                        {p.name} - Rp {p.price.toLocaleString("id-ID")}
-                      </option>
-                    ))}
+                    
+                    <optgroup label="Layanan Studio Snapp.frame" className="bg-[#1E110A] text-white/60">
+                      {productsList.map((p) => (
+                        <option key={p.id} value={p.sku} className="bg-[#1E110A] text-white font-normal">
+                          {p.name} - Rp {p.price.toLocaleString("id-ID")}
+                        </option>
+                      ))}
+                    </optgroup>
+
+                    <optgroup label="Program Kemitraan Affiliate" className="bg-[#1E110A] text-white/60">
+                      {AFFILIATE_PROGRAMS.map((prog) => (
+                        <option key={prog.sku} value={prog.sku} className="bg-[#1E110A] text-white font-normal">
+                          {prog.name} (Affiliate)
+                        </option>
+                      ))}
+                    </optgroup>
                   </select>
                   <button
                     onClick={handleSaveTargetProduct}
@@ -334,8 +375,20 @@ export default function SnapperDashboard() {
                   <div className="truncate mr-2">
                     <p className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Link Tautan Otomatis</p>
                     <p className="text-xs font-bold text-white/80 truncate">
-                      booking?ref={referralCode}
-                      {dashboardData.referralCode?.targetProductId ? `&pkg=${dashboardData.referralCode.targetProductId}` : ""}
+                      {dashboardData.referralCode?.targetProductId && [
+                        "lp-academic-partner",
+                        "lp-career-ready",
+                        "lp-entrepreneur-launchpad",
+                        "bisapreneur-academy",
+                        "baristara-academy",
+                        "cuan-creator-academy",
+                        "tekno-ai-academy",
+                        "mental-bahasa-academy"
+                      ].includes(dashboardData.referralCode.targetProductId) ? (
+                        `affiliate?ref=${referralCode}&pkg=${dashboardData.referralCode.targetProductId}`
+                      ) : (
+                        `booking?ref=${referralCode}${dashboardData.referralCode?.targetProductId ? `&pkg=${dashboardData.referralCode.targetProductId}` : ""}`
+                      )}
                     </p>
                   </div>
                   <button

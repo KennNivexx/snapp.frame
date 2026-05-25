@@ -125,43 +125,98 @@ export async function updateApplicationStatus(id: string, status: "approved" | "
     if (status === "approved") {
       // Cek apakah email sudah terdaftar di table users
       const existingUser = await prisma.user.findUnique({
-        where: { email: application.email }
+        where: { email: application.email },
+        include: { referralCode: true }
       });
 
       if (existingUser) {
-        return { success: false, error: "Email pendaftar sudah terdaftar sebagai user aktif di sistem." };
+        if (existingUser.role !== "SNAPPER") {
+          return { success: false, error: "Email pendaftar sudah terdaftar sebagai administrator di sistem." };
+        }
+
+        // Jika sudah ada sebagai SNAPPER, pastikan mereka memiliki ReferralCode dan aktifkan
+        if (existingUser.referralCode) {
+          await prisma.referralCode.update({
+            where: { id: existingUser.referralCode.id },
+            data: { isActive: true }
+          });
+        } else {
+          // Jika belum punya kode referral, buat baru
+          const generatedReferralCode = await generateUniqueReferralCode(application.name);
+          await prisma.referralCode.create({
+            data: {
+              code: generatedReferralCode,
+              marketerName: application.name,
+              discountPct: 10.0,
+              maxDiscountAmount: 50000,
+              feePercentage: 10.0,
+              ownerId: existingUser.id,
+              isActive: true,
+            }
+          });
+        }
+      } else {
+        // Buat user SNAPPER baru
+        const hashedPassword = await bcrypt.hash(application.password || "default123", 10);
+        const generatedReferralCode = await generateUniqueReferralCode(application.name);
+
+        await prisma.$transaction(async (tx) => {
+          const user = await tx.user.create({
+            data: {
+              name: application.name,
+              email: application.email,
+              phone: application.phone,
+              password: hashedPassword,
+              role: "SNAPPER",
+            }
+          });
+
+          await tx.referralCode.create({
+            data: {
+              code: generatedReferralCode,
+              marketerName: application.name,
+              discountPct: 10.0,
+              maxDiscountAmount: 50000,
+              feePercentage: 10.0,
+              ownerId: user.id,
+              isActive: true,
+            }
+          });
+        });
       }
-
-      // Hash password pendaftar
-      const hashedPassword = await bcrypt.hash(application.password || "default123", 10);
-
-      // Generate unique referral code
-      const generatedReferralCode = await generateUniqueReferralCode(application.name);
-
-      // Buat user & referral code dalam satu transaction
-      await prisma.$transaction(async (tx) => {
-        const user = await tx.user.create({
-          data: {
-            name: application.name,
-            email: application.email,
-            phone: application.phone,
-            password: hashedPassword,
-            role: "SNAPPER",
-          }
-        });
-
-        await tx.referralCode.create({
-          data: {
-            code: generatedReferralCode,
-            marketerName: application.name,
-            discountPct: 10.0, // Default 10% discount
-            maxDiscountAmount: 50000, // Default max discount amount Rp 50.000
-            feePercentage: 10.0, // Default 10% fee (commission) for snapper
-            ownerId: user.id,
-            isActive: true,
-          }
-        });
+    } else {
+      // Jika status diubah ke pending atau rejected (non-approved), hapus user SNAPPER & referral code mereka agar hilang dari daftar affiliator
+      const existingUser = await prisma.user.findUnique({
+        where: { email: application.email },
+        include: { referralCode: true }
       });
+      if (existingUser) {
+        if (existingUser.role === "SNAPPER") {
+          await prisma.$transaction(async (tx) => {
+            if (existingUser.referralCode) {
+              // Hapus referral usages jika ada
+              await tx.referralUsage.deleteMany({
+                where: { referralCodeId: existingUser.referralCode.id },
+              });
+
+              // Hapus referral code
+              await tx.referralCode.delete({
+                where: { id: existingUser.referralCode.id },
+              });
+            }
+
+            // Hapus commissions jika ada
+            await tx.affiliateCommission.deleteMany({
+              where: { snapperId: existingUser.id },
+            });
+
+            // Hapus user
+            await tx.user.delete({
+              where: { id: existingUser.id },
+            });
+          });
+        }
+      }
     }
 
     const updated = await prisma.affiliateApplication.update({

@@ -98,24 +98,24 @@ function LoginContent() {
         />
       </div>
 
+      {/* ── Top Back Button ── */}
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.5 }}
+        className="absolute top-6 left-6 md:top-8 md:left-8 z-50"
+      >
+        <Link
+          href="/"
+          className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.05] text-white/50 hover:text-white transition-all duration-300 text-xs font-bold tracking-wider uppercase backdrop-blur-md"
+        >
+          <ArrowLeft size={13} className="group-hover:-translate-x-1 transition-transform" />
+          Kembali ke Beranda
+        </Link>
+      </motion.div>
+
       {/* ── Main Container ── */}
       <div className="w-full max-w-[450px] relative z-10">
-        
-        {/* ── Top Back Button ── */}
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="mb-8 flex justify-start"
-        >
-          <Link
-            href="/"
-            className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.05] text-white/50 hover:text-white transition-all duration-300 text-xs font-bold tracking-wider uppercase"
-          >
-            <ArrowLeft size={13} className="group-hover:-translate-x-1 transition-transform" />
-            Kembali ke Beranda
-          </Link>
-        </motion.div>
 
         {/* ── Branding Header ── */}
         <div className="text-center mb-8">

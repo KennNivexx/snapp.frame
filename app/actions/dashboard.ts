@@ -166,7 +166,24 @@ export async function getUpcomingBookings() {
       take: 10
     });
 
-    return { success: true, data: bookings };
+    // Serialize DateTime fields to strings so they can cross the server→client boundary
+    const serialized = bookings.map((b) => ({
+      id: b.id,
+      invoiceNo: b.invoiceNo,
+      packageId: b.packageId,
+      packageName: b.packageName,
+      customerName: b.customerName,
+      customerPhone: b.customerPhone,
+      sessionDate: b.sessionDate,
+      sessionTime: b.sessionTime,
+      notes: b.notes,
+      status: b.status,
+      finalPrice: b.finalPrice,
+      paymentMethod: b.paymentMethod,
+      createdAt: b.createdAt.toISOString(),
+    }));
+
+    return { success: true, data: serialized };
   } catch (error: any) {
     console.error("Upcoming Bookings Error:", error);
     return { success: false, error: error.message };
@@ -215,7 +232,7 @@ export async function getChartData(period: "daily" | "weekly" | "monthly" = "dai
         .filter(b => b.createdAt.toISOString().split("T")[0] === dateKey)
         .reduce((sum, b) => sum + b.finalPrice, 0);
 
-      return { name: label, value: posTotal + bookingTotal };
+      return { name: label, revenue: posTotal + bookingTotal };
     });
 
     // Group by period if needed
@@ -230,7 +247,7 @@ export async function getChartData(period: "daily" | "weekly" | "monthly" = "dai
       success: true,
       data: {
         trends: finalTrends,
-        hasTrendData: finalTrends.some(t => t.value > 0)
+        hasTrendData: finalTrends.some(t => t.revenue > 0)
       }
     };
   } catch (error: any) {
