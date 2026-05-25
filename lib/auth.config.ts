@@ -36,7 +36,7 @@ export const authConfig = {
         if (isOnAdmin && userRole !== "ADMIN") {
           return Response.redirect(new URL("/login", nextUrl));
         }
-        if (isOnKasir && userRole !== "CASHIER" && userRole !== "ADMIN") {
+        if (isOnKasir && userRole !== "ADMIN") {
           return Response.redirect(new URL("/login", nextUrl));
         }
         if (isOnSnapper && userRole !== "SNAPPER" && userRole !== "ADMIN") {

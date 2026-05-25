@@ -73,6 +73,11 @@ export type AffiliatePost = $Result.DefaultSelection<Prisma.$AffiliatePostPayloa
  * 
  */
 export type AffiliateCommission = $Result.DefaultSelection<Prisma.$AffiliateCommissionPayload>
+/**
+ * Model AffiliateApplication
+ * 
+ */
+export type AffiliateApplication = $Result.DefaultSelection<Prisma.$AffiliateApplicationPayload>
 
 /**
  * Enums
@@ -80,7 +85,6 @@ export type AffiliateCommission = $Result.DefaultSelection<Prisma.$AffiliateComm
 export namespace $Enums {
   export const Role: {
   ADMIN: 'ADMIN',
-  CASHIER: 'CASHIER',
   SNAPPER: 'SNAPPER'
 };
 
@@ -359,6 +363,16 @@ export class PrismaClient<
     * ```
     */
   get affiliateCommission(): Prisma.AffiliateCommissionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.affiliateApplication`: Exposes CRUD operations for the **AffiliateApplication** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AffiliateApplications
+    * const affiliateApplications = await prisma.affiliateApplication.findMany()
+    * ```
+    */
+  get affiliateApplication(): Prisma.AffiliateApplicationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -804,7 +818,8 @@ export namespace Prisma {
     GalleryPhoto: 'GalleryPhoto',
     SiteSetting: 'SiteSetting',
     AffiliatePost: 'AffiliatePost',
-    AffiliateCommission: 'AffiliateCommission'
+    AffiliateCommission: 'AffiliateCommission',
+    AffiliateApplication: 'AffiliateApplication'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -820,7 +835,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "referralCode" | "booking" | "category" | "product" | "referralUsage" | "transactionItem" | "transaction" | "user" | "galleryPhoto" | "siteSetting" | "affiliatePost" | "affiliateCommission"
+      modelProps: "referralCode" | "booking" | "category" | "product" | "referralUsage" | "transactionItem" | "transaction" | "user" | "galleryPhoto" | "siteSetting" | "affiliatePost" | "affiliateCommission" | "affiliateApplication"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1712,6 +1727,80 @@ export namespace Prisma {
           }
         }
       }
+      AffiliateApplication: {
+        payload: Prisma.$AffiliateApplicationPayload<ExtArgs>
+        fields: Prisma.AffiliateApplicationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AffiliateApplicationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AffiliateApplicationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>
+          }
+          findFirst: {
+            args: Prisma.AffiliateApplicationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AffiliateApplicationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>
+          }
+          findMany: {
+            args: Prisma.AffiliateApplicationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>[]
+          }
+          create: {
+            args: Prisma.AffiliateApplicationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>
+          }
+          createMany: {
+            args: Prisma.AffiliateApplicationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AffiliateApplicationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>[]
+          }
+          delete: {
+            args: Prisma.AffiliateApplicationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>
+          }
+          update: {
+            args: Prisma.AffiliateApplicationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>
+          }
+          deleteMany: {
+            args: Prisma.AffiliateApplicationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AffiliateApplicationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AffiliateApplicationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>[]
+          }
+          upsert: {
+            args: Prisma.AffiliateApplicationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateApplicationPayload>
+          }
+          aggregate: {
+            args: Prisma.AffiliateApplicationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAffiliateApplication>
+          }
+          groupBy: {
+            args: Prisma.AffiliateApplicationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AffiliateApplicationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AffiliateApplicationCountArgs<ExtArgs>
+            result: $Utils.Optional<AffiliateApplicationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1832,6 +1921,7 @@ export namespace Prisma {
     siteSetting?: SiteSettingOmit
     affiliatePost?: AffiliatePostOmit
     affiliateCommission?: AffiliateCommissionOmit
+    affiliateApplication?: AffiliateApplicationOmit
   }
 
   /* Types for Logging */
@@ -2166,6 +2256,7 @@ export namespace Prisma {
     usageCount: number | null
     isActive: boolean | null
     ownerId: string | null
+    targetProductId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2184,6 +2275,7 @@ export namespace Prisma {
     usageCount: number | null
     isActive: boolean | null
     ownerId: string | null
+    targetProductId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2202,6 +2294,7 @@ export namespace Prisma {
     usageCount: number
     isActive: number
     ownerId: number
+    targetProductId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2238,6 +2331,7 @@ export namespace Prisma {
     usageCount?: true
     isActive?: true
     ownerId?: true
+    targetProductId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2256,6 +2350,7 @@ export namespace Prisma {
     usageCount?: true
     isActive?: true
     ownerId?: true
+    targetProductId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2274,6 +2369,7 @@ export namespace Prisma {
     usageCount?: true
     isActive?: true
     ownerId?: true
+    targetProductId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2379,6 +2475,7 @@ export namespace Prisma {
     usageCount: number
     isActive: boolean
     ownerId: string | null
+    targetProductId: string | null
     createdAt: Date
     updatedAt: Date
     _count: ReferralCodeCountAggregateOutputType | null
@@ -2416,6 +2513,7 @@ export namespace Prisma {
     usageCount?: boolean
     isActive?: boolean
     ownerId?: boolean
+    targetProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
@@ -2438,6 +2536,7 @@ export namespace Prisma {
     usageCount?: boolean
     isActive?: boolean
     ownerId?: boolean
+    targetProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
@@ -2457,6 +2556,7 @@ export namespace Prisma {
     usageCount?: boolean
     isActive?: boolean
     ownerId?: boolean
+    targetProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
@@ -2476,11 +2576,12 @@ export namespace Prisma {
     usageCount?: boolean
     isActive?: boolean
     ownerId?: boolean
+    targetProductId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ReferralCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "marketerName" | "discountPct" | "maxDiscountAmount" | "feePercentage" | "bankName" | "bankAccount" | "expiryDate" | "usageLimit" | "usageCount" | "isActive" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["referralCode"]>
+  export type ReferralCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "marketerName" | "discountPct" | "maxDiscountAmount" | "feePercentage" | "bankName" | "bankAccount" | "expiryDate" | "usageLimit" | "usageCount" | "isActive" | "ownerId" | "targetProductId" | "createdAt" | "updatedAt", ExtArgs["result"]["referralCode"]>
   export type ReferralCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
     referral_usages?: boolean | ReferralCode$referral_usagesArgs<ExtArgs>
@@ -2515,6 +2616,7 @@ export namespace Prisma {
       usageCount: number
       isActive: boolean
       ownerId: string | null
+      targetProductId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["referralCode"]>
@@ -2956,6 +3058,7 @@ export namespace Prisma {
     readonly usageCount: FieldRef<"ReferralCode", 'Int'>
     readonly isActive: FieldRef<"ReferralCode", 'Boolean'>
     readonly ownerId: FieldRef<"ReferralCode", 'String'>
+    readonly targetProductId: FieldRef<"ReferralCode", 'String'>
     readonly createdAt: FieldRef<"ReferralCode", 'DateTime'>
     readonly updatedAt: FieldRef<"ReferralCode", 'DateTime'>
   }
@@ -16035,6 +16138,1136 @@ export namespace Prisma {
 
 
   /**
+   * Model AffiliateApplication
+   */
+
+  export type AggregateAffiliateApplication = {
+    _count: AffiliateApplicationCountAggregateOutputType | null
+    _min: AffiliateApplicationMinAggregateOutputType | null
+    _max: AffiliateApplicationMaxAggregateOutputType | null
+  }
+
+  export type AffiliateApplicationMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    email: string | null
+    phone: string | null
+    password: string | null
+    instagram: string | null
+    tiktok: string | null
+    occupation: string | null
+    city: string | null
+    motivation: string | null
+    experience: string | null
+    status: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AffiliateApplicationMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    email: string | null
+    phone: string | null
+    password: string | null
+    instagram: string | null
+    tiktok: string | null
+    occupation: string | null
+    city: string | null
+    motivation: string | null
+    experience: string | null
+    status: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AffiliateApplicationCountAggregateOutputType = {
+    id: number
+    name: number
+    email: number
+    phone: number
+    password: number
+    instagram: number
+    tiktok: number
+    occupation: number
+    city: number
+    motivation: number
+    experience: number
+    status: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AffiliateApplicationMinAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    phone?: true
+    password?: true
+    instagram?: true
+    tiktok?: true
+    occupation?: true
+    city?: true
+    motivation?: true
+    experience?: true
+    status?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AffiliateApplicationMaxAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    phone?: true
+    password?: true
+    instagram?: true
+    tiktok?: true
+    occupation?: true
+    city?: true
+    motivation?: true
+    experience?: true
+    status?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AffiliateApplicationCountAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    phone?: true
+    password?: true
+    instagram?: true
+    tiktok?: true
+    occupation?: true
+    city?: true
+    motivation?: true
+    experience?: true
+    status?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AffiliateApplicationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AffiliateApplication to aggregate.
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateApplications to fetch.
+     */
+    orderBy?: AffiliateApplicationOrderByWithRelationInput | AffiliateApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AffiliateApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AffiliateApplications
+    **/
+    _count?: true | AffiliateApplicationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AffiliateApplicationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AffiliateApplicationMaxAggregateInputType
+  }
+
+  export type GetAffiliateApplicationAggregateType<T extends AffiliateApplicationAggregateArgs> = {
+        [P in keyof T & keyof AggregateAffiliateApplication]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAffiliateApplication[P]>
+      : GetScalarType<T[P], AggregateAffiliateApplication[P]>
+  }
+
+
+
+
+  export type AffiliateApplicationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AffiliateApplicationWhereInput
+    orderBy?: AffiliateApplicationOrderByWithAggregationInput | AffiliateApplicationOrderByWithAggregationInput[]
+    by: AffiliateApplicationScalarFieldEnum[] | AffiliateApplicationScalarFieldEnum
+    having?: AffiliateApplicationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AffiliateApplicationCountAggregateInputType | true
+    _min?: AffiliateApplicationMinAggregateInputType
+    _max?: AffiliateApplicationMaxAggregateInputType
+  }
+
+  export type AffiliateApplicationGroupByOutputType = {
+    id: string
+    name: string
+    email: string
+    phone: string
+    password: string
+    instagram: string | null
+    tiktok: string | null
+    occupation: string | null
+    city: string | null
+    motivation: string | null
+    experience: string | null
+    status: string
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: AffiliateApplicationCountAggregateOutputType | null
+    _min: AffiliateApplicationMinAggregateOutputType | null
+    _max: AffiliateApplicationMaxAggregateOutputType | null
+  }
+
+  type GetAffiliateApplicationGroupByPayload<T extends AffiliateApplicationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AffiliateApplicationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AffiliateApplicationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AffiliateApplicationGroupByOutputType[P]>
+            : GetScalarType<T[P], AffiliateApplicationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AffiliateApplicationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    phone?: boolean
+    password?: boolean
+    instagram?: boolean
+    tiktok?: boolean
+    occupation?: boolean
+    city?: boolean
+    motivation?: boolean
+    experience?: boolean
+    status?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["affiliateApplication"]>
+
+  export type AffiliateApplicationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    phone?: boolean
+    password?: boolean
+    instagram?: boolean
+    tiktok?: boolean
+    occupation?: boolean
+    city?: boolean
+    motivation?: boolean
+    experience?: boolean
+    status?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["affiliateApplication"]>
+
+  export type AffiliateApplicationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    phone?: boolean
+    password?: boolean
+    instagram?: boolean
+    tiktok?: boolean
+    occupation?: boolean
+    city?: boolean
+    motivation?: boolean
+    experience?: boolean
+    status?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["affiliateApplication"]>
+
+  export type AffiliateApplicationSelectScalar = {
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    phone?: boolean
+    password?: boolean
+    instagram?: boolean
+    tiktok?: boolean
+    occupation?: boolean
+    city?: boolean
+    motivation?: boolean
+    experience?: boolean
+    status?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AffiliateApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone" | "password" | "instagram" | "tiktok" | "occupation" | "city" | "motivation" | "experience" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["affiliateApplication"]>
+
+  export type $AffiliateApplicationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AffiliateApplication"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      email: string
+      phone: string
+      password: string
+      instagram: string | null
+      tiktok: string | null
+      occupation: string | null
+      city: string | null
+      motivation: string | null
+      experience: string | null
+      status: string
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["affiliateApplication"]>
+    composites: {}
+  }
+
+  type AffiliateApplicationGetPayload<S extends boolean | null | undefined | AffiliateApplicationDefaultArgs> = $Result.GetResult<Prisma.$AffiliateApplicationPayload, S>
+
+  type AffiliateApplicationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AffiliateApplicationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AffiliateApplicationCountAggregateInputType | true
+    }
+
+  export interface AffiliateApplicationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AffiliateApplication'], meta: { name: 'AffiliateApplication' } }
+    /**
+     * Find zero or one AffiliateApplication that matches the filter.
+     * @param {AffiliateApplicationFindUniqueArgs} args - Arguments to find a AffiliateApplication
+     * @example
+     * // Get one AffiliateApplication
+     * const affiliateApplication = await prisma.affiliateApplication.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AffiliateApplicationFindUniqueArgs>(args: SelectSubset<T, AffiliateApplicationFindUniqueArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AffiliateApplication that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AffiliateApplicationFindUniqueOrThrowArgs} args - Arguments to find a AffiliateApplication
+     * @example
+     * // Get one AffiliateApplication
+     * const affiliateApplication = await prisma.affiliateApplication.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AffiliateApplicationFindUniqueOrThrowArgs>(args: SelectSubset<T, AffiliateApplicationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AffiliateApplication that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationFindFirstArgs} args - Arguments to find a AffiliateApplication
+     * @example
+     * // Get one AffiliateApplication
+     * const affiliateApplication = await prisma.affiliateApplication.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AffiliateApplicationFindFirstArgs>(args?: SelectSubset<T, AffiliateApplicationFindFirstArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AffiliateApplication that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationFindFirstOrThrowArgs} args - Arguments to find a AffiliateApplication
+     * @example
+     * // Get one AffiliateApplication
+     * const affiliateApplication = await prisma.affiliateApplication.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AffiliateApplicationFindFirstOrThrowArgs>(args?: SelectSubset<T, AffiliateApplicationFindFirstOrThrowArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AffiliateApplications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AffiliateApplications
+     * const affiliateApplications = await prisma.affiliateApplication.findMany()
+     * 
+     * // Get first 10 AffiliateApplications
+     * const affiliateApplications = await prisma.affiliateApplication.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const affiliateApplicationWithIdOnly = await prisma.affiliateApplication.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AffiliateApplicationFindManyArgs>(args?: SelectSubset<T, AffiliateApplicationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AffiliateApplication.
+     * @param {AffiliateApplicationCreateArgs} args - Arguments to create a AffiliateApplication.
+     * @example
+     * // Create one AffiliateApplication
+     * const AffiliateApplication = await prisma.affiliateApplication.create({
+     *   data: {
+     *     // ... data to create a AffiliateApplication
+     *   }
+     * })
+     * 
+     */
+    create<T extends AffiliateApplicationCreateArgs>(args: SelectSubset<T, AffiliateApplicationCreateArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AffiliateApplications.
+     * @param {AffiliateApplicationCreateManyArgs} args - Arguments to create many AffiliateApplications.
+     * @example
+     * // Create many AffiliateApplications
+     * const affiliateApplication = await prisma.affiliateApplication.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AffiliateApplicationCreateManyArgs>(args?: SelectSubset<T, AffiliateApplicationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AffiliateApplications and returns the data saved in the database.
+     * @param {AffiliateApplicationCreateManyAndReturnArgs} args - Arguments to create many AffiliateApplications.
+     * @example
+     * // Create many AffiliateApplications
+     * const affiliateApplication = await prisma.affiliateApplication.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AffiliateApplications and only return the `id`
+     * const affiliateApplicationWithIdOnly = await prisma.affiliateApplication.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AffiliateApplicationCreateManyAndReturnArgs>(args?: SelectSubset<T, AffiliateApplicationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AffiliateApplication.
+     * @param {AffiliateApplicationDeleteArgs} args - Arguments to delete one AffiliateApplication.
+     * @example
+     * // Delete one AffiliateApplication
+     * const AffiliateApplication = await prisma.affiliateApplication.delete({
+     *   where: {
+     *     // ... filter to delete one AffiliateApplication
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AffiliateApplicationDeleteArgs>(args: SelectSubset<T, AffiliateApplicationDeleteArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AffiliateApplication.
+     * @param {AffiliateApplicationUpdateArgs} args - Arguments to update one AffiliateApplication.
+     * @example
+     * // Update one AffiliateApplication
+     * const affiliateApplication = await prisma.affiliateApplication.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AffiliateApplicationUpdateArgs>(args: SelectSubset<T, AffiliateApplicationUpdateArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AffiliateApplications.
+     * @param {AffiliateApplicationDeleteManyArgs} args - Arguments to filter AffiliateApplications to delete.
+     * @example
+     * // Delete a few AffiliateApplications
+     * const { count } = await prisma.affiliateApplication.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AffiliateApplicationDeleteManyArgs>(args?: SelectSubset<T, AffiliateApplicationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AffiliateApplications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AffiliateApplications
+     * const affiliateApplication = await prisma.affiliateApplication.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AffiliateApplicationUpdateManyArgs>(args: SelectSubset<T, AffiliateApplicationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AffiliateApplications and returns the data updated in the database.
+     * @param {AffiliateApplicationUpdateManyAndReturnArgs} args - Arguments to update many AffiliateApplications.
+     * @example
+     * // Update many AffiliateApplications
+     * const affiliateApplication = await prisma.affiliateApplication.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AffiliateApplications and only return the `id`
+     * const affiliateApplicationWithIdOnly = await prisma.affiliateApplication.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AffiliateApplicationUpdateManyAndReturnArgs>(args: SelectSubset<T, AffiliateApplicationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AffiliateApplication.
+     * @param {AffiliateApplicationUpsertArgs} args - Arguments to update or create a AffiliateApplication.
+     * @example
+     * // Update or create a AffiliateApplication
+     * const affiliateApplication = await prisma.affiliateApplication.upsert({
+     *   create: {
+     *     // ... data to create a AffiliateApplication
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AffiliateApplication we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AffiliateApplicationUpsertArgs>(args: SelectSubset<T, AffiliateApplicationUpsertArgs<ExtArgs>>): Prisma__AffiliateApplicationClient<$Result.GetResult<Prisma.$AffiliateApplicationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AffiliateApplications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationCountArgs} args - Arguments to filter AffiliateApplications to count.
+     * @example
+     * // Count the number of AffiliateApplications
+     * const count = await prisma.affiliateApplication.count({
+     *   where: {
+     *     // ... the filter for the AffiliateApplications we want to count
+     *   }
+     * })
+    **/
+    count<T extends AffiliateApplicationCountArgs>(
+      args?: Subset<T, AffiliateApplicationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AffiliateApplicationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AffiliateApplication.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AffiliateApplicationAggregateArgs>(args: Subset<T, AffiliateApplicationAggregateArgs>): Prisma.PrismaPromise<GetAffiliateApplicationAggregateType<T>>
+
+    /**
+     * Group by AffiliateApplication.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateApplicationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AffiliateApplicationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AffiliateApplicationGroupByArgs['orderBy'] }
+        : { orderBy?: AffiliateApplicationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AffiliateApplicationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAffiliateApplicationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AffiliateApplication model
+   */
+  readonly fields: AffiliateApplicationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AffiliateApplication.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AffiliateApplicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AffiliateApplication model
+   */
+  interface AffiliateApplicationFieldRefs {
+    readonly id: FieldRef<"AffiliateApplication", 'String'>
+    readonly name: FieldRef<"AffiliateApplication", 'String'>
+    readonly email: FieldRef<"AffiliateApplication", 'String'>
+    readonly phone: FieldRef<"AffiliateApplication", 'String'>
+    readonly password: FieldRef<"AffiliateApplication", 'String'>
+    readonly instagram: FieldRef<"AffiliateApplication", 'String'>
+    readonly tiktok: FieldRef<"AffiliateApplication", 'String'>
+    readonly occupation: FieldRef<"AffiliateApplication", 'String'>
+    readonly city: FieldRef<"AffiliateApplication", 'String'>
+    readonly motivation: FieldRef<"AffiliateApplication", 'String'>
+    readonly experience: FieldRef<"AffiliateApplication", 'String'>
+    readonly status: FieldRef<"AffiliateApplication", 'String'>
+    readonly notes: FieldRef<"AffiliateApplication", 'String'>
+    readonly createdAt: FieldRef<"AffiliateApplication", 'DateTime'>
+    readonly updatedAt: FieldRef<"AffiliateApplication", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AffiliateApplication findUnique
+   */
+  export type AffiliateApplicationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliateApplication to fetch.
+     */
+    where: AffiliateApplicationWhereUniqueInput
+  }
+
+  /**
+   * AffiliateApplication findUniqueOrThrow
+   */
+  export type AffiliateApplicationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliateApplication to fetch.
+     */
+    where: AffiliateApplicationWhereUniqueInput
+  }
+
+  /**
+   * AffiliateApplication findFirst
+   */
+  export type AffiliateApplicationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliateApplication to fetch.
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateApplications to fetch.
+     */
+    orderBy?: AffiliateApplicationOrderByWithRelationInput | AffiliateApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AffiliateApplications.
+     */
+    cursor?: AffiliateApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliateApplications.
+     */
+    distinct?: AffiliateApplicationScalarFieldEnum | AffiliateApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliateApplication findFirstOrThrow
+   */
+  export type AffiliateApplicationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliateApplication to fetch.
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateApplications to fetch.
+     */
+    orderBy?: AffiliateApplicationOrderByWithRelationInput | AffiliateApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AffiliateApplications.
+     */
+    cursor?: AffiliateApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliateApplications.
+     */
+    distinct?: AffiliateApplicationScalarFieldEnum | AffiliateApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliateApplication findMany
+   */
+  export type AffiliateApplicationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * Filter, which AffiliateApplications to fetch.
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateApplications to fetch.
+     */
+    orderBy?: AffiliateApplicationOrderByWithRelationInput | AffiliateApplicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AffiliateApplications.
+     */
+    cursor?: AffiliateApplicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateApplications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateApplications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliateApplications.
+     */
+    distinct?: AffiliateApplicationScalarFieldEnum | AffiliateApplicationScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliateApplication create
+   */
+  export type AffiliateApplicationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AffiliateApplication.
+     */
+    data: XOR<AffiliateApplicationCreateInput, AffiliateApplicationUncheckedCreateInput>
+  }
+
+  /**
+   * AffiliateApplication createMany
+   */
+  export type AffiliateApplicationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AffiliateApplications.
+     */
+    data: AffiliateApplicationCreateManyInput | AffiliateApplicationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AffiliateApplication createManyAndReturn
+   */
+  export type AffiliateApplicationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * The data used to create many AffiliateApplications.
+     */
+    data: AffiliateApplicationCreateManyInput | AffiliateApplicationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AffiliateApplication update
+   */
+  export type AffiliateApplicationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AffiliateApplication.
+     */
+    data: XOR<AffiliateApplicationUpdateInput, AffiliateApplicationUncheckedUpdateInput>
+    /**
+     * Choose, which AffiliateApplication to update.
+     */
+    where: AffiliateApplicationWhereUniqueInput
+  }
+
+  /**
+   * AffiliateApplication updateMany
+   */
+  export type AffiliateApplicationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AffiliateApplications.
+     */
+    data: XOR<AffiliateApplicationUpdateManyMutationInput, AffiliateApplicationUncheckedUpdateManyInput>
+    /**
+     * Filter which AffiliateApplications to update
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * Limit how many AffiliateApplications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliateApplication updateManyAndReturn
+   */
+  export type AffiliateApplicationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * The data used to update AffiliateApplications.
+     */
+    data: XOR<AffiliateApplicationUpdateManyMutationInput, AffiliateApplicationUncheckedUpdateManyInput>
+    /**
+     * Filter which AffiliateApplications to update
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * Limit how many AffiliateApplications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliateApplication upsert
+   */
+  export type AffiliateApplicationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AffiliateApplication to update in case it exists.
+     */
+    where: AffiliateApplicationWhereUniqueInput
+    /**
+     * In case the AffiliateApplication found by the `where` argument doesn't exist, create a new AffiliateApplication with this data.
+     */
+    create: XOR<AffiliateApplicationCreateInput, AffiliateApplicationUncheckedCreateInput>
+    /**
+     * In case the AffiliateApplication was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AffiliateApplicationUpdateInput, AffiliateApplicationUncheckedUpdateInput>
+  }
+
+  /**
+   * AffiliateApplication delete
+   */
+  export type AffiliateApplicationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+    /**
+     * Filter which AffiliateApplication to delete.
+     */
+    where: AffiliateApplicationWhereUniqueInput
+  }
+
+  /**
+   * AffiliateApplication deleteMany
+   */
+  export type AffiliateApplicationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AffiliateApplications to delete
+     */
+    where?: AffiliateApplicationWhereInput
+    /**
+     * Limit how many AffiliateApplications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliateApplication without action
+   */
+  export type AffiliateApplicationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateApplication
+     */
+    select?: AffiliateApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateApplication
+     */
+    omit?: AffiliateApplicationOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16062,6 +17295,7 @@ export namespace Prisma {
     usageCount: 'usageCount',
     isActive: 'isActive',
     ownerId: 'ownerId',
+    targetProductId: 'targetProductId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -16233,6 +17467,27 @@ export namespace Prisma {
   export type AffiliateCommissionScalarFieldEnum = (typeof AffiliateCommissionScalarFieldEnum)[keyof typeof AffiliateCommissionScalarFieldEnum]
 
 
+  export const AffiliateApplicationScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    email: 'email',
+    phone: 'phone',
+    password: 'password',
+    instagram: 'instagram',
+    tiktok: 'tiktok',
+    occupation: 'occupation',
+    city: 'city',
+    motivation: 'motivation',
+    experience: 'experience',
+    status: 'status',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AffiliateApplicationScalarFieldEnum = (typeof AffiliateApplicationScalarFieldEnum)[keyof typeof AffiliateApplicationScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -16387,6 +17642,7 @@ export namespace Prisma {
     usageCount?: IntFilter<"ReferralCode"> | number
     isActive?: BoolFilter<"ReferralCode"> | boolean
     ownerId?: StringNullableFilter<"ReferralCode"> | string | null
+    targetProductId?: StringNullableFilter<"ReferralCode"> | string | null
     createdAt?: DateTimeFilter<"ReferralCode"> | Date | string
     updatedAt?: DateTimeFilter<"ReferralCode"> | Date | string
     owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -16408,6 +17664,7 @@ export namespace Prisma {
     usageCount?: SortOrder
     isActive?: SortOrder
     ownerId?: SortOrderInput | SortOrder
+    targetProductId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
@@ -16432,6 +17689,7 @@ export namespace Prisma {
     usageLimit?: IntNullableFilter<"ReferralCode"> | number | null
     usageCount?: IntFilter<"ReferralCode"> | number
     isActive?: BoolFilter<"ReferralCode"> | boolean
+    targetProductId?: StringNullableFilter<"ReferralCode"> | string | null
     createdAt?: DateTimeFilter<"ReferralCode"> | Date | string
     updatedAt?: DateTimeFilter<"ReferralCode"> | Date | string
     owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -16453,6 +17711,7 @@ export namespace Prisma {
     usageCount?: SortOrder
     isActive?: SortOrder
     ownerId?: SortOrderInput | SortOrder
+    targetProductId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ReferralCodeCountOrderByAggregateInput
@@ -16479,6 +17738,7 @@ export namespace Prisma {
     usageCount?: IntWithAggregatesFilter<"ReferralCode"> | number
     isActive?: BoolWithAggregatesFilter<"ReferralCode"> | boolean
     ownerId?: StringNullableWithAggregatesFilter<"ReferralCode"> | string | null
+    targetProductId?: StringNullableWithAggregatesFilter<"ReferralCode"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ReferralCode"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ReferralCode"> | Date | string
   }
@@ -17341,6 +18601,108 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"AffiliateCommission"> | Date | string
   }
 
+  export type AffiliateApplicationWhereInput = {
+    AND?: AffiliateApplicationWhereInput | AffiliateApplicationWhereInput[]
+    OR?: AffiliateApplicationWhereInput[]
+    NOT?: AffiliateApplicationWhereInput | AffiliateApplicationWhereInput[]
+    id?: StringFilter<"AffiliateApplication"> | string
+    name?: StringFilter<"AffiliateApplication"> | string
+    email?: StringFilter<"AffiliateApplication"> | string
+    phone?: StringFilter<"AffiliateApplication"> | string
+    password?: StringFilter<"AffiliateApplication"> | string
+    instagram?: StringNullableFilter<"AffiliateApplication"> | string | null
+    tiktok?: StringNullableFilter<"AffiliateApplication"> | string | null
+    occupation?: StringNullableFilter<"AffiliateApplication"> | string | null
+    city?: StringNullableFilter<"AffiliateApplication"> | string | null
+    motivation?: StringNullableFilter<"AffiliateApplication"> | string | null
+    experience?: StringNullableFilter<"AffiliateApplication"> | string | null
+    status?: StringFilter<"AffiliateApplication"> | string
+    notes?: StringNullableFilter<"AffiliateApplication"> | string | null
+    createdAt?: DateTimeFilter<"AffiliateApplication"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliateApplication"> | Date | string
+  }
+
+  export type AffiliateApplicationOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    password?: SortOrder
+    instagram?: SortOrderInput | SortOrder
+    tiktok?: SortOrderInput | SortOrder
+    occupation?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    motivation?: SortOrderInput | SortOrder
+    experience?: SortOrderInput | SortOrder
+    status?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliateApplicationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AffiliateApplicationWhereInput | AffiliateApplicationWhereInput[]
+    OR?: AffiliateApplicationWhereInput[]
+    NOT?: AffiliateApplicationWhereInput | AffiliateApplicationWhereInput[]
+    name?: StringFilter<"AffiliateApplication"> | string
+    email?: StringFilter<"AffiliateApplication"> | string
+    phone?: StringFilter<"AffiliateApplication"> | string
+    password?: StringFilter<"AffiliateApplication"> | string
+    instagram?: StringNullableFilter<"AffiliateApplication"> | string | null
+    tiktok?: StringNullableFilter<"AffiliateApplication"> | string | null
+    occupation?: StringNullableFilter<"AffiliateApplication"> | string | null
+    city?: StringNullableFilter<"AffiliateApplication"> | string | null
+    motivation?: StringNullableFilter<"AffiliateApplication"> | string | null
+    experience?: StringNullableFilter<"AffiliateApplication"> | string | null
+    status?: StringFilter<"AffiliateApplication"> | string
+    notes?: StringNullableFilter<"AffiliateApplication"> | string | null
+    createdAt?: DateTimeFilter<"AffiliateApplication"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliateApplication"> | Date | string
+  }, "id">
+
+  export type AffiliateApplicationOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    password?: SortOrder
+    instagram?: SortOrderInput | SortOrder
+    tiktok?: SortOrderInput | SortOrder
+    occupation?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    motivation?: SortOrderInput | SortOrder
+    experience?: SortOrderInput | SortOrder
+    status?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AffiliateApplicationCountOrderByAggregateInput
+    _max?: AffiliateApplicationMaxOrderByAggregateInput
+    _min?: AffiliateApplicationMinOrderByAggregateInput
+  }
+
+  export type AffiliateApplicationScalarWhereWithAggregatesInput = {
+    AND?: AffiliateApplicationScalarWhereWithAggregatesInput | AffiliateApplicationScalarWhereWithAggregatesInput[]
+    OR?: AffiliateApplicationScalarWhereWithAggregatesInput[]
+    NOT?: AffiliateApplicationScalarWhereWithAggregatesInput | AffiliateApplicationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AffiliateApplication"> | string
+    name?: StringWithAggregatesFilter<"AffiliateApplication"> | string
+    email?: StringWithAggregatesFilter<"AffiliateApplication"> | string
+    phone?: StringWithAggregatesFilter<"AffiliateApplication"> | string
+    password?: StringWithAggregatesFilter<"AffiliateApplication"> | string
+    instagram?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    tiktok?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    occupation?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    city?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    motivation?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    experience?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    status?: StringWithAggregatesFilter<"AffiliateApplication"> | string
+    notes?: StringNullableWithAggregatesFilter<"AffiliateApplication"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AffiliateApplication"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AffiliateApplication"> | Date | string
+  }
+
   export type ReferralCodeCreateInput = {
     id?: string
     code: string
@@ -17354,6 +18716,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     owner?: UserCreateNestedOneWithoutReferralCodeInput
@@ -17375,6 +18738,7 @@ export namespace Prisma {
     usageCount?: number
     isActive?: boolean
     ownerId?: string | null
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -17394,6 +18758,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneWithoutReferralCodeNestedInput
@@ -17415,6 +18780,7 @@ export namespace Prisma {
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutReferralCodeNestedInput
@@ -17435,6 +18801,7 @@ export namespace Prisma {
     usageCount?: number
     isActive?: boolean
     ownerId?: string | null
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17452,6 +18819,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17470,6 +18838,7 @@ export namespace Prisma {
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18417,6 +19786,132 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AffiliateApplicationCreateInput = {
+    id?: string
+    name: string
+    email: string
+    phone: string
+    password?: string
+    instagram?: string | null
+    tiktok?: string | null
+    occupation?: string | null
+    city?: string | null
+    motivation?: string | null
+    experience?: string | null
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateApplicationUncheckedCreateInput = {
+    id?: string
+    name: string
+    email: string
+    phone: string
+    password?: string
+    instagram?: string | null
+    tiktok?: string | null
+    occupation?: string | null
+    city?: string | null
+    motivation?: string | null
+    experience?: string | null
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateApplicationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    instagram?: NullableStringFieldUpdateOperationsInput | string | null
+    tiktok?: NullableStringFieldUpdateOperationsInput | string | null
+    occupation?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateApplicationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    instagram?: NullableStringFieldUpdateOperationsInput | string | null
+    tiktok?: NullableStringFieldUpdateOperationsInput | string | null
+    occupation?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateApplicationCreateManyInput = {
+    id?: string
+    name: string
+    email: string
+    phone: string
+    password?: string
+    instagram?: string | null
+    tiktok?: string | null
+    occupation?: string | null
+    city?: string | null
+    motivation?: string | null
+    experience?: string | null
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateApplicationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    instagram?: NullableStringFieldUpdateOperationsInput | string | null
+    tiktok?: NullableStringFieldUpdateOperationsInput | string | null
+    occupation?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateApplicationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    instagram?: NullableStringFieldUpdateOperationsInput | string | null
+    tiktok?: NullableStringFieldUpdateOperationsInput | string | null
+    occupation?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    motivation?: NullableStringFieldUpdateOperationsInput | string | null
+    experience?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -18551,6 +20046,7 @@ export namespace Prisma {
     usageCount?: SortOrder
     isActive?: SortOrder
     ownerId?: SortOrder
+    targetProductId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18577,6 +20073,7 @@ export namespace Prisma {
     usageCount?: SortOrder
     isActive?: SortOrder
     ownerId?: SortOrder
+    targetProductId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18595,6 +20092,7 @@ export namespace Prisma {
     usageCount?: SortOrder
     isActive?: SortOrder
     ownerId?: SortOrder
+    targetProductId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19319,6 +20817,60 @@ export namespace Prisma {
 
   export type AffiliateCommissionSumOrderByAggregateInput = {
     amount?: SortOrder
+  }
+
+  export type AffiliateApplicationCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    password?: SortOrder
+    instagram?: SortOrder
+    tiktok?: SortOrder
+    occupation?: SortOrder
+    city?: SortOrder
+    motivation?: SortOrder
+    experience?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliateApplicationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    password?: SortOrder
+    instagram?: SortOrder
+    tiktok?: SortOrder
+    occupation?: SortOrder
+    city?: SortOrder
+    motivation?: SortOrder
+    experience?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliateApplicationMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    password?: SortOrder
+    instagram?: SortOrder
+    tiktok?: SortOrder
+    occupation?: SortOrder
+    city?: SortOrder
+    motivation?: SortOrder
+    experience?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserCreateNestedOneWithoutReferralCodeInput = {
@@ -20714,6 +22266,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     owner?: UserCreateNestedOneWithoutReferralCodeInput
@@ -20734,6 +22287,7 @@ export namespace Prisma {
     usageCount?: number
     isActive?: boolean
     ownerId?: string | null
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -20840,6 +22394,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneWithoutReferralCodeNestedInput
@@ -20860,6 +22415,7 @@ export namespace Prisma {
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutReferralCodeNestedInput
@@ -21208,6 +22764,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     owner?: UserCreateNestedOneWithoutReferralCodeInput
@@ -21228,6 +22785,7 @@ export namespace Prisma {
     usageCount?: number
     isActive?: boolean
     ownerId?: string | null
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -21346,6 +22904,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneWithoutReferralCodeNestedInput
@@ -21366,6 +22925,7 @@ export namespace Prisma {
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutReferralCodeNestedInput
@@ -21448,6 +23008,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageCreateNestedManyWithoutReferralCodeInput
@@ -21467,6 +23028,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    targetProductId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -21562,6 +23124,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUpdateManyWithoutReferralCodeNestedInput
@@ -21581,6 +23144,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    targetProductId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutReferralCodeNestedInput

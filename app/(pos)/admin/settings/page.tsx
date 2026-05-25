@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getSiteSettings, updateSiteSettings } from "@/app/actions/settings";
-import { Save, Loader2, Globe, Mail, Phone, Clock, Type } from "lucide-react";
+import { Save, Loader2, Globe, Mail, Phone, Clock, Type, Upload, Image as ImageIcon, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -32,6 +32,14 @@ export default function SettingsPage() {
         hero_text_2: data.hero_text_2 || "Akan Kamu Rindukan",
         hero_highlight_2: data.hero_highlight_2 || "Nanti",
         hero_desc: data.hero_desc || "Abadikan momen paling berhargamu dengan sentuhan editorial yang abadi. Sebuah pengalaman fotografi eksklusif yang dirancang khusus untuk menceritakan kisahmu.",
+        affiliate_poster_academic: data.affiliate_poster_academic || "",
+        affiliate_poster_career: data.affiliate_poster_career || "",
+        affiliate_poster_entrepreneur: data.affiliate_poster_entrepreneur || "",
+        affiliate_poster_bisapreneur: data.affiliate_poster_bisapreneur || "",
+        affiliate_poster_baristara: data.affiliate_poster_baristara || "",
+        affiliate_poster_cuan_creator: data.affiliate_poster_cuan_creator || "",
+        affiliate_poster_tekno_ai: data.affiliate_poster_tekno_ai || "",
+        affiliate_poster_mental_bahasa: data.affiliate_poster_mental_bahasa || "",
       });
     } catch (error) {
       toast.error("Gagal memuat pengaturan");
@@ -42,6 +50,31 @@ export default function SettingsPage() {
 
   const handleChange = (key: string, value: string) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleImageUpload = async (key: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      toast.loading("Mengunggah poster...", { id: "upload" });
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        const currentVal = settings[key] || "";
+        const urls = currentVal.split(",").map(u => u.trim()).filter(Boolean);
+        urls.push(data.url);
+        handleChange(key, urls.join(","));
+        toast.success("Poster berhasil diunggah!", { id: "upload" });
+      } else {
+        toast.error("Gagal mengunggah gambar.", { id: "upload" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Terjadi kesalahan saat mengunggah.", { id: "upload" });
+    }
   };
 
   const handleSave = async () => {
@@ -249,6 +282,104 @@ export default function SettingsPage() {
                   className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all min-h-[100px]"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Poster Program Affiliate */}
+          <div className="bg-white p-6 rounded-2xl border border-near-black/5 shadow-sm">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-near-black/5">
+              <div className="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-near-black uppercase tracking-widest">Poster Program Affiliate</h2>
+                <p className="text-[11px] text-near-black/50 font-medium">Ubah gambar poster promosi tiap program affiliate (bisa banyak poster per program)</p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {[
+                { label: "LP Academic Partner", key: "affiliate_poster_academic" },
+                { label: "LP Career Ready", key: "affiliate_poster_career" },
+                { label: "LP Entrepreneur Launchpad", key: "affiliate_poster_entrepreneur" },
+                { label: "Bisapreneur Academy", key: "affiliate_poster_bisapreneur" },
+                { label: "Baristara Academy", key: "affiliate_poster_baristara" },
+                { label: "Cuan Creator Academy", key: "affiliate_poster_cuan_creator" },
+                { label: "Tekno AI Academy", key: "affiliate_poster_tekno_ai" },
+                { label: "Mental Bahasa Academy", key: "affiliate_poster_mental_bahasa" },
+              ].map((prog) => {
+                const urls = (settings[prog.key] || "").split(",").map(u => u.trim()).filter(Boolean);
+                return (
+                  <div key={prog.key} className="space-y-3 border-b border-near-black/5 pb-4 last:border-b-0 last:pb-0">
+                    <label className="block text-xs font-bold text-near-black uppercase tracking-wide">{prog.label}</label>
+                    
+                    {/* Poster Previews Grid */}
+                    <div className="space-y-3">
+                      {urls.length > 0 ? (
+                        <div className="flex flex-wrap gap-3">
+                          {urls.map((url, idx) => (
+                            <div key={idx} className="relative w-24 h-32 rounded-xl bg-near-black/5 border border-near-black/10 overflow-hidden flex-shrink-0 group shadow-sm">
+                              <img src={url} alt={`${prog.label} ${idx + 1}`} className="w-full h-full object-contain bg-[#1a1a1a]" />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = urls.filter((_, i) => i !== idx);
+                                  handleChange(prog.key, updated.join(","));
+                                }}
+                                className="absolute top-1.5 right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md cursor-pointer flex items-center justify-center"
+                                title="Hapus Poster"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                              <div className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[8px] font-bold text-white uppercase">
+                                #{idx + 1}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="w-24 h-32 rounded-xl bg-near-black/5 border border-near-black/10 flex items-center justify-center text-near-black/25">
+                          <ImageIcon className="w-6 h-6 animate-pulse" />
+                        </div>
+                      )}
+
+                      {/* Inputs & Buttons */}
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={settings[prog.key] || ""}
+                          onChange={(e) => handleChange(prog.key, e.target.value)}
+                          placeholder="Link Gambar URL Poster (pisahkan dengan koma jika banyak)..."
+                          className="w-full px-3 py-2 bg-warm-white/50 border border-near-black/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all font-mono"
+                        />
+                        <div className="flex gap-2">
+                          <label className="flex items-center gap-1.5 px-3 py-1.5 bg-near-black/5 hover:bg-near-black/10 text-near-black text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                            <Upload className="w-3 h-3" /> Unggah Poster Baru
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleImageUpload(prog.key, file);
+                              }}
+                              className="hidden"
+                            />
+                          </label>
+                          {urls.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleChange(prog.key, "")}
+                              className="px-3 py-1.5 text-rose-500 hover:bg-rose-50 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border border-transparent"
+                            >
+                              Hapus Semua
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

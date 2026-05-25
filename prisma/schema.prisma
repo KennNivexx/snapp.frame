@@ -22,6 +22,7 @@ model ReferralCode {
   isActive          Boolean         @default(true) @map("is_active")
   ownerId           String?         @unique @map("owner_id")
   owner             User?           @relation("UserReferral", fields: [ownerId], references: [id])
+  targetProductId   String?         @map("target_product_id")
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
   referral_usages   ReferralUsage[]
@@ -135,7 +136,7 @@ model User {
   name            String
   email           String          @unique(map: "User_email_key")
   password        String
-  role            Role            @default(CASHIER)
+  role            Role            @default(ADMIN)
   phone           String?
   bankName        String?         @map("bank_name")
   bankAccount     String?         @map("bank_account")
@@ -151,7 +152,6 @@ model User {
 
 enum Role {
   ADMIN
-  CASHIER
   SNAPPER
 }
 
@@ -221,4 +221,24 @@ model AffiliateCommission {
   booking     Booking  @relation(fields: [bookingId], references: [id])
 
   @@map("affiliate_commissions")
+}
+
+model AffiliateApplication {
+  id           String   @id @default(uuid())
+  name         String
+  email        String
+  phone        String
+  password     String   @default("")
+  instagram    String?
+  tiktok       String?
+  occupation   String?  // pelajar, mahasiswa, karyawan, freelancer, wirausaha, lainnya
+  city         String?
+  motivation   String?  @db.Text
+  experience   String?  @db.Text
+  status       String   @default("pending") // pending, approved, rejected
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("affiliate_applications")
 }

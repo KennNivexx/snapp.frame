@@ -21,7 +21,7 @@ export async function loginUser(data: any) {
       return { success: false, error: "Email tidak terdaftar." };
     }
 
-    let redirectTo = "/kasir";
+    let redirectTo = "/admin";
     if (user.role === "ADMIN") {
       redirectTo = "/admin";
     } else if (user.role === "SNAPPER") {

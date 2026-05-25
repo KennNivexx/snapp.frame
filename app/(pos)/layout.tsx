@@ -18,6 +18,7 @@ import {
   Package,
   History,
   Image as ImageIcon,
+  HeartHandshake,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -32,6 +33,7 @@ const navItems = [
   { label: "Booking", icon: Calendar, href: "/admin/bookings" },
   { label: "Pelanggan", icon: Users, href: "/admin/customers" },
   { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
+  { label: "Kelola Affiliasi", icon: HeartHandshake, href: "/admin/affiliators" },
   { label: "Laporan", icon: History, href: "/admin/reports" },
   { label: "Pengaturan Web", icon: Settings, href: "/admin/settings" },
 ];
@@ -62,7 +64,7 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("open-sidebar", handleOpenSidebar);
   }, []);
 
-  const role = session?.user?.role || "CASHIER";
+  const role = session?.user?.role || "ADMIN";
 
   const activeNavItems = (() => {
     if (loadingSession) return [];
@@ -74,11 +76,7 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
         { label: "Rekening Payout", icon: Settings, href: "/snapper?tab=bank" },
       ];
     }
-    // CASHIER
-    return [
-      { label: "Kasir POS", icon: ShoppingCart, href: "/kasir" },
-      { label: "Booking", icon: Calendar, href: "/admin/bookings" },
-    ];
+    return [];
   })();
 
   const currentTab = searchParams.get("tab");
@@ -87,7 +85,7 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col h-full bg-[#FDFBF7] text-near-black border-r border-near-black/5 relative">
       {/* ── Logo Section ────────────────────────────────── */}
       <div className="pt-8 pb-4 flex flex-col items-center px-4">
-        <Link href={role === "SNAPPER" ? "/snapper" : role === "ADMIN" ? "/admin" : "/kasir"} className="w-full flex justify-center group">
+        <Link href={loadingSession ? "#" : role === "SNAPPER" ? "/snapper" : "/admin"} className="w-full flex justify-center group">
           <img 
             src="/logosnapframe-removebg-preview.png" 
             alt="Snapframe Logo" 
@@ -157,7 +155,7 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
                 {session?.user?.name || "User"}
               </p>
               <p className="text-[8px] text-muted font-bold truncate uppercase tracking-widest">
-                {role === "ADMIN" ? "Administrator" : role === "SNAPPER" ? "Snapper Affiliator" : "Staff Cashier"}
+                {loadingSession ? "Loading..." : role === "ADMIN" ? "Administrator" : "Snapper Affiliator"}
               </p>
             </div>
           </div>

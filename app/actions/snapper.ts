@@ -39,6 +39,7 @@ export async function getSnapperDashboardData(userId: string) {
           feePercentage: user.referralCode.feePercentage,
           usageCount: user.referralCode.usageCount,
           isActive: user.referralCode.isActive,
+          targetProductId: user.referralCode.targetProductId,
         } : null,
         commissions: user.commissions.map(c => ({
           id: c.id,
@@ -59,5 +60,28 @@ export async function getSnapperDashboardData(userId: string) {
   } catch (error: any) {
     console.error("getSnapperDashboardData error:", error);
     return { success: false, error: error.message || "Gagal mengambil data dashboard." };
+  }
+}
+
+export async function updateSnapperReferralProduct(userId: string, productId: string | null) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { referralCode: true }
+    });
+
+    if (!user || !user.referralCode) {
+      return { success: false, error: "Referral code tidak ditemukan untuk user ini." };
+    }
+
+    await prisma.referralCode.update({
+      where: { id: user.referralCode.id },
+      data: { targetProductId: productId }
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("updateSnapperReferralProduct error:", error);
+    return { success: false, error: error.message || "Gagal memperbarui produk referral." };
   }
 }

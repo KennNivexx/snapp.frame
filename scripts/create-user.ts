@@ -37,7 +37,7 @@ async function main() {
       name: "Kasir SnappFrame",
       email: "kasir@snappframe.com",
       password: "Kasir@123",
-      role: "CASHIER" as const,
+      role: "ADMIN" as const,
     },
   ];
 

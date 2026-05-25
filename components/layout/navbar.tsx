@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Home,
+  LogIn,
   Image as ImageIcon,
   Package,
   MessageCircle,
@@ -26,7 +26,7 @@ const NAV_LINKS = [
   { label: "Paket", href: "/packages", icon: Package, isHidden: false },
   { label: "Affiliate", href: "/affiliate", icon: HeartHandshake, isHidden: false },
   { label: "Kontak", href: "/#contact", icon: MessageCircle, isHidden: false },
-  { label: "Kasir", href: "/kasir", icon: Home, isHidden: false },
+  { label: "Login", href: "/login", icon: LogIn, isHidden: false },
 ] as const;
 
 /* ─── Component ────────────────────────────────────────────── */

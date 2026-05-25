@@ -34,6 +34,7 @@ export async function updateSiteSettings(settings: Record<string, string>) {
     // Revalidate paths that might use these settings
     revalidatePath("/");
     revalidatePath("/admin/settings");
+    revalidatePath("/affiliate");
     
     return { success: true };
   } catch (error) {

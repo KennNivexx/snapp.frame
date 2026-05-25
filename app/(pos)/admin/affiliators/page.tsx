@@ -43,6 +43,11 @@ import {
   deleteAffiliatePost,
   togglePostPublish,
 } from "@/app/actions/affiliate-posts";
+import {
+  getAffiliateApplications,
+  updateApplicationStatus,
+  deleteAffiliateApplication,
+} from "@/app/actions/affiliate-applications";
 import { toast } from "sonner";
 
 /* ─────────────────────────── Types ─────────────────────────── */
@@ -72,6 +77,29 @@ interface AffiliatePost {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
+
+interface AffiliateApplication {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  instagram: string | null;
+  tiktok: string | null;
+  occupation: string | null;
+  city: string | null;
+  motivation: string | null;
+  experience: string | null;
+  status: string;
+  notes: string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+const APP_STATUS_CONFIG = {
+  pending: { label: "Menunggu", icon: Clock, className: "text-amber-600 bg-amber-50 border-amber-200" },
+  approved: { label: "Disetujui", icon: CheckCircle2, className: "text-emerald-600 bg-emerald-50 border-emerald-200" },
+  rejected: { label: "Ditolak", icon: XCircle, className: "text-rose-600 bg-rose-50 border-rose-200" },
+};
 
 /* ─────────────────────────── Mock Data ─────────────────────── */
 
@@ -743,12 +771,18 @@ export default function AffiliatorsPage() {
   });
 
   // ── Post state ──
-  const [tab, setTab] = useState<"affiliators" | "posts">("affiliators");
+  const [tab, setTab] = useState<"affiliators" | "posts" | "pendaftaran">("pendaftaran");
   const [posts, setPosts] = useState<AffiliatePost[]>([]);
   const [postsLoading, setPostsLoading] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
   const [editingPost, setEditingPost] = useState<AffiliatePost | null>(null);
   const [postSearch, setPostSearch] = useState("");
+
+  // ── Application state ──
+  const [applications, setApplications] = useState<AffiliateApplication[]>([]);
+  const [appsLoading, setAppsLoading] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<AffiliateApplication | null>(null);
+  const [appStatusFilter, setAppStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
 
   // ── Affiliator computed ──
   const filtered = affiliators.filter((a) => {
@@ -820,9 +854,49 @@ export default function AffiliatorsPage() {
     setPostsLoading(false);
   };
 
+  // ── Application actions ──
+  const fetchApplications = async () => {
+    setAppsLoading(true);
+    const res = await getAffiliateApplications();
+    if (res.success) setApplications((res.data as AffiliateApplication[]) ?? []);
+    setAppsLoading(false);
+  };
+
+  const handleAppStatus = async (id: string, status: "approved" | "rejected" | "pending") => {
+    const res = await updateApplicationStatus(id, status);
+    if (res.success) {
+      toast.success(
+        status === "approved" ? "Pendaftaran disetujui!" :
+        status === "rejected" ? "Pendaftaran ditolak." : "Status dikembalikan ke pending."
+      );
+      setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
+      if (selectedApp?.id === id) setSelectedApp((a) => a ? { ...a, status } : null);
+    } else {
+      toast.error("Gagal mengubah status.");
+    }
+  };
+
+  const handleDeleteApp = async (id: string) => {
+    if (!confirm("Hapus pendaftaran ini?")) return;
+    const res = await deleteAffiliateApplication(id);
+    if (res.success) {
+      toast.success("Pendaftaran dihapus.");
+      setApplications((prev) => prev.filter((a) => a.id !== id));
+      if (selectedApp?.id === id) setSelectedApp(null);
+    } else {
+      toast.error("Gagal menghapus.");
+    }
+  };
+
   useEffect(() => {
     if (tab === "posts") fetchPosts();
+    if (tab === "pendaftaran") fetchApplications();
   }, [tab]);
+
+  // Auto-load applications on first mount
+  useEffect(() => {
+    fetchApplications();
+  }, []);
 
   const handleDeletePost = async (id: string) => {
     if (!confirm("Hapus post ini?")) return;
@@ -912,7 +986,25 @@ export default function AffiliatorsPage() {
       </div>
 
       {/* ── Tabs ── */}
-      <div className="flex gap-1 bg-[#F8F6F4] p-1.5 rounded-2xl w-fit">
+      <div className="flex gap-1 bg-[#F8F6F4] p-1.5 rounded-2xl w-fit flex-wrap">
+        <button
+          onClick={() => setTab("pendaftaran")}
+          className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            tab === "pendaftaran"
+              ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
+              : "text-gray-400 hover:text-[#3B2211]"
+          }`}
+        >
+          <AlertCircle size={14} />
+          Pendaftaran Baru
+          {applications.filter((a) => a.status === "pending").length > 0 && (
+            <span className={`ml-1 px-2 py-0.5 rounded-full text-[8px] font-black ${
+              tab === "pendaftaran" ? "bg-white/20 text-white" : "bg-amber-500 text-white"
+            }`}>
+              {applications.filter((a) => a.status === "pending").length}
+            </span>
+          )}
+        </button>
         <button
           onClick={() => setTab("affiliators")}
           className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
@@ -1185,6 +1277,290 @@ export default function AffiliatorsPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ════════════ PENDAFTARAN TAB ════════════ */}
+        {tab === "pendaftaran" && (
+          <motion.div
+            key="pendaftaran"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-6">
+              {([
+                { label: "Total Masuk", value: applications.length, icon: Users, color: "text-[#3B2211]", bg: "bg-[#3B2211]/5" },
+                { label: "Menunggu Review", value: applications.filter(a => a.status === "pending").length, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
+                { label: "Disetujui", value: applications.filter(a => a.status === "approved").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+              ] as const).map((s, i) => (
+                <motion.div
+                  key={s.label}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07 }}
+                  className="p-6 bg-white rounded-2xl border border-white shadow-sm flex items-center gap-5"
+                >
+                  <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center ${s.color}`}>
+                    <s.icon size={22} />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">{s.label}</p>
+                    <span className="text-3xl font-black text-[#3B2211] tracking-tighter">{s.value}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Filter */}
+            <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
+              {(["all", "pending", "approved", "rejected"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setAppStatusFilter(s)}
+                  className={`px-5 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                    appStatusFilter === s
+                      ? "bg-[#3B2211] text-white shadow-sm"
+                      : "text-gray-400 hover:text-[#3B2211]"
+                  }`}
+                >
+                  {s === "all" ? "Semua" : APP_STATUS_CONFIG[s].label}
+                </button>
+              ))}
+            </div>
+
+            {/* Table & Detail Split View */}
+            <div className={`grid ${selectedApp ? "grid-cols-5" : "grid-cols-1"} gap-6`}>
+              {/* Table */}
+              <div className={`${selectedApp ? "col-span-3" : "col-span-1"} bg-white rounded-2xl border border-white shadow-sm overflow-hidden`}>
+                {appsLoading ? (
+                  <div className="py-20 flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="bg-[#F8F6F4]/50 text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+                          <th className="px-6 py-5 font-black">Pendaftar</th>
+                          <th className="px-6 py-5 font-black">Kontak</th>
+                          <th className="px-6 py-5 font-black">Tanggal Daftar</th>
+                          <th className="px-6 py-5 font-black text-center">Status</th>
+                          <th className="px-6 py-5 font-black text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#F8F6F4] text-sm">
+                        {applications
+                          .filter(a => appStatusFilter === "all" || a.status === appStatusFilter)
+                          .length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-8 py-20 text-center">
+                              <div className="flex flex-col items-center gap-3">
+                                <AlertCircle size={32} className="text-gray-200" />
+                                <p className="text-sm font-black text-gray-300 uppercase tracking-widest">Tidak ada pendaftaran</p>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          applications
+                            .filter(a => appStatusFilter === "all" || a.status === appStatusFilter)
+                            .map((app) => {
+                              const cfg = APP_STATUS_CONFIG[app.status as keyof typeof APP_STATUS_CONFIG] ?? APP_STATUS_CONFIG.pending;
+                              const StatusIcon = cfg.icon;
+                              const isSelected = selectedApp?.id === app.id;
+                              return (
+                                <tr
+                                  key={app.id}
+                                  onClick={() => setSelectedApp(isSelected ? null : app)}
+                                  className={`cursor-pointer transition-colors ${
+                                    isSelected ? "bg-amber-50 border-l-4 border-l-amber-500" : "hover:bg-[#F8F6F4]/30"
+                                  }`}
+                                >
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-9 h-9 rounded-xl bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211] font-black text-xs flex-shrink-0">
+                                        {app.name.slice(0, 2).toUpperCase()}
+                                      </div>
+                                      <div>
+                                        <p className="font-bold text-[#3B2211] text-sm">{app.name}</p>
+                                        {app.occupation && (
+                                          <p className="text-[9px] text-gray-400 font-bold uppercase mt-0.5">{app.occupation.replace("_", " ")}</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div className="space-y-0.5">
+                                      <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-bold">
+                                        <Phone size={10} className="text-gray-300" />
+                                        {app.phone}
+                                      </div>
+                                      {app.instagram && (
+                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-bold">
+                                          <AtSign size={10} className="text-gray-300" />
+                                          {app.instagram}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <p className="text-[10px] text-gray-500 font-bold">
+                                      {new Date(app.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                                    </p>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex justify-center">
+                                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest ${cfg.className}`}>
+                                        <StatusIcon size={10} />
+                                        {cfg.label}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 text-right">
+                                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                                      {app.status === "pending" && (
+                                        <>
+                                          <button
+                                            onClick={() => handleAppStatus(app.id, "approved")}
+                                            className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                                            title="Setujui"
+                                          >
+                                            <CheckCircle2 size={15} />
+                                          </button>
+                                          <button
+                                            onClick={() => handleAppStatus(app.id, "rejected")}
+                                            className="p-2 text-rose-400 hover:bg-rose-50 rounded-lg transition-colors"
+                                            title="Tolak"
+                                          >
+                                            <XCircle size={15} />
+                                          </button>
+                                        </>
+                                      )}
+                                      {app.status !== "pending" && (
+                                        <button
+                                          onClick={() => handleAppStatus(app.id, "pending")}
+                                          className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
+                                          title="Kembalikan ke Pending"
+                                        >
+                                          <Clock size={15} />
+                                        </button>
+                                      )}
+                                      <button
+                                        onClick={() => handleDeleteApp(app.id)}
+                                        className="p-2 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                        title="Hapus"
+                                      >
+                                        <Trash2 size={15} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Detail Panel */}
+              <AnimatePresence>
+                {selectedApp && (
+                  <motion.div
+                    key={selectedApp.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className="col-span-2 bg-white rounded-2xl border border-white shadow-sm p-6 space-y-5 self-start sticky top-6"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="w-14 h-14 rounded-2xl bg-[#3B2211]/5 flex items-center justify-center text-[#3B2211] font-black text-lg mb-3">
+                          {selectedApp.name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <h3 className="text-lg font-black text-[#3B2211]">{selectedApp.name}</h3>
+                        {selectedApp.occupation && (
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                            {selectedApp.occupation.replace("_", " ")}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setSelectedApp(null)}
+                        className="p-2 text-gray-300 hover:text-[#3B2211] hover:bg-[#3B2211]/5 rounded-xl"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {([
+                        { label: "Email", value: selectedApp.email },
+                        { label: "WhatsApp", value: selectedApp.phone },
+                        { label: "Instagram", value: selectedApp.instagram },
+                        { label: "TikTok", value: selectedApp.tiktok },
+                        { label: "Kota", value: selectedApp.city },
+                      ] as const).filter(i => i.value).map(({ label, value }) => (
+                        <div key={label} className="flex items-center justify-between gap-3">
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest w-20 flex-shrink-0">{label}</span>
+                          <span className="text-xs font-bold text-[#3B2211] text-right">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {selectedApp.motivation && (
+                      <div className="bg-[#F8F6F4] rounded-xl p-4">
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Motivasi</p>
+                        <p className="text-xs text-gray-600 font-medium leading-relaxed">{selectedApp.motivation}</p>
+                      </div>
+                    )}
+                    {selectedApp.experience && (
+                      <div className="bg-[#F8F6F4] rounded-xl p-4">
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Pengalaman</p>
+                        <p className="text-xs text-gray-600 font-medium leading-relaxed">{selectedApp.experience}</p>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2 pt-2">
+                      {selectedApp.status === "pending" ? (
+                        <>
+                          <button
+                            onClick={() => handleAppStatus(selectedApp.id, "approved")}
+                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                          >
+                            <CheckCircle2 size={13} /> Setujui
+                          </button>
+                          <button
+                            onClick={() => handleAppStatus(selectedApp.id, "rejected")}
+                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                          >
+                            <XCircle size={13} /> Tolak
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleAppStatus(selectedApp.id, "pending")}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                        >
+                          <Clock size={13} /> Kembalikan ke Pending
+                        </button>
+                      )}
+                    </div>
+                    <a
+                      href={`https://wa.me/${selectedApp.phone.replace(/^0/, "62").replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                    >
+                      <Phone size={13} /> Hubungi via WhatsApp
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}

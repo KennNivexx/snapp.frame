@@ -6,12 +6,13 @@ import {
   Coffee, Camera, Presentation, Recycle, MonitorPlay,
   GraduationCap, Users, Building, ShoppingBag, Handshake,
   BadgeDollarSign, TrendingUp, Award, CheckCircle2,
-  ChevronRight, Gift, ArrowRight, X,
+  ChevronRight, ChevronLeft, Gift, ArrowRight, X,
   ExternalLink, Search, ArrowLeft, MessageCircle,
-  Heart, Copy, Check, Share2, Calendar, Sparkles,
+  Heart, Copy, Check, Share2, Calendar, Sparkles, Eye, EyeOff,
 } from "lucide-react";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { getAffiliatePosts } from "@/app/actions/affiliate-posts";
+import { getSiteSettings } from "@/app/actions/settings";
 import { toast } from "sonner";
 
 // ─── AFFILIATE DETAIL DATA ────────────────────────────────────────────────────
@@ -321,14 +322,60 @@ const fallbackPosts = [
 ];
 
 function RegisterModal({ onClose }: { onClose: () => void }) {
-  const [form, setForm] = useState({ name: "", phone: "", instagram: "" });
+  const [step, setStep] = useState<"form" | "success">("form");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    instagram: "",
+    tiktok: "",
+    occupation: "",
+    city: "",
+    motivation: "",
+    experience: "",
+  });
 
-  const handleSubmit = () => {
-    if (!form.name || !form.phone) return;
-    const url = getWhatsAppUrl("affiliate", form);
-    window.open(url, "_blank");
-    onClose();
+  const occupations = [
+    { value: "pelajar", label: "Pelajar / Siswa" },
+    { value: "mahasiswa", label: "Mahasiswa" },
+    { value: "karyawan", label: "Karyawan / Pegawai" },
+    { value: "freelancer", label: "Freelancer" },
+    { value: "wirausaha", label: "Wirausaha / Pebisnis" },
+    { value: "konten_kreator", label: "Konten Kreator" },
+    { value: "lainnya", label: "Lainnya" },
+  ];
+
+  const set = (field: string, val: string) => setForm((f) => ({ ...f, [field]: val }));
+
+  const handleSubmit = async () => {
+    if (!form.name || !form.email || !form.phone || !form.password) {
+      setError("Nama, email, nomor WhatsApp, dan kata sandi wajib diisi.");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Kata sandi harus minimal 6 karakter.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+
+    const { submitAffiliateApplication } = await import("@/app/actions/affiliate-applications");
+    const res = await submitAffiliateApplication(form);
+
+    setLoading(false);
+    if (res.success) {
+      setStep("success");
+    } else {
+      setError(res.error ?? "Terjadi kesalahan. Coba lagi.");
+    }
   };
+
+  const inputCls = "w-full px-4 py-3 bg-white border border-near-black/10 rounded-xl text-xs font-bold text-near-black focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all placeholder:text-near-black/30";
+  const labelCls = "block text-[10px] font-black uppercase tracking-wider text-near-black/60 mb-1.5";
 
   return (
     <motion.div
@@ -340,57 +387,199 @@ function RegisterModal({ onClose }: { onClose: () => void }) {
     >
       <div className="absolute inset-0 bg-near-black/80 backdrop-blur-sm" />
       <motion.div
-        initial={{ y: 50, opacity: 0 }}
+        initial={{ y: 60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 50, opacity: 0 }}
+        exit={{ y: 60, opacity: 0 }}
+        transition={{ type: "spring", damping: 28, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-md bg-warm-white rounded-t-3xl sm:rounded-3xl border border-near-black/10 overflow-hidden shadow-2xl p-6 text-near-black"
+        className="relative w-full sm:max-w-lg bg-warm-white rounded-t-3xl sm:rounded-3xl border border-near-black/10 overflow-hidden shadow-2xl text-near-black flex flex-col"
+        style={{ maxHeight: "92vh" }}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-sm font-black uppercase tracking-wider text-near-black">Formulir Pendaftaran</h3>
+        {/* Header */}
+        <div className="flex-shrink-0 flex justify-between items-center px-6 pt-6 pb-4 border-b border-near-black/5">
+          <div>
+            <h3 className="text-sm font-black uppercase tracking-wider text-near-black">
+              Formulir Pendaftaran Affiliate
+            </h3>
+            <p className="text-[10px] text-near-black/40 font-bold mt-0.5">
+              Isi data diri kamu untuk bergabung sebagai partner
+            </p>
+          </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-near-black/5 flex items-center justify-center text-near-black/40 hover:text-near-black transition-all">
             <X size={16} />
           </button>
         </div>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-wider text-near-black/60 mb-1.5">Nama Lengkap</label>
-            <input
-              type="text"
-              placeholder="Masukkan nama lengkap Anda"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full px-4 py-3 bg-white border border-near-black/10 rounded-xl text-xs font-bold text-near-black focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-wider text-near-black/60 mb-1.5">No. WhatsApp</label>
-            <input
-              type="tel"
-              placeholder="Contoh: 081234567890"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full px-4 py-3 bg-white border border-near-black/10 rounded-xl text-xs font-bold text-near-black focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-wider text-near-black/60 mb-1.5">Username Instagram (Opsional)</label>
-            <input
-              type="text"
-              placeholder="@username"
-              value={form.instagram}
-              onChange={(e) => setForm({ ...form, instagram: e.target.value })}
-              className="w-full px-4 py-3 bg-white border border-near-black/10 rounded-xl text-xs font-bold text-near-black focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            disabled={!form.name || !form.phone}
-            className="w-full py-3.5 bg-near-black hover:bg-near-black/90 disabled:opacity-50 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all mt-2 shadow-lg shadow-near-black/10 cursor-pointer"
-          >
-            Kirim via WhatsApp
-          </button>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto">
+          {step === "success" ? (
+            /* ── Success Screen ── */
+            <div className="flex flex-col items-center justify-center gap-5 px-8 py-12 text-center">
+              <div className="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center">
+                <CheckCircle2 size={36} className="text-emerald-500" />
+              </div>
+              <div>
+                <h4 className="text-lg font-black text-near-black mb-2">Pendaftaran Berhasil! 🎉</h4>
+                <p className="text-xs text-near-black/60 font-bold leading-relaxed max-w-xs">
+                  Data kamu sudah kami terima. Tim kami akan menghubungi kamu via WhatsApp dalam 1×24 jam untuk proses selanjutnya.
+                </p>
+              </div>
+              <div className="bg-gold/10 border border-gold/20 rounded-2xl p-4 w-full text-left">
+                <p className="text-[10px] font-black uppercase tracking-wider text-gold mb-2">Info Selanjutnya</p>
+                <ul className="space-y-1.5">
+                  {[
+                    "Verifikasi data oleh tim kami",
+                    "Kamu akan menerima kode referral pribadi",
+                    "Akses materi promosi & dukungan tim",
+                  ].map((s, i) => (
+                    <li key={i} className="flex items-center gap-2 text-[11px] font-bold text-near-black/70">
+                      <CheckCircle2 size={12} className="text-gold flex-shrink-0" />
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={onClose}
+                  className="flex-1 py-3 border border-near-black/10 text-near-black/50 rounded-xl text-xs font-black uppercase tracking-wider hover:border-near-black/20 transition-all"
+                >
+                  Tutup
+                </button>
+                <a
+                  href={`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo Snapp.frame! Saya ${form.name} baru saja mendaftar sebagai affiliate partner. Mohon informasi lebih lanjut.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-[2] flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all"
+                >
+                  <MessageCircle size={14} />
+                  Hubungi via WhatsApp
+                </a>
+              </div>
+            </div>
+          ) : (
+            /* ── Form ── */
+            <div className="space-y-4 px-6 py-5">
+              {/* Section: Data Diri */}
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gold">Data Diri</p>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className={labelCls}>Nama Lengkap <span className="text-rose-400">*</span></label>
+                  <input type="text" placeholder="Masukkan nama lengkap" value={form.name} onChange={(e) => set("name", e.target.value)} className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>Email <span className="text-rose-400">*</span></label>
+                  <input type="email" placeholder="nama@email.com" value={form.email} onChange={(e) => set("email", e.target.value)} className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>No. WhatsApp <span className="text-rose-400">*</span></label>
+                  <input type="tel" placeholder="081234567890" value={form.phone} onChange={(e) => set("phone", e.target.value)} className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>Kata Sandi Akun <span className="text-rose-400">*</span></label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Minimal 6 karakter untuk masuk dashboard"
+                      value={form.password}
+                      onChange={(e) => set("password", e.target.value)}
+                      className={inputCls + " pr-10"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-near-black/30 hover:text-near-black cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>Kota / Domisili</label>
+                    <input type="text" placeholder="Contoh: Cilegon" value={form.city} onChange={(e) => set("city", e.target.value)} className={inputCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Pekerjaan</label>
+                    <select value={form.occupation} onChange={(e) => set("occupation", e.target.value)} className={inputCls + " cursor-pointer"}>
+                      <option value="">Pilih pekerjaan</option>
+                      {occupations.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section: Media Sosial */}
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gold pt-2">Media Sosial</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Instagram</label>
+                  <input type="text" placeholder="@username" value={form.instagram} onChange={(e) => set("instagram", e.target.value)} className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>TikTok</label>
+                  <input type="text" placeholder="@username" value={form.tiktok} onChange={(e) => set("tiktok", e.target.value)} className={inputCls} />
+                </div>
+              </div>
+
+              {/* Section: Motivasi */}
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gold pt-2">Latar Belakang</p>
+              <div>
+                <label className={labelCls}>Mengapa ingin bergabung?</label>
+                <textarea
+                  placeholder="Ceritakan alasanmu ingin menjadi affiliate partner Snapp.frame..."
+                  value={form.motivation}
+                  onChange={(e) => set("motivation", e.target.value)}
+                  rows={3}
+                  className={inputCls + " resize-none"}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Pengalaman promosi / marketing (jika ada)</label>
+                <textarea
+                  placeholder="Contoh: pernah jadi reseller, konten kreator, atau endorser..."
+                  value={form.experience}
+                  onChange={(e) => set("experience", e.target.value)}
+                  rows={2}
+                  className={inputCls + " resize-none"}
+                />
+              </div>
+
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-100 rounded-xl">
+                  <X size={14} className="text-rose-500 flex-shrink-0" />
+                  <p className="text-xs font-bold text-rose-600">{error}</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
+
+        {/* Footer Submit */}
+        {step === "form" && (
+          <div className="flex-shrink-0 px-6 pb-6 pt-4 border-t border-near-black/5">
+            <button
+              onClick={handleSubmit}
+              disabled={loading || !form.name || !form.email || !form.phone || !form.password}
+              className="w-full py-3.5 bg-near-black hover:bg-near-black/90 disabled:opacity-50 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-near-black/10 cursor-pointer flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <ArrowRight size={14} />
+                  Daftar Sekarang — Gratis!
+                </>
+              )}
+            </button>
+            <p className="text-[9px] text-near-black/30 font-bold text-center mt-3">
+              Dengan mendaftar, kamu menyetujui syarat & ketentuan program affiliate Snapp.frame.
+            </p>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
@@ -400,9 +589,11 @@ function RegisterModal({ onClose }: { onClose: () => void }) {
 function AffiliateDetailModal({
   product,
   onClose,
+  onRegister,
 }: {
   product: (typeof products)[0];
   onClose: () => void;
+  onRegister: () => void;
 }) {
   const detail = affiliateDetails[product.name];
   const ProgramIcon = product.icon;
@@ -531,18 +722,155 @@ function AffiliateDetailModal({
             <ArrowLeft size={12} />
             Kembali
           </button>
-          <a
-            href={product.url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => { onClose(); onRegister(); }}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gold hover:bg-gold/90 text-near-black text-[10px] font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-gold/20"
           >
             Daftar Affiliate Sekarang
-            <ExternalLink size={12} />
-          </a>
+            <ArrowRight size={12} />
+          </button>
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+const POSTER_KEYS: Record<string, string> = {
+  "LP Academic Partner": "affiliate_poster_academic",
+  "LP Career Ready": "affiliate_poster_career",
+  "LP Entrepreneur Launchpad": "affiliate_poster_entrepreneur",
+  "Bisapreneur Academy": "affiliate_poster_bisapreneur",
+  "Baristara Academy": "affiliate_poster_baristara",
+  "Cuan Creator Academy": "affiliate_poster_cuan_creator",
+  "Tekno AI Academy": "affiliate_poster_tekno_ai",
+  "Mental Bahasa Academy": "affiliate_poster_mental_bahasa",
+};
+
+const DEFAULT_POSTERS: Record<string, string> = {
+  "LP Academic Partner": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop",
+  "LP Career Ready": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop",
+  "LP Entrepreneur Launchpad": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop",
+  "Bisapreneur Academy": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?q=80&w=600&auto=format&fit=crop",
+  "Baristara Academy": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=600&auto=format&fit=crop",
+  "Cuan Creator Academy": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
+  "Tekno AI Academy": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600&auto=format&fit=crop",
+  "Mental Bahasa Academy": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600&auto=format&fit=crop",
+};
+
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? "100%" : "-100%",
+    opacity: 0,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? "100%" : "-100%",
+    opacity: 0,
+  }),
+};
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
+
+function ProgramPosterCarousel({ urls, productName }: { urls: string[]; productName: string }) {
+  const [[page, direction], setPage] = useState([0, 0]);
+
+  if (urls.length === 0) return null;
+
+  const currentIndex = ((page % urls.length) + urls.length) % urls.length;
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
+  };
+
+  const nextSlide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    paginate(1);
+  };
+
+  const prevSlide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    paginate(-1);
+  };
+
+  return (
+    <div className="mb-5 overflow-hidden rounded-2xl border border-near-black/5 aspect-[3/4] bg-near-black/5 relative group/carousel shadow-sm hover:shadow-md transition-shadow">
+      {/* Images Slider Container */}
+      <div className="w-full h-full relative overflow-hidden">
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.img
+            key={page}
+            src={urls[currentIndex]}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            drag={urls.length > 1 ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={1}
+            onDragEnd={(e, { offset, velocity }) => {
+              const swipe = swipePower(offset.x, velocity.x);
+
+              if (swipe < -swipeConfidenceThreshold) {
+                paginate(1);
+              } else if (swipe > swipeConfidenceThreshold) {
+                paginate(-1);
+              }
+            }}
+            alt={`${productName} poster ${currentIndex + 1}`}
+            className="absolute inset-0 w-full h-full object-contain bg-[#1A1A1A] select-none touch-pan-y"
+            loading="lazy"
+          />
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation Arrows */}
+      {urls.length > 1 && (
+        <>
+          <button
+            onClick={prevSlide}
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 z-10 cursor-pointer border border-white/10"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 z-10 cursor-pointer border border-white/10"
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 bg-black/40 px-2 py-1 rounded-full backdrop-blur-sm border border-white/5">
+            {urls.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const dir = idx > currentIndex ? 1 : -1;
+                  setPage([idx, dir]);
+                }}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  currentIndex === idx ? "bg-gold w-3" : "bg-white/40 hover:bg-white/70"
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -556,17 +884,26 @@ export default function AffiliatePage() {
   const [activeFilter, setActiveFilter] = useState<"semua" | "kegiatan" | "promo">("semua");
   const [likedPosts, setLikedPosts] = useState<Record<string, boolean>>({});
   const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
+  const [settings, setSettings] = useState<Record<string, string>>({});
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
-    async function fetchPosts() {
+    async function fetchPageData() {
       try {
-        const res = await getAffiliatePosts();
-        if (res.success && res.data && res.data.length > 0) {
-          const published = res.data.filter((p: any) => p.isPublished);
+        const [postsRes, settingsRes] = await Promise.all([
+          getAffiliatePosts(),
+          getSiteSettings()
+        ]);
+
+        if (settingsRes) {
+          setSettings(settingsRes);
+        }
+
+        if (postsRes.success && postsRes.data && postsRes.data.length > 0) {
+          const published = postsRes.data.filter((p: any) => p.isPublished);
           const formatted = published.map((p: any) => {
             let category = "promo";
             const tagsLower = (p.hashtags || []).map((t: string) => t.toLowerCase());
@@ -590,13 +927,13 @@ export default function AffiliatePage() {
           setPosts(fallbackPosts);
         }
       } catch (err) {
-        console.error("Gagal memuat affiliate posts:", err);
+        console.error("Gagal memuat affiliate data:", err);
         setPosts(fallbackPosts);
       } finally {
         setLoading(false);
       }
     }
-    fetchPosts();
+    fetchPageData();
   }, []);
 
   const handleLike = (postId: string) => {
@@ -648,6 +985,7 @@ export default function AffiliatePage() {
           <AffiliateDetailModal
             product={activeProduct}
             onClose={() => setActiveProduct(null)}
+            onRegister={() => setShowModal(true)}
           />
         )}
       </AnimatePresence>
@@ -753,55 +1091,67 @@ export default function AffiliatePage() {
                   Tidak ada program partner ditemukan
                 </div>
               ) : (
-                filteredProducts.map((prod, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    className="group p-6 rounded-[2rem] border border-near-black/5 bg-warm-white/30 hover:bg-white hover:border-gold/30 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
-                          <prod.icon size={22} />
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                          prod.url
-                            ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                            : "bg-near-black/5 text-near-black/40"
-                        }`}>
-                          {prod.url ? "Link Aktif" : "Segera Hadir"}
-                        </span>
-                      </div>
-                      <h3 className="text-sm font-black text-near-black uppercase mb-2 tracking-wide line-clamp-1">{prod.name}</h3>
-                      <p className="text-[11px] text-near-black/60 font-medium leading-relaxed mb-6 line-clamp-3">{prod.desc}</p>
-                    </div>
+                filteredProducts.map((prod, i) => {
+                  const posterKey = POSTER_KEYS[prod.name];
+                  const rawPosters = settings[posterKey] || DEFAULT_POSTERS[prod.name] || "";
+                  const posterUrls = rawPosters
+                    .split(",")
+                    .map((url) => url.trim())
+                    .filter(Boolean);
 
-                    <div className="pt-4 border-t border-near-black/5 flex items-center justify-between gap-4 mt-auto">
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.05 }}
+                      className="group p-6 rounded-[2rem] border border-near-black/5 bg-warm-white/30 hover:bg-white hover:border-gold/30 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+                    >
                       <div>
-                        <span className="block text-[8px] text-near-black/40 font-black uppercase tracking-wider mb-0.5">ESTIMASI FEE</span>
-                        <span className="block text-xs font-black text-gold uppercase">{prod.fee}</span>
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
+                            <prod.icon size={22} />
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                            prod.url
+                              ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                              : "bg-near-black/5 text-near-black/40"
+                          }`}>
+                            {prod.url ? "Link Aktif" : "Segera Hadir"}
+                          </span>
+                        </div>
+                        <h3 className="text-sm font-black text-near-black uppercase mb-2 tracking-wide line-clamp-1">{prod.name}</h3>
+                        <p className="text-[11px] text-near-black/60 font-medium leading-relaxed mb-6 line-clamp-3">{prod.desc}</p>
                       </div>
-                      {prod.url ? (
-                        <button
-                          id={`affiliate-btn-${i}`}
-                          onClick={() => setActiveProduct(prod)}
-                          className="inline-flex items-center gap-2 px-4 py-2.5 bg-gold hover:bg-near-black text-near-black hover:text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-gold/10"
-                        >
-                          Lihat Detail
-                          <ChevronRight size={12} />
-                        </button>
-                      ) : (
+
+                      {/* Poster Image Carousel */}
+                      <ProgramPosterCarousel urls={posterUrls} productName={prod.name} />
+
+                      <div className="pt-4 border-t border-near-black/5 flex items-center justify-between gap-4 mt-auto">
+                        <div>
+                          <span className="block text-[8px] text-near-black/40 font-black uppercase tracking-wider mb-0.5">ESTIMASI FEE</span>
+                          <span className="block text-xs font-black text-gold uppercase">{prod.fee}</span>
+                        </div>
+                        {prod.url ? (
+                          <button
+                            id={`affiliate-btn-${i}`}
+                            onClick={() => setActiveProduct(prod)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gold hover:bg-near-black text-near-black hover:text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-gold/10"
+                          >
+                            Lihat Detail
+                            <ChevronRight size={12} />
+                          </button>
+                        ) : (
                         <span className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-near-black/5 text-near-black/30 text-[10px] font-black uppercase tracking-wider rounded-xl cursor-default">
                           Coming Soon
                         </span>
                       )}
                     </div>
                   </motion.div>
-                ))
-              )}
+                );
+              })
+            )}
             </div>
           </div>
         </section>

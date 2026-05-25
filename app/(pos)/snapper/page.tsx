@@ -9,8 +9,9 @@ import {
   TrendingUp, Users, Share2, ExternalLink, Sparkles, Clock,
   CheckCircle2, Calendar, ImageIcon, BookOpen, AlertCircle, Phone
 } from "lucide-react";
-import { getSnapperDashboardData } from "@/app/actions/snapper";
+import { getSnapperDashboardData, updateSnapperReferralProduct } from "@/app/actions/snapper";
 import { getAffiliatePosts } from "@/app/actions/affiliate-posts";
+import { getProducts } from "@/app/actions/products";
 import { toast } from "sonner";
 
 interface Commission {
@@ -51,6 +52,11 @@ export default function SnapperDashboard() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
+  // Referral campaign States
+  const [productsList, setProductsList] = useState<any[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [savingProduct, setSavingProduct] = useState(false);
+
   // Auto-redirect if not logged in or wrong role
   useEffect(() => {
     getSession().then((s) => {
@@ -67,7 +73,7 @@ export default function SnapperDashboard() {
     });
   }, [router]);
 
-  // Fetch dashboard data & affiliate posts
+  // Fetch dashboard data & affiliate posts & products
   useEffect(() => {
     if (!session) return;
 
@@ -75,13 +81,15 @@ export default function SnapperDashboard() {
       setLoading(true);
       try {
         const userId = session.user.id;
-        const [dashRes, postsRes] = await Promise.all([
+        const [dashRes, postsRes, prodRes] = await Promise.all([
           getSnapperDashboardData(userId),
-          getAffiliatePosts()
+          getAffiliatePosts(),
+          getProducts()
         ]);
 
-        if (dashRes.success) {
+        if (dashRes.success && dashRes.data) {
           setDashboardData(dashRes.data);
+          setSelectedProductId(dashRes.data.referralCode?.targetProductId || "");
         } else {
           toast.error(dashRes.error || "Gagal memuat data dashboard.");
         }
@@ -90,6 +98,10 @@ export default function SnapperDashboard() {
           // Only show published posts to snappers
           const published = postsRes.data.filter((p: any) => p.isPublished);
           setPosts(published);
+        }
+
+        if (prodRes.success && prodRes.data) {
+          setProductsList(prodRes.data);
         }
       } catch (err) {
         console.error(err);
@@ -130,11 +142,40 @@ export default function SnapperDashboard() {
   // Copy referral link
   const handleCopyLink = (code: string) => {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
-    const shareUrl = `${origin}/booking?ref=${code}`;
+    let shareUrl = `${origin}/booking?ref=${code}`;
+    if (dashboardData?.referralCode?.targetProductId) {
+      shareUrl += `&pkg=${dashboardData.referralCode.targetProductId}`;
+    }
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
     toast.success("Link referral berhasil disalin!");
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleSaveTargetProduct = async () => {
+    if (!session || !dashboardData?.referralCode) return;
+    setSavingProduct(true);
+    try {
+      const res = await updateSnapperReferralProduct(session.user.id, selectedProductId || null);
+      if (res.success) {
+        toast.success("Target produk campaign berhasil diperbarui!");
+        // Update local state
+        setDashboardData((prev: any) => ({
+          ...prev,
+          referralCode: {
+            ...prev.referralCode,
+            targetProductId: selectedProductId || null
+          }
+        }));
+      } else {
+        toast.error(res.error || "Gagal memperbarui target campaign.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Terjadi kesalahan sistem.");
+    } finally {
+      setSavingProduct(false);
+    }
   };
 
   if (loading || !dashboardData) {
@@ -234,6 +275,45 @@ export default function SnapperDashboard() {
                 </p>
               </div>
 
+              {/* Target Campaign Selector */}
+              <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3 relative z-10">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#E5AB7A]">Target Produk Referral (Hanya 1 Produk)</span>
+                  {selectedProductId && (
+                    <button 
+                      onClick={() => setSelectedProductId("")} 
+                      className="text-[9px] font-bold text-rose-400 hover:underline"
+                    >
+                      Reset (General Link)
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <select
+                    value={selectedProductId}
+                    onChange={(e) => setSelectedProductId(e.target.value)}
+                    className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-[#C88A58] transition-colors"
+                  >
+                    <option value="" className="bg-[#1E110A] text-white/50">Semua Produk/Layanan (General)</option>
+                    {productsList.map((p) => (
+                      <option key={p.id} value={p.sku} className="bg-[#1E110A] text-white">
+                        {p.name} - Rp {p.price.toLocaleString("id-ID")}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleSaveTargetProduct}
+                    disabled={savingProduct || (dashboardData.referralCode?.targetProductId || "") === selectedProductId}
+                    className="px-4 py-2.5 bg-gold hover:bg-gold/90 text-near-black text-[10px] font-black uppercase tracking-wider rounded-xl transition-all disabled:opacity-40"
+                  >
+                    {savingProduct ? "Menyimpan..." : "Simpan Target"}
+                  </button>
+                </div>
+                <p className="text-[9px] text-white/40 leading-normal">
+                  * Memilih produk di atas akan memodifikasi link rujukan Anda secara otomatis agar langsung memilih dan menargetkan produk tersebut saat pelanggan melakukan booking. Anda hanya bisa mengaktifkan 1 produk dalam satu waktu.
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 relative z-10">
                 {/* Code Card */}
                 <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
@@ -255,6 +335,7 @@ export default function SnapperDashboard() {
                     <p className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Link Tautan Otomatis</p>
                     <p className="text-xs font-bold text-white/80 truncate">
                       booking?ref={referralCode}
+                      {dashboardData.referralCode?.targetProductId ? `&pkg=${dashboardData.referralCode.targetProductId}` : ""}
                     </p>
                   </div>
                   <button
