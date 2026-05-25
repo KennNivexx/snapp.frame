@@ -68,6 +68,11 @@ export type SiteSetting = $Result.DefaultSelection<Prisma.$SiteSettingPayload>
  * 
  */
 export type AffiliatePost = $Result.DefaultSelection<Prisma.$AffiliatePostPayload>
+/**
+ * Model AffiliateCommission
+ * 
+ */
+export type AffiliateCommission = $Result.DefaultSelection<Prisma.$AffiliateCommissionPayload>
 
 /**
  * Enums
@@ -75,7 +80,8 @@ export type AffiliatePost = $Result.DefaultSelection<Prisma.$AffiliatePostPayloa
 export namespace $Enums {
   export const Role: {
   ADMIN: 'ADMIN',
-  CASHIER: 'CASHIER'
+  CASHIER: 'CASHIER',
+  SNAPPER: 'SNAPPER'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -343,6 +349,16 @@ export class PrismaClient<
     * ```
     */
   get affiliatePost(): Prisma.AffiliatePostDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.affiliateCommission`: Exposes CRUD operations for the **AffiliateCommission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AffiliateCommissions
+    * const affiliateCommissions = await prisma.affiliateCommission.findMany()
+    * ```
+    */
+  get affiliateCommission(): Prisma.AffiliateCommissionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -787,7 +803,8 @@ export namespace Prisma {
     User: 'User',
     GalleryPhoto: 'GalleryPhoto',
     SiteSetting: 'SiteSetting',
-    AffiliatePost: 'AffiliatePost'
+    AffiliatePost: 'AffiliatePost',
+    AffiliateCommission: 'AffiliateCommission'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -803,7 +820,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "referralCode" | "booking" | "category" | "product" | "referralUsage" | "transactionItem" | "transaction" | "user" | "galleryPhoto" | "siteSetting" | "affiliatePost"
+      modelProps: "referralCode" | "booking" | "category" | "product" | "referralUsage" | "transactionItem" | "transaction" | "user" | "galleryPhoto" | "siteSetting" | "affiliatePost" | "affiliateCommission"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1621,6 +1638,80 @@ export namespace Prisma {
           }
         }
       }
+      AffiliateCommission: {
+        payload: Prisma.$AffiliateCommissionPayload<ExtArgs>
+        fields: Prisma.AffiliateCommissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AffiliateCommissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AffiliateCommissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>
+          }
+          findFirst: {
+            args: Prisma.AffiliateCommissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AffiliateCommissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>
+          }
+          findMany: {
+            args: Prisma.AffiliateCommissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>[]
+          }
+          create: {
+            args: Prisma.AffiliateCommissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>
+          }
+          createMany: {
+            args: Prisma.AffiliateCommissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AffiliateCommissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>[]
+          }
+          delete: {
+            args: Prisma.AffiliateCommissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>
+          }
+          update: {
+            args: Prisma.AffiliateCommissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.AffiliateCommissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AffiliateCommissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AffiliateCommissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.AffiliateCommissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AffiliateCommissionPayload>
+          }
+          aggregate: {
+            args: Prisma.AffiliateCommissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAffiliateCommission>
+          }
+          groupBy: {
+            args: Prisma.AffiliateCommissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AffiliateCommissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AffiliateCommissionCountArgs<ExtArgs>
+            result: $Utils.Optional<AffiliateCommissionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1740,6 +1831,7 @@ export namespace Prisma {
     galleryPhoto?: GalleryPhotoOmit
     siteSetting?: SiteSettingOmit
     affiliatePost?: AffiliatePostOmit
+    affiliateCommission?: AffiliateCommissionOmit
   }
 
   /* Types for Logging */
@@ -1856,6 +1948,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type BookingCountOutputType
+   */
+
+  export type BookingCountOutputType = {
+    commissions: number
+  }
+
+  export type BookingCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    commissions?: boolean | BookingCountOutputTypeCountCommissionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BookingCountOutputType without action
+   */
+  export type BookingCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingCountOutputType
+     */
+    select?: BookingCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BookingCountOutputType without action
+   */
+  export type BookingCountOutputTypeCountCommissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AffiliateCommissionWhereInput
+  }
+
+
+  /**
    * Count Type CategoryCountOutputType
    */
 
@@ -1955,11 +2078,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     referral_usages: number
     transactions: number
+    commissions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     referral_usages?: boolean | UserCountOutputTypeCountReferral_usagesArgs
     transactions?: boolean | UserCountOutputTypeCountTransactionsArgs
+    commissions?: boolean | UserCountOutputTypeCountCommissionsArgs
   }
 
   // Custom InputTypes
@@ -1985,6 +2110,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransactionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCommissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AffiliateCommissionWhereInput
   }
 
 
@@ -2033,6 +2165,7 @@ export namespace Prisma {
     usageLimit: number | null
     usageCount: number | null
     isActive: boolean | null
+    ownerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2050,6 +2183,7 @@ export namespace Prisma {
     usageLimit: number | null
     usageCount: number | null
     isActive: boolean | null
+    ownerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2067,6 +2201,7 @@ export namespace Prisma {
     usageLimit: number
     usageCount: number
     isActive: number
+    ownerId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2102,6 +2237,7 @@ export namespace Prisma {
     usageLimit?: true
     usageCount?: true
     isActive?: true
+    ownerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2119,6 +2255,7 @@ export namespace Prisma {
     usageLimit?: true
     usageCount?: true
     isActive?: true
+    ownerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2136,6 +2273,7 @@ export namespace Prisma {
     usageLimit?: true
     usageCount?: true
     isActive?: true
+    ownerId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2240,6 +2378,7 @@ export namespace Prisma {
     usageLimit: number | null
     usageCount: number
     isActive: boolean
+    ownerId: string | null
     createdAt: Date
     updatedAt: Date
     _count: ReferralCodeCountAggregateOutputType | null
@@ -2276,8 +2415,10 @@ export namespace Prisma {
     usageLimit?: boolean
     usageCount?: boolean
     isActive?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
     referral_usages?: boolean | ReferralCode$referral_usagesArgs<ExtArgs>
     transactions?: boolean | ReferralCode$transactionsArgs<ExtArgs>
     _count?: boolean | ReferralCodeCountOutputTypeDefaultArgs<ExtArgs>
@@ -2296,8 +2437,10 @@ export namespace Prisma {
     usageLimit?: boolean
     usageCount?: boolean
     isActive?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["referralCode"]>
 
   export type ReferralCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2313,8 +2456,10 @@ export namespace Prisma {
     usageLimit?: boolean
     usageCount?: boolean
     isActive?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["referralCode"]>
 
   export type ReferralCodeSelectScalar = {
@@ -2330,22 +2475,29 @@ export namespace Prisma {
     usageLimit?: boolean
     usageCount?: boolean
     isActive?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ReferralCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "marketerName" | "discountPct" | "maxDiscountAmount" | "feePercentage" | "bankName" | "bankAccount" | "expiryDate" | "usageLimit" | "usageCount" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["referralCode"]>
+  export type ReferralCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "marketerName" | "discountPct" | "maxDiscountAmount" | "feePercentage" | "bankName" | "bankAccount" | "expiryDate" | "usageLimit" | "usageCount" | "isActive" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["referralCode"]>
   export type ReferralCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
     referral_usages?: boolean | ReferralCode$referral_usagesArgs<ExtArgs>
     transactions?: boolean | ReferralCode$transactionsArgs<ExtArgs>
     _count?: boolean | ReferralCodeCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type ReferralCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type ReferralCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ReferralCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
+  }
+  export type ReferralCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | ReferralCode$ownerArgs<ExtArgs>
+  }
 
   export type $ReferralCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ReferralCode"
     objects: {
+      owner: Prisma.$UserPayload<ExtArgs> | null
       referral_usages: Prisma.$ReferralUsagePayload<ExtArgs>[]
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
     }
@@ -2362,6 +2514,7 @@ export namespace Prisma {
       usageLimit: number | null
       usageCount: number
       isActive: boolean
+      ownerId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["referralCode"]>
@@ -2758,6 +2911,7 @@ export namespace Prisma {
    */
   export interface Prisma__ReferralCodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    owner<T extends ReferralCode$ownerArgs<ExtArgs> = {}>(args?: Subset<T, ReferralCode$ownerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     referral_usages<T extends ReferralCode$referral_usagesArgs<ExtArgs> = {}>(args?: Subset<T, ReferralCode$referral_usagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     transactions<T extends ReferralCode$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, ReferralCode$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -2801,6 +2955,7 @@ export namespace Prisma {
     readonly usageLimit: FieldRef<"ReferralCode", 'Int'>
     readonly usageCount: FieldRef<"ReferralCode", 'Int'>
     readonly isActive: FieldRef<"ReferralCode", 'Boolean'>
+    readonly ownerId: FieldRef<"ReferralCode", 'String'>
     readonly createdAt: FieldRef<"ReferralCode", 'DateTime'>
     readonly updatedAt: FieldRef<"ReferralCode", 'DateTime'>
   }
@@ -3057,6 +3212,10 @@ export namespace Prisma {
      */
     data: ReferralCodeCreateManyInput | ReferralCodeCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReferralCodeIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3127,6 +3286,10 @@ export namespace Prisma {
      * Limit how many ReferralCodes to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReferralCodeIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3193,6 +3356,25 @@ export namespace Prisma {
      * Limit how many ReferralCodes to delete.
      */
     limit?: number
+  }
+
+  /**
+   * ReferralCode.owner
+   */
+  export type ReferralCode$ownerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -3564,6 +3746,8 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    commissions?: boolean | Booking$commissionsArgs<ExtArgs>
+    _count?: boolean | BookingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["booking"]>
 
   export type BookingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3627,10 +3811,18 @@ export namespace Prisma {
   }
 
   export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "invoiceNo" | "packageId" | "packageName" | "customerName" | "customerPhone" | "sessionDate" | "sessionTime" | "notes" | "referralCode" | "discountPct" | "originalPrice" | "finalPrice" | "paymentMethod" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
+  export type BookingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    commissions?: boolean | Booking$commissionsArgs<ExtArgs>
+    _count?: boolean | BookingCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type BookingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type BookingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $BookingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Booking"
-    objects: {}
+    objects: {
+      commissions: Prisma.$AffiliateCommissionPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       invoiceNo: string
@@ -4043,6 +4235,7 @@ export namespace Prisma {
    */
   export interface Prisma__BookingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    commissions<T extends Booking$commissionsArgs<ExtArgs> = {}>(args?: Subset<T, Booking$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4106,6 +4299,10 @@ export namespace Prisma {
      */
     omit?: BookingOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    /**
      * Filter, which Booking to fetch.
      */
     where: BookingWhereUniqueInput
@@ -4124,6 +4321,10 @@ export namespace Prisma {
      */
     omit?: BookingOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    /**
      * Filter, which Booking to fetch.
      */
     where: BookingWhereUniqueInput
@@ -4141,6 +4342,10 @@ export namespace Prisma {
      * Omit specific fields from the Booking
      */
     omit?: BookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
     /**
      * Filter, which Booking to fetch.
      */
@@ -4190,6 +4395,10 @@ export namespace Prisma {
      */
     omit?: BookingOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    /**
      * Filter, which Booking to fetch.
      */
     where?: BookingWhereInput
@@ -4237,6 +4446,10 @@ export namespace Prisma {
      * Omit specific fields from the Booking
      */
     omit?: BookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
     /**
      * Filter, which Bookings to fetch.
      */
@@ -4286,6 +4499,10 @@ export namespace Prisma {
      */
     omit?: BookingOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    /**
      * The data needed to create a Booking.
      */
     data: XOR<BookingCreateInput, BookingUncheckedCreateInput>
@@ -4333,6 +4550,10 @@ export namespace Prisma {
      * Omit specific fields from the Booking
      */
     omit?: BookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
     /**
      * The data needed to update a Booking.
      */
@@ -4400,6 +4621,10 @@ export namespace Prisma {
      */
     omit?: BookingOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    /**
      * The filter to search for the Booking to update in case it exists.
      */
     where: BookingWhereUniqueInput
@@ -4426,6 +4651,10 @@ export namespace Prisma {
      */
     omit?: BookingOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    /**
      * Filter which Booking to delete.
      */
     where: BookingWhereUniqueInput
@@ -4446,6 +4675,30 @@ export namespace Prisma {
   }
 
   /**
+   * Booking.commissions
+   */
+  export type Booking$commissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    where?: AffiliateCommissionWhereInput
+    orderBy?: AffiliateCommissionOrderByWithRelationInput | AffiliateCommissionOrderByWithRelationInput[]
+    cursor?: AffiliateCommissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AffiliateCommissionScalarFieldEnum | AffiliateCommissionScalarFieldEnum[]
+  }
+
+  /**
    * Booking without action
    */
   export type BookingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4457,6 +4710,10 @@ export namespace Prisma {
      * Omit specific fields from the Booking
      */
     omit?: BookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
   }
 
 
@@ -10254,6 +10511,9 @@ export namespace Prisma {
     email: string | null
     password: string | null
     role: $Enums.Role | null
+    phone: string | null
+    bankName: string | null
+    bankAccount: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10264,6 +10524,9 @@ export namespace Prisma {
     email: string | null
     password: string | null
     role: $Enums.Role | null
+    phone: string | null
+    bankName: string | null
+    bankAccount: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10274,6 +10537,9 @@ export namespace Prisma {
     email: number
     password: number
     role: number
+    phone: number
+    bankName: number
+    bankAccount: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -10286,6 +10552,9 @@ export namespace Prisma {
     email?: true
     password?: true
     role?: true
+    phone?: true
+    bankName?: true
+    bankAccount?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10296,6 +10565,9 @@ export namespace Prisma {
     email?: true
     password?: true
     role?: true
+    phone?: true
+    bankName?: true
+    bankAccount?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10306,6 +10578,9 @@ export namespace Prisma {
     email?: true
     password?: true
     role?: true
+    phone?: true
+    bankName?: true
+    bankAccount?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10389,6 +10664,9 @@ export namespace Prisma {
     email: string
     password: string
     role: $Enums.Role
+    phone: string | null
+    bankName: string | null
+    bankAccount: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -10416,10 +10694,15 @@ export namespace Prisma {
     email?: boolean
     password?: boolean
     role?: boolean
+    phone?: boolean
+    bankName?: boolean
+    bankAccount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     referral_usages?: boolean | User$referral_usagesArgs<ExtArgs>
     transactions?: boolean | User$transactionsArgs<ExtArgs>
+    referralCode?: boolean | User$referralCodeArgs<ExtArgs>
+    commissions?: boolean | User$commissionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -10429,6 +10712,9 @@ export namespace Prisma {
     email?: boolean
     password?: boolean
     role?: boolean
+    phone?: boolean
+    bankName?: boolean
+    bankAccount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -10439,6 +10725,9 @@ export namespace Prisma {
     email?: boolean
     password?: boolean
     role?: boolean
+    phone?: boolean
+    bankName?: boolean
+    bankAccount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -10449,14 +10738,19 @@ export namespace Prisma {
     email?: boolean
     password?: boolean
     role?: boolean
+    phone?: boolean
+    bankName?: boolean
+    bankAccount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "role" | "phone" | "bankName" | "bankAccount" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     referral_usages?: boolean | User$referral_usagesArgs<ExtArgs>
     transactions?: boolean | User$transactionsArgs<ExtArgs>
+    referralCode?: boolean | User$referralCodeArgs<ExtArgs>
+    commissions?: boolean | User$commissionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -10467,6 +10761,8 @@ export namespace Prisma {
     objects: {
       referral_usages: Prisma.$ReferralUsagePayload<ExtArgs>[]
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
+      referralCode: Prisma.$ReferralCodePayload<ExtArgs> | null
+      commissions: Prisma.$AffiliateCommissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10474,6 +10770,9 @@ export namespace Prisma {
       email: string
       password: string
       role: $Enums.Role
+      phone: string | null
+      bankName: string | null
+      bankAccount: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -10872,6 +11171,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     referral_usages<T extends User$referral_usagesArgs<ExtArgs> = {}>(args?: Subset<T, User$referral_usagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferralUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     transactions<T extends User$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    referralCode<T extends User$referralCodeArgs<ExtArgs> = {}>(args?: Subset<T, User$referralCodeArgs<ExtArgs>>): Prisma__ReferralCodeClient<$Result.GetResult<Prisma.$ReferralCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    commissions<T extends User$commissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10906,6 +11207,9 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'Role'>
+    readonly phone: FieldRef<"User", 'String'>
+    readonly bankName: FieldRef<"User", 'String'>
+    readonly bankAccount: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -11346,6 +11650,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * User.referralCode
+   */
+  export type User$referralCodeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReferralCode
+     */
+    select?: ReferralCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ReferralCode
+     */
+    omit?: ReferralCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReferralCodeInclude<ExtArgs> | null
+    where?: ReferralCodeWhereInput
+  }
+
+  /**
+   * User.commissions
+   */
+  export type User$commissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    where?: AffiliateCommissionWhereInput
+    orderBy?: AffiliateCommissionOrderByWithRelationInput | AffiliateCommissionOrderByWithRelationInput[]
+    cursor?: AffiliateCommissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AffiliateCommissionScalarFieldEnum | AffiliateCommissionScalarFieldEnum[]
   }
 
   /**
@@ -14557,6 +14904,1137 @@ export namespace Prisma {
 
 
   /**
+   * Model AffiliateCommission
+   */
+
+  export type AggregateAffiliateCommission = {
+    _count: AffiliateCommissionCountAggregateOutputType | null
+    _avg: AffiliateCommissionAvgAggregateOutputType | null
+    _sum: AffiliateCommissionSumAggregateOutputType | null
+    _min: AffiliateCommissionMinAggregateOutputType | null
+    _max: AffiliateCommissionMaxAggregateOutputType | null
+  }
+
+  export type AffiliateCommissionAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type AffiliateCommissionSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type AffiliateCommissionMinAggregateOutputType = {
+    id: string | null
+    snapperId: string | null
+    bookingId: string | null
+    amount: number | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AffiliateCommissionMaxAggregateOutputType = {
+    id: string | null
+    snapperId: string | null
+    bookingId: string | null
+    amount: number | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AffiliateCommissionCountAggregateOutputType = {
+    id: number
+    snapperId: number
+    bookingId: number
+    amount: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AffiliateCommissionAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type AffiliateCommissionSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type AffiliateCommissionMinAggregateInputType = {
+    id?: true
+    snapperId?: true
+    bookingId?: true
+    amount?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AffiliateCommissionMaxAggregateInputType = {
+    id?: true
+    snapperId?: true
+    bookingId?: true
+    amount?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AffiliateCommissionCountAggregateInputType = {
+    id?: true
+    snapperId?: true
+    bookingId?: true
+    amount?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AffiliateCommissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AffiliateCommission to aggregate.
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateCommissions to fetch.
+     */
+    orderBy?: AffiliateCommissionOrderByWithRelationInput | AffiliateCommissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AffiliateCommissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateCommissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateCommissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AffiliateCommissions
+    **/
+    _count?: true | AffiliateCommissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AffiliateCommissionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AffiliateCommissionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AffiliateCommissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AffiliateCommissionMaxAggregateInputType
+  }
+
+  export type GetAffiliateCommissionAggregateType<T extends AffiliateCommissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateAffiliateCommission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAffiliateCommission[P]>
+      : GetScalarType<T[P], AggregateAffiliateCommission[P]>
+  }
+
+
+
+
+  export type AffiliateCommissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AffiliateCommissionWhereInput
+    orderBy?: AffiliateCommissionOrderByWithAggregationInput | AffiliateCommissionOrderByWithAggregationInput[]
+    by: AffiliateCommissionScalarFieldEnum[] | AffiliateCommissionScalarFieldEnum
+    having?: AffiliateCommissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AffiliateCommissionCountAggregateInputType | true
+    _avg?: AffiliateCommissionAvgAggregateInputType
+    _sum?: AffiliateCommissionSumAggregateInputType
+    _min?: AffiliateCommissionMinAggregateInputType
+    _max?: AffiliateCommissionMaxAggregateInputType
+  }
+
+  export type AffiliateCommissionGroupByOutputType = {
+    id: string
+    snapperId: string
+    bookingId: string
+    amount: number
+    status: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AffiliateCommissionCountAggregateOutputType | null
+    _avg: AffiliateCommissionAvgAggregateOutputType | null
+    _sum: AffiliateCommissionSumAggregateOutputType | null
+    _min: AffiliateCommissionMinAggregateOutputType | null
+    _max: AffiliateCommissionMaxAggregateOutputType | null
+  }
+
+  type GetAffiliateCommissionGroupByPayload<T extends AffiliateCommissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AffiliateCommissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AffiliateCommissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AffiliateCommissionGroupByOutputType[P]>
+            : GetScalarType<T[P], AffiliateCommissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AffiliateCommissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    snapperId?: boolean
+    bookingId?: boolean
+    amount?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    snapper?: boolean | UserDefaultArgs<ExtArgs>
+    booking?: boolean | BookingDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["affiliateCommission"]>
+
+  export type AffiliateCommissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    snapperId?: boolean
+    bookingId?: boolean
+    amount?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    snapper?: boolean | UserDefaultArgs<ExtArgs>
+    booking?: boolean | BookingDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["affiliateCommission"]>
+
+  export type AffiliateCommissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    snapperId?: boolean
+    bookingId?: boolean
+    amount?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    snapper?: boolean | UserDefaultArgs<ExtArgs>
+    booking?: boolean | BookingDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["affiliateCommission"]>
+
+  export type AffiliateCommissionSelectScalar = {
+    id?: boolean
+    snapperId?: boolean
+    bookingId?: boolean
+    amount?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AffiliateCommissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "snapperId" | "bookingId" | "amount" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["affiliateCommission"]>
+  export type AffiliateCommissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    snapper?: boolean | UserDefaultArgs<ExtArgs>
+    booking?: boolean | BookingDefaultArgs<ExtArgs>
+  }
+  export type AffiliateCommissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    snapper?: boolean | UserDefaultArgs<ExtArgs>
+    booking?: boolean | BookingDefaultArgs<ExtArgs>
+  }
+  export type AffiliateCommissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    snapper?: boolean | UserDefaultArgs<ExtArgs>
+    booking?: boolean | BookingDefaultArgs<ExtArgs>
+  }
+
+  export type $AffiliateCommissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AffiliateCommission"
+    objects: {
+      snapper: Prisma.$UserPayload<ExtArgs>
+      booking: Prisma.$BookingPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      snapperId: string
+      bookingId: string
+      amount: number
+      status: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["affiliateCommission"]>
+    composites: {}
+  }
+
+  type AffiliateCommissionGetPayload<S extends boolean | null | undefined | AffiliateCommissionDefaultArgs> = $Result.GetResult<Prisma.$AffiliateCommissionPayload, S>
+
+  type AffiliateCommissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AffiliateCommissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AffiliateCommissionCountAggregateInputType | true
+    }
+
+  export interface AffiliateCommissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AffiliateCommission'], meta: { name: 'AffiliateCommission' } }
+    /**
+     * Find zero or one AffiliateCommission that matches the filter.
+     * @param {AffiliateCommissionFindUniqueArgs} args - Arguments to find a AffiliateCommission
+     * @example
+     * // Get one AffiliateCommission
+     * const affiliateCommission = await prisma.affiliateCommission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AffiliateCommissionFindUniqueArgs>(args: SelectSubset<T, AffiliateCommissionFindUniqueArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AffiliateCommission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AffiliateCommissionFindUniqueOrThrowArgs} args - Arguments to find a AffiliateCommission
+     * @example
+     * // Get one AffiliateCommission
+     * const affiliateCommission = await prisma.affiliateCommission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AffiliateCommissionFindUniqueOrThrowArgs>(args: SelectSubset<T, AffiliateCommissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AffiliateCommission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionFindFirstArgs} args - Arguments to find a AffiliateCommission
+     * @example
+     * // Get one AffiliateCommission
+     * const affiliateCommission = await prisma.affiliateCommission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AffiliateCommissionFindFirstArgs>(args?: SelectSubset<T, AffiliateCommissionFindFirstArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AffiliateCommission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionFindFirstOrThrowArgs} args - Arguments to find a AffiliateCommission
+     * @example
+     * // Get one AffiliateCommission
+     * const affiliateCommission = await prisma.affiliateCommission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AffiliateCommissionFindFirstOrThrowArgs>(args?: SelectSubset<T, AffiliateCommissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AffiliateCommissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AffiliateCommissions
+     * const affiliateCommissions = await prisma.affiliateCommission.findMany()
+     * 
+     * // Get first 10 AffiliateCommissions
+     * const affiliateCommissions = await prisma.affiliateCommission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const affiliateCommissionWithIdOnly = await prisma.affiliateCommission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AffiliateCommissionFindManyArgs>(args?: SelectSubset<T, AffiliateCommissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AffiliateCommission.
+     * @param {AffiliateCommissionCreateArgs} args - Arguments to create a AffiliateCommission.
+     * @example
+     * // Create one AffiliateCommission
+     * const AffiliateCommission = await prisma.affiliateCommission.create({
+     *   data: {
+     *     // ... data to create a AffiliateCommission
+     *   }
+     * })
+     * 
+     */
+    create<T extends AffiliateCommissionCreateArgs>(args: SelectSubset<T, AffiliateCommissionCreateArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AffiliateCommissions.
+     * @param {AffiliateCommissionCreateManyArgs} args - Arguments to create many AffiliateCommissions.
+     * @example
+     * // Create many AffiliateCommissions
+     * const affiliateCommission = await prisma.affiliateCommission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AffiliateCommissionCreateManyArgs>(args?: SelectSubset<T, AffiliateCommissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AffiliateCommissions and returns the data saved in the database.
+     * @param {AffiliateCommissionCreateManyAndReturnArgs} args - Arguments to create many AffiliateCommissions.
+     * @example
+     * // Create many AffiliateCommissions
+     * const affiliateCommission = await prisma.affiliateCommission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AffiliateCommissions and only return the `id`
+     * const affiliateCommissionWithIdOnly = await prisma.affiliateCommission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AffiliateCommissionCreateManyAndReturnArgs>(args?: SelectSubset<T, AffiliateCommissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AffiliateCommission.
+     * @param {AffiliateCommissionDeleteArgs} args - Arguments to delete one AffiliateCommission.
+     * @example
+     * // Delete one AffiliateCommission
+     * const AffiliateCommission = await prisma.affiliateCommission.delete({
+     *   where: {
+     *     // ... filter to delete one AffiliateCommission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AffiliateCommissionDeleteArgs>(args: SelectSubset<T, AffiliateCommissionDeleteArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AffiliateCommission.
+     * @param {AffiliateCommissionUpdateArgs} args - Arguments to update one AffiliateCommission.
+     * @example
+     * // Update one AffiliateCommission
+     * const affiliateCommission = await prisma.affiliateCommission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AffiliateCommissionUpdateArgs>(args: SelectSubset<T, AffiliateCommissionUpdateArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AffiliateCommissions.
+     * @param {AffiliateCommissionDeleteManyArgs} args - Arguments to filter AffiliateCommissions to delete.
+     * @example
+     * // Delete a few AffiliateCommissions
+     * const { count } = await prisma.affiliateCommission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AffiliateCommissionDeleteManyArgs>(args?: SelectSubset<T, AffiliateCommissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AffiliateCommissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AffiliateCommissions
+     * const affiliateCommission = await prisma.affiliateCommission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AffiliateCommissionUpdateManyArgs>(args: SelectSubset<T, AffiliateCommissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AffiliateCommissions and returns the data updated in the database.
+     * @param {AffiliateCommissionUpdateManyAndReturnArgs} args - Arguments to update many AffiliateCommissions.
+     * @example
+     * // Update many AffiliateCommissions
+     * const affiliateCommission = await prisma.affiliateCommission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AffiliateCommissions and only return the `id`
+     * const affiliateCommissionWithIdOnly = await prisma.affiliateCommission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AffiliateCommissionUpdateManyAndReturnArgs>(args: SelectSubset<T, AffiliateCommissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AffiliateCommission.
+     * @param {AffiliateCommissionUpsertArgs} args - Arguments to update or create a AffiliateCommission.
+     * @example
+     * // Update or create a AffiliateCommission
+     * const affiliateCommission = await prisma.affiliateCommission.upsert({
+     *   create: {
+     *     // ... data to create a AffiliateCommission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AffiliateCommission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AffiliateCommissionUpsertArgs>(args: SelectSubset<T, AffiliateCommissionUpsertArgs<ExtArgs>>): Prisma__AffiliateCommissionClient<$Result.GetResult<Prisma.$AffiliateCommissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AffiliateCommissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionCountArgs} args - Arguments to filter AffiliateCommissions to count.
+     * @example
+     * // Count the number of AffiliateCommissions
+     * const count = await prisma.affiliateCommission.count({
+     *   where: {
+     *     // ... the filter for the AffiliateCommissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends AffiliateCommissionCountArgs>(
+      args?: Subset<T, AffiliateCommissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AffiliateCommissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AffiliateCommission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AffiliateCommissionAggregateArgs>(args: Subset<T, AffiliateCommissionAggregateArgs>): Prisma.PrismaPromise<GetAffiliateCommissionAggregateType<T>>
+
+    /**
+     * Group by AffiliateCommission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AffiliateCommissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AffiliateCommissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AffiliateCommissionGroupByArgs['orderBy'] }
+        : { orderBy?: AffiliateCommissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AffiliateCommissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAffiliateCommissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AffiliateCommission model
+   */
+  readonly fields: AffiliateCommissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AffiliateCommission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AffiliateCommissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    snapper<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    booking<T extends BookingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BookingDefaultArgs<ExtArgs>>): Prisma__BookingClient<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AffiliateCommission model
+   */
+  interface AffiliateCommissionFieldRefs {
+    readonly id: FieldRef<"AffiliateCommission", 'String'>
+    readonly snapperId: FieldRef<"AffiliateCommission", 'String'>
+    readonly bookingId: FieldRef<"AffiliateCommission", 'String'>
+    readonly amount: FieldRef<"AffiliateCommission", 'Float'>
+    readonly status: FieldRef<"AffiliateCommission", 'String'>
+    readonly createdAt: FieldRef<"AffiliateCommission", 'DateTime'>
+    readonly updatedAt: FieldRef<"AffiliateCommission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AffiliateCommission findUnique
+   */
+  export type AffiliateCommissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * Filter, which AffiliateCommission to fetch.
+     */
+    where: AffiliateCommissionWhereUniqueInput
+  }
+
+  /**
+   * AffiliateCommission findUniqueOrThrow
+   */
+  export type AffiliateCommissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * Filter, which AffiliateCommission to fetch.
+     */
+    where: AffiliateCommissionWhereUniqueInput
+  }
+
+  /**
+   * AffiliateCommission findFirst
+   */
+  export type AffiliateCommissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * Filter, which AffiliateCommission to fetch.
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateCommissions to fetch.
+     */
+    orderBy?: AffiliateCommissionOrderByWithRelationInput | AffiliateCommissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AffiliateCommissions.
+     */
+    cursor?: AffiliateCommissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateCommissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateCommissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliateCommissions.
+     */
+    distinct?: AffiliateCommissionScalarFieldEnum | AffiliateCommissionScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliateCommission findFirstOrThrow
+   */
+  export type AffiliateCommissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * Filter, which AffiliateCommission to fetch.
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateCommissions to fetch.
+     */
+    orderBy?: AffiliateCommissionOrderByWithRelationInput | AffiliateCommissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AffiliateCommissions.
+     */
+    cursor?: AffiliateCommissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateCommissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateCommissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliateCommissions.
+     */
+    distinct?: AffiliateCommissionScalarFieldEnum | AffiliateCommissionScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliateCommission findMany
+   */
+  export type AffiliateCommissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * Filter, which AffiliateCommissions to fetch.
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AffiliateCommissions to fetch.
+     */
+    orderBy?: AffiliateCommissionOrderByWithRelationInput | AffiliateCommissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AffiliateCommissions.
+     */
+    cursor?: AffiliateCommissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AffiliateCommissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AffiliateCommissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AffiliateCommissions.
+     */
+    distinct?: AffiliateCommissionScalarFieldEnum | AffiliateCommissionScalarFieldEnum[]
+  }
+
+  /**
+   * AffiliateCommission create
+   */
+  export type AffiliateCommissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AffiliateCommission.
+     */
+    data: XOR<AffiliateCommissionCreateInput, AffiliateCommissionUncheckedCreateInput>
+  }
+
+  /**
+   * AffiliateCommission createMany
+   */
+  export type AffiliateCommissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AffiliateCommissions.
+     */
+    data: AffiliateCommissionCreateManyInput | AffiliateCommissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AffiliateCommission createManyAndReturn
+   */
+  export type AffiliateCommissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many AffiliateCommissions.
+     */
+    data: AffiliateCommissionCreateManyInput | AffiliateCommissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AffiliateCommission update
+   */
+  export type AffiliateCommissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AffiliateCommission.
+     */
+    data: XOR<AffiliateCommissionUpdateInput, AffiliateCommissionUncheckedUpdateInput>
+    /**
+     * Choose, which AffiliateCommission to update.
+     */
+    where: AffiliateCommissionWhereUniqueInput
+  }
+
+  /**
+   * AffiliateCommission updateMany
+   */
+  export type AffiliateCommissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AffiliateCommissions.
+     */
+    data: XOR<AffiliateCommissionUpdateManyMutationInput, AffiliateCommissionUncheckedUpdateManyInput>
+    /**
+     * Filter which AffiliateCommissions to update
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * Limit how many AffiliateCommissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliateCommission updateManyAndReturn
+   */
+  export type AffiliateCommissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * The data used to update AffiliateCommissions.
+     */
+    data: XOR<AffiliateCommissionUpdateManyMutationInput, AffiliateCommissionUncheckedUpdateManyInput>
+    /**
+     * Filter which AffiliateCommissions to update
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * Limit how many AffiliateCommissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AffiliateCommission upsert
+   */
+  export type AffiliateCommissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AffiliateCommission to update in case it exists.
+     */
+    where: AffiliateCommissionWhereUniqueInput
+    /**
+     * In case the AffiliateCommission found by the `where` argument doesn't exist, create a new AffiliateCommission with this data.
+     */
+    create: XOR<AffiliateCommissionCreateInput, AffiliateCommissionUncheckedCreateInput>
+    /**
+     * In case the AffiliateCommission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AffiliateCommissionUpdateInput, AffiliateCommissionUncheckedUpdateInput>
+  }
+
+  /**
+   * AffiliateCommission delete
+   */
+  export type AffiliateCommissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+    /**
+     * Filter which AffiliateCommission to delete.
+     */
+    where: AffiliateCommissionWhereUniqueInput
+  }
+
+  /**
+   * AffiliateCommission deleteMany
+   */
+  export type AffiliateCommissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AffiliateCommissions to delete
+     */
+    where?: AffiliateCommissionWhereInput
+    /**
+     * Limit how many AffiliateCommissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AffiliateCommission without action
+   */
+  export type AffiliateCommissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AffiliateCommission
+     */
+    select?: AffiliateCommissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AffiliateCommission
+     */
+    omit?: AffiliateCommissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AffiliateCommissionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14583,6 +16061,7 @@ export namespace Prisma {
     usageLimit: 'usageLimit',
     usageCount: 'usageCount',
     isActive: 'isActive',
+    ownerId: 'ownerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -14689,6 +16168,9 @@ export namespace Prisma {
     email: 'email',
     password: 'password',
     role: 'role',
+    phone: 'phone',
+    bankName: 'bankName',
+    bankAccount: 'bankAccount',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -14736,6 +16218,19 @@ export namespace Prisma {
   };
 
   export type AffiliatePostScalarFieldEnum = (typeof AffiliatePostScalarFieldEnum)[keyof typeof AffiliatePostScalarFieldEnum]
+
+
+  export const AffiliateCommissionScalarFieldEnum: {
+    id: 'id',
+    snapperId: 'snapperId',
+    bookingId: 'bookingId',
+    amount: 'amount',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AffiliateCommissionScalarFieldEnum = (typeof AffiliateCommissionScalarFieldEnum)[keyof typeof AffiliateCommissionScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -14891,8 +16386,10 @@ export namespace Prisma {
     usageLimit?: IntNullableFilter<"ReferralCode"> | number | null
     usageCount?: IntFilter<"ReferralCode"> | number
     isActive?: BoolFilter<"ReferralCode"> | boolean
+    ownerId?: StringNullableFilter<"ReferralCode"> | string | null
     createdAt?: DateTimeFilter<"ReferralCode"> | Date | string
     updatedAt?: DateTimeFilter<"ReferralCode"> | Date | string
+    owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     referral_usages?: ReferralUsageListRelationFilter
     transactions?: TransactionListRelationFilter
   }
@@ -14910,8 +16407,10 @@ export namespace Prisma {
     usageLimit?: SortOrderInput | SortOrder
     usageCount?: SortOrder
     isActive?: SortOrder
+    ownerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    owner?: UserOrderByWithRelationInput
     referral_usages?: ReferralUsageOrderByRelationAggregateInput
     transactions?: TransactionOrderByRelationAggregateInput
   }
@@ -14919,6 +16418,7 @@ export namespace Prisma {
   export type ReferralCodeWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     code?: string
+    ownerId?: string
     AND?: ReferralCodeWhereInput | ReferralCodeWhereInput[]
     OR?: ReferralCodeWhereInput[]
     NOT?: ReferralCodeWhereInput | ReferralCodeWhereInput[]
@@ -14934,9 +16434,10 @@ export namespace Prisma {
     isActive?: BoolFilter<"ReferralCode"> | boolean
     createdAt?: DateTimeFilter<"ReferralCode"> | Date | string
     updatedAt?: DateTimeFilter<"ReferralCode"> | Date | string
+    owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     referral_usages?: ReferralUsageListRelationFilter
     transactions?: TransactionListRelationFilter
-  }, "id" | "code">
+  }, "id" | "code" | "ownerId">
 
   export type ReferralCodeOrderByWithAggregationInput = {
     id?: SortOrder
@@ -14951,6 +16452,7 @@ export namespace Prisma {
     usageLimit?: SortOrderInput | SortOrder
     usageCount?: SortOrder
     isActive?: SortOrder
+    ownerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ReferralCodeCountOrderByAggregateInput
@@ -14976,6 +16478,7 @@ export namespace Prisma {
     usageLimit?: IntNullableWithAggregatesFilter<"ReferralCode"> | number | null
     usageCount?: IntWithAggregatesFilter<"ReferralCode"> | number
     isActive?: BoolWithAggregatesFilter<"ReferralCode"> | boolean
+    ownerId?: StringNullableWithAggregatesFilter<"ReferralCode"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ReferralCode"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ReferralCode"> | Date | string
   }
@@ -15001,6 +16504,7 @@ export namespace Prisma {
     status?: StringFilter<"Booking"> | string
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     updatedAt?: DateTimeFilter<"Booking"> | Date | string
+    commissions?: AffiliateCommissionListRelationFilter
   }
 
   export type BookingOrderByWithRelationInput = {
@@ -15021,6 +16525,7 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    commissions?: AffiliateCommissionOrderByRelationAggregateInput
   }
 
   export type BookingWhereUniqueInput = Prisma.AtLeast<{
@@ -15044,6 +16549,7 @@ export namespace Prisma {
     status?: StringFilter<"Booking"> | string
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     updatedAt?: DateTimeFilter<"Booking"> | Date | string
+    commissions?: AffiliateCommissionListRelationFilter
   }, "id" | "invoiceNo">
 
   export type BookingOrderByWithAggregationInput = {
@@ -15480,10 +16986,15 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
+    phone?: StringNullableFilter<"User"> | string | null
+    bankName?: StringNullableFilter<"User"> | string | null
+    bankAccount?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referral_usages?: ReferralUsageListRelationFilter
     transactions?: TransactionListRelationFilter
+    referralCode?: XOR<ReferralCodeNullableScalarRelationFilter, ReferralCodeWhereInput> | null
+    commissions?: AffiliateCommissionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -15492,10 +17003,15 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    bankName?: SortOrderInput | SortOrder
+    bankAccount?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     referral_usages?: ReferralUsageOrderByRelationAggregateInput
     transactions?: TransactionOrderByRelationAggregateInput
+    referralCode?: ReferralCodeOrderByWithRelationInput
+    commissions?: AffiliateCommissionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -15507,10 +17023,15 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
+    phone?: StringNullableFilter<"User"> | string | null
+    bankName?: StringNullableFilter<"User"> | string | null
+    bankAccount?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     referral_usages?: ReferralUsageListRelationFilter
     transactions?: TransactionListRelationFilter
+    referralCode?: XOR<ReferralCodeNullableScalarRelationFilter, ReferralCodeWhereInput> | null
+    commissions?: AffiliateCommissionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -15519,6 +17040,9 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    bankName?: SortOrderInput | SortOrder
+    bankAccount?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -15535,6 +17059,9 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    bankName?: StringNullableWithAggregatesFilter<"User"> | string | null
+    bankAccount?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -15744,6 +17271,76 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"AffiliatePost"> | Date | string
   }
 
+  export type AffiliateCommissionWhereInput = {
+    AND?: AffiliateCommissionWhereInput | AffiliateCommissionWhereInput[]
+    OR?: AffiliateCommissionWhereInput[]
+    NOT?: AffiliateCommissionWhereInput | AffiliateCommissionWhereInput[]
+    id?: StringFilter<"AffiliateCommission"> | string
+    snapperId?: StringFilter<"AffiliateCommission"> | string
+    bookingId?: StringFilter<"AffiliateCommission"> | string
+    amount?: FloatFilter<"AffiliateCommission"> | number
+    status?: StringFilter<"AffiliateCommission"> | string
+    createdAt?: DateTimeFilter<"AffiliateCommission"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliateCommission"> | Date | string
+    snapper?: XOR<UserScalarRelationFilter, UserWhereInput>
+    booking?: XOR<BookingScalarRelationFilter, BookingWhereInput>
+  }
+
+  export type AffiliateCommissionOrderByWithRelationInput = {
+    id?: SortOrder
+    snapperId?: SortOrder
+    bookingId?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    snapper?: UserOrderByWithRelationInput
+    booking?: BookingOrderByWithRelationInput
+  }
+
+  export type AffiliateCommissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AffiliateCommissionWhereInput | AffiliateCommissionWhereInput[]
+    OR?: AffiliateCommissionWhereInput[]
+    NOT?: AffiliateCommissionWhereInput | AffiliateCommissionWhereInput[]
+    snapperId?: StringFilter<"AffiliateCommission"> | string
+    bookingId?: StringFilter<"AffiliateCommission"> | string
+    amount?: FloatFilter<"AffiliateCommission"> | number
+    status?: StringFilter<"AffiliateCommission"> | string
+    createdAt?: DateTimeFilter<"AffiliateCommission"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliateCommission"> | Date | string
+    snapper?: XOR<UserScalarRelationFilter, UserWhereInput>
+    booking?: XOR<BookingScalarRelationFilter, BookingWhereInput>
+  }, "id">
+
+  export type AffiliateCommissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    snapperId?: SortOrder
+    bookingId?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AffiliateCommissionCountOrderByAggregateInput
+    _avg?: AffiliateCommissionAvgOrderByAggregateInput
+    _max?: AffiliateCommissionMaxOrderByAggregateInput
+    _min?: AffiliateCommissionMinOrderByAggregateInput
+    _sum?: AffiliateCommissionSumOrderByAggregateInput
+  }
+
+  export type AffiliateCommissionScalarWhereWithAggregatesInput = {
+    AND?: AffiliateCommissionScalarWhereWithAggregatesInput | AffiliateCommissionScalarWhereWithAggregatesInput[]
+    OR?: AffiliateCommissionScalarWhereWithAggregatesInput[]
+    NOT?: AffiliateCommissionScalarWhereWithAggregatesInput | AffiliateCommissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AffiliateCommission"> | string
+    snapperId?: StringWithAggregatesFilter<"AffiliateCommission"> | string
+    bookingId?: StringWithAggregatesFilter<"AffiliateCommission"> | string
+    amount?: FloatWithAggregatesFilter<"AffiliateCommission"> | number
+    status?: StringWithAggregatesFilter<"AffiliateCommission"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AffiliateCommission"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AffiliateCommission"> | Date | string
+  }
+
   export type ReferralCodeCreateInput = {
     id?: string
     code: string
@@ -15759,6 +17356,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner?: UserCreateNestedOneWithoutReferralCodeInput
     referral_usages?: ReferralUsageCreateNestedManyWithoutReferralCodeInput
     transactions?: TransactionCreateNestedManyWithoutReferralCodeInput
   }
@@ -15776,6 +17374,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    ownerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -15797,6 +17396,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneWithoutReferralCodeNestedInput
     referral_usages?: ReferralUsageUpdateManyWithoutReferralCodeNestedInput
     transactions?: TransactionUpdateManyWithoutReferralCodeNestedInput
   }
@@ -15814,6 +17414,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutReferralCodeNestedInput
@@ -15833,6 +17434,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    ownerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15867,6 +17469,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15889,6 +17492,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    commissions?: AffiliateCommissionCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateInput = {
@@ -15909,6 +17513,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    commissions?: AffiliateCommissionUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUpdateInput = {
@@ -15929,6 +17534,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commissions?: AffiliateCommissionUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateInput = {
@@ -15949,6 +17555,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commissions?: AffiliateCommissionUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingCreateManyInput = {
@@ -16410,10 +18017,15 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageCreateNestedManyWithoutUserInput
     transactions?: TransactionCreateNestedManyWithoutCashierInput
+    referralCode?: ReferralCodeCreateNestedOneWithoutOwnerInput
+    commissions?: AffiliateCommissionCreateNestedManyWithoutSnapperInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -16422,10 +18034,15 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutUserInput
     transactions?: TransactionUncheckedCreateNestedManyWithoutCashierInput
+    referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutOwnerInput
+    commissions?: AffiliateCommissionUncheckedCreateNestedManyWithoutSnapperInput
   }
 
   export type UserUpdateInput = {
@@ -16434,10 +18051,15 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUpdateManyWithoutUserNestedInput
     transactions?: TransactionUpdateManyWithoutCashierNestedInput
+    referralCode?: ReferralCodeUpdateOneWithoutOwnerNestedInput
+    commissions?: AffiliateCommissionUpdateManyWithoutSnapperNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -16446,10 +18068,15 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutUserNestedInput
     transactions?: TransactionUncheckedUpdateManyWithoutCashierNestedInput
+    referralCode?: ReferralCodeUncheckedUpdateOneWithoutOwnerNestedInput
+    commissions?: AffiliateCommissionUncheckedUpdateManyWithoutSnapperNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -16458,6 +18085,9 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16468,6 +18098,9 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16478,6 +18111,9 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16713,6 +18349,74 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AffiliateCommissionCreateInput = {
+    id?: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    snapper: UserCreateNestedOneWithoutCommissionsInput
+    booking: BookingCreateNestedOneWithoutCommissionsInput
+  }
+
+  export type AffiliateCommissionUncheckedCreateInput = {
+    id?: string
+    snapperId: string
+    bookingId: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateCommissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    snapper?: UserUpdateOneRequiredWithoutCommissionsNestedInput
+    booking?: BookingUpdateOneRequiredWithoutCommissionsNestedInput
+  }
+
+  export type AffiliateCommissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    snapperId?: StringFieldUpdateOperationsInput | string
+    bookingId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateCommissionCreateManyInput = {
+    id?: string
+    snapperId: string
+    bookingId: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateCommissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateCommissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    snapperId?: StringFieldUpdateOperationsInput | string
+    bookingId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16803,6 +18507,11 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type ReferralUsageListRelationFilter = {
     every?: ReferralUsageWhereInput
     some?: ReferralUsageWhereInput
@@ -16841,6 +18550,7 @@ export namespace Prisma {
     usageLimit?: SortOrder
     usageCount?: SortOrder
     isActive?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16866,6 +18576,7 @@ export namespace Prisma {
     usageLimit?: SortOrder
     usageCount?: SortOrder
     isActive?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16883,6 +18594,7 @@ export namespace Prisma {
     usageLimit?: SortOrder
     usageCount?: SortOrder
     isActive?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17013,6 +18725,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type AffiliateCommissionListRelationFilter = {
+    every?: AffiliateCommissionWhereInput
+    some?: AffiliateCommissionWhereInput
+    none?: AffiliateCommissionWhereInput
+  }
+
+  export type AffiliateCommissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type BookingCountOrderByAggregateInput = {
@@ -17396,6 +19118,9 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bankName?: SortOrder
+    bankAccount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17406,6 +19131,9 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bankName?: SortOrder
+    bankAccount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17416,6 +19144,9 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     role?: SortOrder
+    phone?: SortOrder
+    bankName?: SortOrder
+    bankAccount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17547,6 +19278,55 @@ export namespace Prisma {
     likeCount?: SortOrder
   }
 
+  export type BookingScalarRelationFilter = {
+    is?: BookingWhereInput
+    isNot?: BookingWhereInput
+  }
+
+  export type AffiliateCommissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    snapperId?: SortOrder
+    bookingId?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliateCommissionAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type AffiliateCommissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    snapperId?: SortOrder
+    bookingId?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliateCommissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    snapperId?: SortOrder
+    bookingId?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AffiliateCommissionSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type UserCreateNestedOneWithoutReferralCodeInput = {
+    create?: XOR<UserCreateWithoutReferralCodeInput, UserUncheckedCreateWithoutReferralCodeInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReferralCodeInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ReferralUsageCreateNestedManyWithoutReferralCodeInput = {
     create?: XOR<ReferralUsageCreateWithoutReferralCodeInput, ReferralUsageUncheckedCreateWithoutReferralCodeInput> | ReferralUsageCreateWithoutReferralCodeInput[] | ReferralUsageUncheckedCreateWithoutReferralCodeInput[]
     connectOrCreate?: ReferralUsageCreateOrConnectWithoutReferralCodeInput | ReferralUsageCreateOrConnectWithoutReferralCodeInput[]
@@ -17619,6 +19399,16 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type UserUpdateOneWithoutReferralCodeNestedInput = {
+    create?: XOR<UserCreateWithoutReferralCodeInput, UserUncheckedCreateWithoutReferralCodeInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReferralCodeInput
+    upsert?: UserUpsertWithoutReferralCodeInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReferralCodeInput, UserUpdateWithoutReferralCodeInput>, UserUncheckedUpdateWithoutReferralCodeInput>
+  }
+
   export type ReferralUsageUpdateManyWithoutReferralCodeNestedInput = {
     create?: XOR<ReferralUsageCreateWithoutReferralCodeInput, ReferralUsageUncheckedCreateWithoutReferralCodeInput> | ReferralUsageCreateWithoutReferralCodeInput[] | ReferralUsageUncheckedCreateWithoutReferralCodeInput[]
     connectOrCreate?: ReferralUsageCreateOrConnectWithoutReferralCodeInput | ReferralUsageCreateOrConnectWithoutReferralCodeInput[]
@@ -17673,6 +19463,48 @@ export namespace Prisma {
     update?: TransactionUpdateWithWhereUniqueWithoutReferralCodeInput | TransactionUpdateWithWhereUniqueWithoutReferralCodeInput[]
     updateMany?: TransactionUpdateManyWithWhereWithoutReferralCodeInput | TransactionUpdateManyWithWhereWithoutReferralCodeInput[]
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type AffiliateCommissionCreateNestedManyWithoutBookingInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutBookingInput, AffiliateCommissionUncheckedCreateWithoutBookingInput> | AffiliateCommissionCreateWithoutBookingInput[] | AffiliateCommissionUncheckedCreateWithoutBookingInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutBookingInput | AffiliateCommissionCreateOrConnectWithoutBookingInput[]
+    createMany?: AffiliateCommissionCreateManyBookingInputEnvelope
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+  }
+
+  export type AffiliateCommissionUncheckedCreateNestedManyWithoutBookingInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutBookingInput, AffiliateCommissionUncheckedCreateWithoutBookingInput> | AffiliateCommissionCreateWithoutBookingInput[] | AffiliateCommissionUncheckedCreateWithoutBookingInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutBookingInput | AffiliateCommissionCreateOrConnectWithoutBookingInput[]
+    createMany?: AffiliateCommissionCreateManyBookingInputEnvelope
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+  }
+
+  export type AffiliateCommissionUpdateManyWithoutBookingNestedInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutBookingInput, AffiliateCommissionUncheckedCreateWithoutBookingInput> | AffiliateCommissionCreateWithoutBookingInput[] | AffiliateCommissionUncheckedCreateWithoutBookingInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutBookingInput | AffiliateCommissionCreateOrConnectWithoutBookingInput[]
+    upsert?: AffiliateCommissionUpsertWithWhereUniqueWithoutBookingInput | AffiliateCommissionUpsertWithWhereUniqueWithoutBookingInput[]
+    createMany?: AffiliateCommissionCreateManyBookingInputEnvelope
+    set?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    disconnect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    delete?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    update?: AffiliateCommissionUpdateWithWhereUniqueWithoutBookingInput | AffiliateCommissionUpdateWithWhereUniqueWithoutBookingInput[]
+    updateMany?: AffiliateCommissionUpdateManyWithWhereWithoutBookingInput | AffiliateCommissionUpdateManyWithWhereWithoutBookingInput[]
+    deleteMany?: AffiliateCommissionScalarWhereInput | AffiliateCommissionScalarWhereInput[]
+  }
+
+  export type AffiliateCommissionUncheckedUpdateManyWithoutBookingNestedInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutBookingInput, AffiliateCommissionUncheckedCreateWithoutBookingInput> | AffiliateCommissionCreateWithoutBookingInput[] | AffiliateCommissionUncheckedCreateWithoutBookingInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutBookingInput | AffiliateCommissionCreateOrConnectWithoutBookingInput[]
+    upsert?: AffiliateCommissionUpsertWithWhereUniqueWithoutBookingInput | AffiliateCommissionUpsertWithWhereUniqueWithoutBookingInput[]
+    createMany?: AffiliateCommissionCreateManyBookingInputEnvelope
+    set?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    disconnect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    delete?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    update?: AffiliateCommissionUpdateWithWhereUniqueWithoutBookingInput | AffiliateCommissionUpdateWithWhereUniqueWithoutBookingInput[]
+    updateMany?: AffiliateCommissionUpdateManyWithWhereWithoutBookingInput | AffiliateCommissionUpdateManyWithWhereWithoutBookingInput[]
+    deleteMany?: AffiliateCommissionScalarWhereInput | AffiliateCommissionScalarWhereInput[]
   }
 
   export type ProductCreateNestedManyWithoutCategoryInput = {
@@ -17978,6 +19810,19 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
+  export type ReferralCodeCreateNestedOneWithoutOwnerInput = {
+    create?: XOR<ReferralCodeCreateWithoutOwnerInput, ReferralCodeUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: ReferralCodeCreateOrConnectWithoutOwnerInput
+    connect?: ReferralCodeWhereUniqueInput
+  }
+
+  export type AffiliateCommissionCreateNestedManyWithoutSnapperInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutSnapperInput, AffiliateCommissionUncheckedCreateWithoutSnapperInput> | AffiliateCommissionCreateWithoutSnapperInput[] | AffiliateCommissionUncheckedCreateWithoutSnapperInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutSnapperInput | AffiliateCommissionCreateOrConnectWithoutSnapperInput[]
+    createMany?: AffiliateCommissionCreateManySnapperInputEnvelope
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+  }
+
   export type ReferralUsageUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ReferralUsageCreateWithoutUserInput, ReferralUsageUncheckedCreateWithoutUserInput> | ReferralUsageCreateWithoutUserInput[] | ReferralUsageUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReferralUsageCreateOrConnectWithoutUserInput | ReferralUsageCreateOrConnectWithoutUserInput[]
@@ -17990,6 +19835,19 @@ export namespace Prisma {
     connectOrCreate?: TransactionCreateOrConnectWithoutCashierInput | TransactionCreateOrConnectWithoutCashierInput[]
     createMany?: TransactionCreateManyCashierInputEnvelope
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type ReferralCodeUncheckedCreateNestedOneWithoutOwnerInput = {
+    create?: XOR<ReferralCodeCreateWithoutOwnerInput, ReferralCodeUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: ReferralCodeCreateOrConnectWithoutOwnerInput
+    connect?: ReferralCodeWhereUniqueInput
+  }
+
+  export type AffiliateCommissionUncheckedCreateNestedManyWithoutSnapperInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutSnapperInput, AffiliateCommissionUncheckedCreateWithoutSnapperInput> | AffiliateCommissionCreateWithoutSnapperInput[] | AffiliateCommissionUncheckedCreateWithoutSnapperInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutSnapperInput | AffiliateCommissionCreateOrConnectWithoutSnapperInput[]
+    createMany?: AffiliateCommissionCreateManySnapperInputEnvelope
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -18024,6 +19882,30 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
+  export type ReferralCodeUpdateOneWithoutOwnerNestedInput = {
+    create?: XOR<ReferralCodeCreateWithoutOwnerInput, ReferralCodeUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: ReferralCodeCreateOrConnectWithoutOwnerInput
+    upsert?: ReferralCodeUpsertWithoutOwnerInput
+    disconnect?: ReferralCodeWhereInput | boolean
+    delete?: ReferralCodeWhereInput | boolean
+    connect?: ReferralCodeWhereUniqueInput
+    update?: XOR<XOR<ReferralCodeUpdateToOneWithWhereWithoutOwnerInput, ReferralCodeUpdateWithoutOwnerInput>, ReferralCodeUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type AffiliateCommissionUpdateManyWithoutSnapperNestedInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutSnapperInput, AffiliateCommissionUncheckedCreateWithoutSnapperInput> | AffiliateCommissionCreateWithoutSnapperInput[] | AffiliateCommissionUncheckedCreateWithoutSnapperInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutSnapperInput | AffiliateCommissionCreateOrConnectWithoutSnapperInput[]
+    upsert?: AffiliateCommissionUpsertWithWhereUniqueWithoutSnapperInput | AffiliateCommissionUpsertWithWhereUniqueWithoutSnapperInput[]
+    createMany?: AffiliateCommissionCreateManySnapperInputEnvelope
+    set?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    disconnect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    delete?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    update?: AffiliateCommissionUpdateWithWhereUniqueWithoutSnapperInput | AffiliateCommissionUpdateWithWhereUniqueWithoutSnapperInput[]
+    updateMany?: AffiliateCommissionUpdateManyWithWhereWithoutSnapperInput | AffiliateCommissionUpdateManyWithWhereWithoutSnapperInput[]
+    deleteMany?: AffiliateCommissionScalarWhereInput | AffiliateCommissionScalarWhereInput[]
+  }
+
   export type ReferralUsageUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReferralUsageCreateWithoutUserInput, ReferralUsageUncheckedCreateWithoutUserInput> | ReferralUsageCreateWithoutUserInput[] | ReferralUsageUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReferralUsageCreateOrConnectWithoutUserInput | ReferralUsageCreateOrConnectWithoutUserInput[]
@@ -18052,6 +19934,30 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
+  export type ReferralCodeUncheckedUpdateOneWithoutOwnerNestedInput = {
+    create?: XOR<ReferralCodeCreateWithoutOwnerInput, ReferralCodeUncheckedCreateWithoutOwnerInput>
+    connectOrCreate?: ReferralCodeCreateOrConnectWithoutOwnerInput
+    upsert?: ReferralCodeUpsertWithoutOwnerInput
+    disconnect?: ReferralCodeWhereInput | boolean
+    delete?: ReferralCodeWhereInput | boolean
+    connect?: ReferralCodeWhereUniqueInput
+    update?: XOR<XOR<ReferralCodeUpdateToOneWithWhereWithoutOwnerInput, ReferralCodeUpdateWithoutOwnerInput>, ReferralCodeUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type AffiliateCommissionUncheckedUpdateManyWithoutSnapperNestedInput = {
+    create?: XOR<AffiliateCommissionCreateWithoutSnapperInput, AffiliateCommissionUncheckedCreateWithoutSnapperInput> | AffiliateCommissionCreateWithoutSnapperInput[] | AffiliateCommissionUncheckedCreateWithoutSnapperInput[]
+    connectOrCreate?: AffiliateCommissionCreateOrConnectWithoutSnapperInput | AffiliateCommissionCreateOrConnectWithoutSnapperInput[]
+    upsert?: AffiliateCommissionUpsertWithWhereUniqueWithoutSnapperInput | AffiliateCommissionUpsertWithWhereUniqueWithoutSnapperInput[]
+    createMany?: AffiliateCommissionCreateManySnapperInputEnvelope
+    set?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    disconnect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    delete?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    connect?: AffiliateCommissionWhereUniqueInput | AffiliateCommissionWhereUniqueInput[]
+    update?: AffiliateCommissionUpdateWithWhereUniqueWithoutSnapperInput | AffiliateCommissionUpdateWithWhereUniqueWithoutSnapperInput[]
+    updateMany?: AffiliateCommissionUpdateManyWithWhereWithoutSnapperInput | AffiliateCommissionUpdateManyWithWhereWithoutSnapperInput[]
+    deleteMany?: AffiliateCommissionScalarWhereInput | AffiliateCommissionScalarWhereInput[]
+  }
+
   export type AffiliatePostCreatehashtagsInput = {
     set: string[]
   }
@@ -18059,6 +19965,34 @@ export namespace Prisma {
   export type AffiliatePostUpdatehashtagsInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type UserCreateNestedOneWithoutCommissionsInput = {
+    create?: XOR<UserCreateWithoutCommissionsInput, UserUncheckedCreateWithoutCommissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCommissionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BookingCreateNestedOneWithoutCommissionsInput = {
+    create?: XOR<BookingCreateWithoutCommissionsInput, BookingUncheckedCreateWithoutCommissionsInput>
+    connectOrCreate?: BookingCreateOrConnectWithoutCommissionsInput
+    connect?: BookingWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutCommissionsNestedInput = {
+    create?: XOR<UserCreateWithoutCommissionsInput, UserUncheckedCreateWithoutCommissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCommissionsInput
+    upsert?: UserUpsertWithoutCommissionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCommissionsInput, UserUpdateWithoutCommissionsInput>, UserUncheckedUpdateWithoutCommissionsInput>
+  }
+
+  export type BookingUpdateOneRequiredWithoutCommissionsNestedInput = {
+    create?: XOR<BookingCreateWithoutCommissionsInput, BookingUncheckedCreateWithoutCommissionsInput>
+    connectOrCreate?: BookingCreateOrConnectWithoutCommissionsInput
+    upsert?: BookingUpsertWithoutCommissionsInput
+    connect?: BookingWhereUniqueInput
+    update?: XOR<XOR<BookingUpdateToOneWithWhereWithoutCommissionsInput, BookingUpdateWithoutCommissionsInput>, BookingUncheckedUpdateWithoutCommissionsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -18329,6 +20263,43 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
+  export type UserCreateWithoutReferralCodeInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referral_usages?: ReferralUsageCreateNestedManyWithoutUserInput
+    transactions?: TransactionCreateNestedManyWithoutCashierInput
+    commissions?: AffiliateCommissionCreateNestedManyWithoutSnapperInput
+  }
+
+  export type UserUncheckedCreateWithoutReferralCodeInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutUserInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutCashierInput
+    commissions?: AffiliateCommissionUncheckedCreateNestedManyWithoutSnapperInput
+  }
+
+  export type UserCreateOrConnectWithoutReferralCodeInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReferralCodeInput, UserUncheckedCreateWithoutReferralCodeInput>
+  }
+
   export type ReferralUsageCreateWithoutReferralCodeInput = {
     id?: string
     usedAt?: Date | string
@@ -18393,6 +20364,49 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserUpsertWithoutReferralCodeInput = {
+    update: XOR<UserUpdateWithoutReferralCodeInput, UserUncheckedUpdateWithoutReferralCodeInput>
+    create: XOR<UserCreateWithoutReferralCodeInput, UserUncheckedCreateWithoutReferralCodeInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReferralCodeInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReferralCodeInput, UserUncheckedUpdateWithoutReferralCodeInput>
+  }
+
+  export type UserUpdateWithoutReferralCodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral_usages?: ReferralUsageUpdateManyWithoutUserNestedInput
+    transactions?: TransactionUpdateManyWithoutCashierNestedInput
+    commissions?: AffiliateCommissionUpdateManyWithoutSnapperNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReferralCodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral_usages?: ReferralUsageUncheckedUpdateManyWithoutUserNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutCashierNestedInput
+    commissions?: AffiliateCommissionUncheckedUpdateManyWithoutSnapperNestedInput
+  }
+
   export type ReferralUsageUpsertWithWhereUniqueWithoutReferralCodeInput = {
     where: ReferralUsageWhereUniqueInput
     update: XOR<ReferralUsageUpdateWithoutReferralCodeInput, ReferralUsageUncheckedUpdateWithoutReferralCodeInput>
@@ -18451,6 +20465,63 @@ export namespace Prisma {
     status?: EnumTransactionStatusFilter<"Transaction"> | $Enums.TransactionStatus
     createdAt?: DateTimeFilter<"Transaction"> | Date | string
     updatedAt?: DateTimeFilter<"Transaction"> | Date | string
+  }
+
+  export type AffiliateCommissionCreateWithoutBookingInput = {
+    id?: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    snapper: UserCreateNestedOneWithoutCommissionsInput
+  }
+
+  export type AffiliateCommissionUncheckedCreateWithoutBookingInput = {
+    id?: string
+    snapperId: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateCommissionCreateOrConnectWithoutBookingInput = {
+    where: AffiliateCommissionWhereUniqueInput
+    create: XOR<AffiliateCommissionCreateWithoutBookingInput, AffiliateCommissionUncheckedCreateWithoutBookingInput>
+  }
+
+  export type AffiliateCommissionCreateManyBookingInputEnvelope = {
+    data: AffiliateCommissionCreateManyBookingInput | AffiliateCommissionCreateManyBookingInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AffiliateCommissionUpsertWithWhereUniqueWithoutBookingInput = {
+    where: AffiliateCommissionWhereUniqueInput
+    update: XOR<AffiliateCommissionUpdateWithoutBookingInput, AffiliateCommissionUncheckedUpdateWithoutBookingInput>
+    create: XOR<AffiliateCommissionCreateWithoutBookingInput, AffiliateCommissionUncheckedCreateWithoutBookingInput>
+  }
+
+  export type AffiliateCommissionUpdateWithWhereUniqueWithoutBookingInput = {
+    where: AffiliateCommissionWhereUniqueInput
+    data: XOR<AffiliateCommissionUpdateWithoutBookingInput, AffiliateCommissionUncheckedUpdateWithoutBookingInput>
+  }
+
+  export type AffiliateCommissionUpdateManyWithWhereWithoutBookingInput = {
+    where: AffiliateCommissionScalarWhereInput
+    data: XOR<AffiliateCommissionUpdateManyMutationInput, AffiliateCommissionUncheckedUpdateManyWithoutBookingInput>
+  }
+
+  export type AffiliateCommissionScalarWhereInput = {
+    AND?: AffiliateCommissionScalarWhereInput | AffiliateCommissionScalarWhereInput[]
+    OR?: AffiliateCommissionScalarWhereInput[]
+    NOT?: AffiliateCommissionScalarWhereInput | AffiliateCommissionScalarWhereInput[]
+    id?: StringFilter<"AffiliateCommission"> | string
+    snapperId?: StringFilter<"AffiliateCommission"> | string
+    bookingId?: StringFilter<"AffiliateCommission"> | string
+    amount?: FloatFilter<"AffiliateCommission"> | number
+    status?: StringFilter<"AffiliateCommission"> | string
+    createdAt?: DateTimeFilter<"AffiliateCommission"> | Date | string
+    updatedAt?: DateTimeFilter<"AffiliateCommission"> | Date | string
   }
 
   export type ProductCreateWithoutCategoryInput = {
@@ -18645,6 +20716,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner?: UserCreateNestedOneWithoutReferralCodeInput
     transactions?: TransactionCreateNestedManyWithoutReferralCodeInput
   }
 
@@ -18661,6 +20733,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    ownerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -18712,9 +20785,14 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionCreateNestedManyWithoutCashierInput
+    referralCode?: ReferralCodeCreateNestedOneWithoutOwnerInput
+    commissions?: AffiliateCommissionCreateNestedManyWithoutSnapperInput
   }
 
   export type UserUncheckedCreateWithoutReferral_usagesInput = {
@@ -18723,9 +20801,14 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutCashierInput
+    referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutOwnerInput
+    commissions?: AffiliateCommissionUncheckedCreateNestedManyWithoutSnapperInput
   }
 
   export type UserCreateOrConnectWithoutReferral_usagesInput = {
@@ -18759,6 +20842,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneWithoutReferralCodeNestedInput
     transactions?: TransactionUpdateManyWithoutReferralCodeNestedInput
   }
 
@@ -18775,6 +20859,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutReferralCodeNestedInput
@@ -18838,9 +20923,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUpdateManyWithoutCashierNestedInput
+    referralCode?: ReferralCodeUpdateOneWithoutOwnerNestedInput
+    commissions?: AffiliateCommissionUpdateManyWithoutSnapperNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReferral_usagesInput = {
@@ -18849,9 +20939,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutCashierNestedInput
+    referralCode?: ReferralCodeUncheckedUpdateOneWithoutOwnerNestedInput
+    commissions?: AffiliateCommissionUncheckedUpdateManyWithoutSnapperNestedInput
   }
 
   export type ProductCreateWithoutTransaction_itemsInput = {
@@ -19069,9 +21164,14 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageCreateNestedManyWithoutUserInput
+    referralCode?: ReferralCodeCreateNestedOneWithoutOwnerInput
+    commissions?: AffiliateCommissionCreateNestedManyWithoutSnapperInput
   }
 
   export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -19080,9 +21180,14 @@ export namespace Prisma {
     email: string
     password: string
     role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutUserInput
+    referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutOwnerInput
+    commissions?: AffiliateCommissionUncheckedCreateNestedManyWithoutSnapperInput
   }
 
   export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -19105,6 +21210,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner?: UserCreateNestedOneWithoutReferralCodeInput
     referral_usages?: ReferralUsageCreateNestedManyWithoutReferralCodeInput
   }
 
@@ -19121,6 +21227,7 @@ export namespace Prisma {
     usageLimit?: number | null
     usageCount?: number
     isActive?: boolean
+    ownerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutReferralCodeInput
@@ -19189,9 +21296,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUpdateManyWithoutUserNestedInput
+    referralCode?: ReferralCodeUpdateOneWithoutOwnerNestedInput
+    commissions?: AffiliateCommissionUpdateManyWithoutSnapperNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -19200,9 +21312,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutUserNestedInput
+    referralCode?: ReferralCodeUncheckedUpdateOneWithoutOwnerNestedInput
+    commissions?: AffiliateCommissionUncheckedUpdateManyWithoutSnapperNestedInput
   }
 
   export type ReferralCodeUpsertWithoutTransactionsInput = {
@@ -19231,6 +21348,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneWithoutReferralCodeNestedInput
     referral_usages?: ReferralUsageUpdateManyWithoutReferralCodeNestedInput
   }
 
@@ -19247,6 +21365,7 @@ export namespace Prisma {
     usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     usageCount?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     referral_usages?: ReferralUsageUncheckedUpdateManyWithoutReferralCodeNestedInput
@@ -19316,6 +21435,77 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ReferralCodeCreateWithoutOwnerInput = {
+    id?: string
+    code: string
+    marketerName?: string
+    discountPct: number
+    maxDiscountAmount?: number
+    feePercentage?: number
+    bankName?: string | null
+    bankAccount?: string | null
+    expiryDate?: Date | string | null
+    usageLimit?: number | null
+    usageCount?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referral_usages?: ReferralUsageCreateNestedManyWithoutReferralCodeInput
+    transactions?: TransactionCreateNestedManyWithoutReferralCodeInput
+  }
+
+  export type ReferralCodeUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    code: string
+    marketerName?: string
+    discountPct: number
+    maxDiscountAmount?: number
+    feePercentage?: number
+    bankName?: string | null
+    bankAccount?: string | null
+    expiryDate?: Date | string | null
+    usageLimit?: number | null
+    usageCount?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutReferralCodeInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutReferralCodeInput
+  }
+
+  export type ReferralCodeCreateOrConnectWithoutOwnerInput = {
+    where: ReferralCodeWhereUniqueInput
+    create: XOR<ReferralCodeCreateWithoutOwnerInput, ReferralCodeUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type AffiliateCommissionCreateWithoutSnapperInput = {
+    id?: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    booking: BookingCreateNestedOneWithoutCommissionsInput
+  }
+
+  export type AffiliateCommissionUncheckedCreateWithoutSnapperInput = {
+    id?: string
+    bookingId: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateCommissionCreateOrConnectWithoutSnapperInput = {
+    where: AffiliateCommissionWhereUniqueInput
+    create: XOR<AffiliateCommissionCreateWithoutSnapperInput, AffiliateCommissionUncheckedCreateWithoutSnapperInput>
+  }
+
+  export type AffiliateCommissionCreateManySnapperInputEnvelope = {
+    data: AffiliateCommissionCreateManySnapperInput | AffiliateCommissionCreateManySnapperInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ReferralUsageUpsertWithWhereUniqueWithoutUserInput = {
     where: ReferralUsageWhereUniqueInput
     update: XOR<ReferralUsageUpdateWithoutUserInput, ReferralUsageUncheckedUpdateWithoutUserInput>
@@ -19346,6 +21536,247 @@ export namespace Prisma {
   export type TransactionUpdateManyWithWhereWithoutCashierInput = {
     where: TransactionScalarWhereInput
     data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutCashierInput>
+  }
+
+  export type ReferralCodeUpsertWithoutOwnerInput = {
+    update: XOR<ReferralCodeUpdateWithoutOwnerInput, ReferralCodeUncheckedUpdateWithoutOwnerInput>
+    create: XOR<ReferralCodeCreateWithoutOwnerInput, ReferralCodeUncheckedCreateWithoutOwnerInput>
+    where?: ReferralCodeWhereInput
+  }
+
+  export type ReferralCodeUpdateToOneWithWhereWithoutOwnerInput = {
+    where?: ReferralCodeWhereInput
+    data: XOR<ReferralCodeUpdateWithoutOwnerInput, ReferralCodeUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type ReferralCodeUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    marketerName?: StringFieldUpdateOperationsInput | string
+    discountPct?: FloatFieldUpdateOperationsInput | number
+    maxDiscountAmount?: FloatFieldUpdateOperationsInput | number
+    feePercentage?: FloatFieldUpdateOperationsInput | number
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    usageCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral_usages?: ReferralUsageUpdateManyWithoutReferralCodeNestedInput
+    transactions?: TransactionUpdateManyWithoutReferralCodeNestedInput
+  }
+
+  export type ReferralCodeUncheckedUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    marketerName?: StringFieldUpdateOperationsInput | string
+    discountPct?: FloatFieldUpdateOperationsInput | number
+    maxDiscountAmount?: FloatFieldUpdateOperationsInput | number
+    feePercentage?: FloatFieldUpdateOperationsInput | number
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usageLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    usageCount?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral_usages?: ReferralUsageUncheckedUpdateManyWithoutReferralCodeNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutReferralCodeNestedInput
+  }
+
+  export type AffiliateCommissionUpsertWithWhereUniqueWithoutSnapperInput = {
+    where: AffiliateCommissionWhereUniqueInput
+    update: XOR<AffiliateCommissionUpdateWithoutSnapperInput, AffiliateCommissionUncheckedUpdateWithoutSnapperInput>
+    create: XOR<AffiliateCommissionCreateWithoutSnapperInput, AffiliateCommissionUncheckedCreateWithoutSnapperInput>
+  }
+
+  export type AffiliateCommissionUpdateWithWhereUniqueWithoutSnapperInput = {
+    where: AffiliateCommissionWhereUniqueInput
+    data: XOR<AffiliateCommissionUpdateWithoutSnapperInput, AffiliateCommissionUncheckedUpdateWithoutSnapperInput>
+  }
+
+  export type AffiliateCommissionUpdateManyWithWhereWithoutSnapperInput = {
+    where: AffiliateCommissionScalarWhereInput
+    data: XOR<AffiliateCommissionUpdateManyMutationInput, AffiliateCommissionUncheckedUpdateManyWithoutSnapperInput>
+  }
+
+  export type UserCreateWithoutCommissionsInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referral_usages?: ReferralUsageCreateNestedManyWithoutUserInput
+    transactions?: TransactionCreateNestedManyWithoutCashierInput
+    referralCode?: ReferralCodeCreateNestedOneWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutCommissionsInput = {
+    id?: string
+    name: string
+    email: string
+    password: string
+    role?: $Enums.Role
+    phone?: string | null
+    bankName?: string | null
+    bankAccount?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    referral_usages?: ReferralUsageUncheckedCreateNestedManyWithoutUserInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutCashierInput
+    referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutCommissionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCommissionsInput, UserUncheckedCreateWithoutCommissionsInput>
+  }
+
+  export type BookingCreateWithoutCommissionsInput = {
+    id?: string
+    invoiceNo: string
+    packageId: string
+    packageName: string
+    customerName: string
+    customerPhone: string
+    sessionDate: string
+    sessionTime: string
+    notes?: string | null
+    referralCode?: string | null
+    discountPct?: number
+    originalPrice: number
+    finalPrice: number
+    paymentMethod: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BookingUncheckedCreateWithoutCommissionsInput = {
+    id?: string
+    invoiceNo: string
+    packageId: string
+    packageName: string
+    customerName: string
+    customerPhone: string
+    sessionDate: string
+    sessionTime: string
+    notes?: string | null
+    referralCode?: string | null
+    discountPct?: number
+    originalPrice: number
+    finalPrice: number
+    paymentMethod: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BookingCreateOrConnectWithoutCommissionsInput = {
+    where: BookingWhereUniqueInput
+    create: XOR<BookingCreateWithoutCommissionsInput, BookingUncheckedCreateWithoutCommissionsInput>
+  }
+
+  export type UserUpsertWithoutCommissionsInput = {
+    update: XOR<UserUpdateWithoutCommissionsInput, UserUncheckedUpdateWithoutCommissionsInput>
+    create: XOR<UserCreateWithoutCommissionsInput, UserUncheckedCreateWithoutCommissionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCommissionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCommissionsInput, UserUncheckedUpdateWithoutCommissionsInput>
+  }
+
+  export type UserUpdateWithoutCommissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral_usages?: ReferralUsageUpdateManyWithoutUserNestedInput
+    transactions?: TransactionUpdateManyWithoutCashierNestedInput
+    referralCode?: ReferralCodeUpdateOneWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCommissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccount?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referral_usages?: ReferralUsageUncheckedUpdateManyWithoutUserNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutCashierNestedInput
+    referralCode?: ReferralCodeUncheckedUpdateOneWithoutOwnerNestedInput
+  }
+
+  export type BookingUpsertWithoutCommissionsInput = {
+    update: XOR<BookingUpdateWithoutCommissionsInput, BookingUncheckedUpdateWithoutCommissionsInput>
+    create: XOR<BookingCreateWithoutCommissionsInput, BookingUncheckedCreateWithoutCommissionsInput>
+    where?: BookingWhereInput
+  }
+
+  export type BookingUpdateToOneWithWhereWithoutCommissionsInput = {
+    where?: BookingWhereInput
+    data: XOR<BookingUpdateWithoutCommissionsInput, BookingUncheckedUpdateWithoutCommissionsInput>
+  }
+
+  export type BookingUpdateWithoutCommissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    packageName?: StringFieldUpdateOperationsInput | string
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    sessionDate?: StringFieldUpdateOperationsInput | string
+    sessionTime?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    discountPct?: FloatFieldUpdateOperationsInput | number
+    originalPrice?: FloatFieldUpdateOperationsInput | number
+    finalPrice?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BookingUncheckedUpdateWithoutCommissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    packageId?: StringFieldUpdateOperationsInput | string
+    packageName?: StringFieldUpdateOperationsInput | string
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    sessionDate?: StringFieldUpdateOperationsInput | string
+    sessionTime?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    referralCode?: NullableStringFieldUpdateOperationsInput | string | null
+    discountPct?: FloatFieldUpdateOperationsInput | number
+    originalPrice?: FloatFieldUpdateOperationsInput | number
+    finalPrice?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReferralUsageCreateManyReferralCodeInput = {
@@ -19428,6 +21859,42 @@ export namespace Prisma {
     discount?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateCommissionCreateManyBookingInput = {
+    id?: string
+    snapperId: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AffiliateCommissionUpdateWithoutBookingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    snapper?: UserUpdateOneRequiredWithoutCommissionsNestedInput
+  }
+
+  export type AffiliateCommissionUncheckedUpdateWithoutBookingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    snapperId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateCommissionUncheckedUpdateManyWithoutBookingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    snapperId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19586,6 +22053,15 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type AffiliateCommissionCreateManySnapperInput = {
+    id?: string
+    bookingId: string
+    amount: number
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ReferralUsageUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19646,6 +22122,33 @@ export namespace Prisma {
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     referralCodeId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateCommissionUpdateWithoutSnapperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    booking?: BookingUpdateOneRequiredWithoutCommissionsNestedInput
+  }
+
+  export type AffiliateCommissionUncheckedUpdateWithoutSnapperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AffiliateCommissionUncheckedUpdateManyWithoutSnapperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

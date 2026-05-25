@@ -20,6 +20,8 @@ model ReferralCode {
   usageLimit        Int?            @map("usage_limit")
   usageCount        Int             @default(0) @map("usage_count")
   isActive          Boolean         @default(true) @map("is_active")
+  ownerId           String?         @unique @map("owner_id")
+  owner             User?           @relation("UserReferral", fields: [ownerId], references: [id])
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
   referral_usages   ReferralUsage[]
@@ -46,6 +48,7 @@ model Booking {
   status        String   @default("pending")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
+  commissions   AffiliateCommission[]
 
   @@map("bookings")
 }
@@ -133,10 +136,15 @@ model User {
   email           String          @unique(map: "User_email_key")
   password        String
   role            Role            @default(CASHIER)
+  phone           String?
+  bankName        String?         @map("bank_name")
+  bankAccount     String?         @map("bank_account")
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   referral_usages ReferralUsage[]
   transactions    Transaction[]
+  referralCode    ReferralCode?   @relation("UserReferral")
+  commissions     AffiliateCommission[] @relation("SnapperCommissions")
 
   @@map("users")
 }
@@ -144,6 +152,7 @@ model User {
 enum Role {
   ADMIN
   CASHIER
+  SNAPPER
 }
 
 
@@ -198,4 +207,18 @@ model AffiliatePost {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("affiliate_posts")
+}
+
+model AffiliateCommission {
+  id          String   @id @default(uuid())
+  snapperId   String   @map("snapper_id")
+  bookingId   String   @map("booking_id")
+  amount      Float
+  status      String   @default("pending") // pending, paid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  snapper     User     @relation("SnapperCommissions", fields: [snapperId], references: [id])
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+
+  @@map("affiliate_commissions")
 }

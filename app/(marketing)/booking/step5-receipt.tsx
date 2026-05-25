@@ -13,6 +13,7 @@ import { btn } from "@/lib/button-classes";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/lib/env";
 import { createBooking } from "@/app/actions/bookings";
+import { toast } from "sonner";
 
 /* ─── Helpers ─────────────────────────── */
 
@@ -300,17 +301,53 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           </p>
 
           {paymentMethod === "qris" ? (
-            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3">
+            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3 px-4 text-center">
               <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Pembayaran via QRIS</p>
-              <p className="text-xs text-[#5A5A5A] text-center max-w-[200px]">
+              <p className="text-xs text-[#5A5A5A] max-w-[200px] mb-3">
                 Mendukung Gopay, ShopeePay, Dana, LinkAja, dan bank transfer scan.
+              </p>
+              <p className="text-xs font-bold text-[#3B2211]">
+                Total Transfer: <span className="text-[#C88A58]">{formatPrice(finalPrice)}</span>
               </p>
             </div>
           ) : (
-            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3">
-              <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Pembayaran via Transfer Bank</p>
-              <p className="text-xs text-[#5A5A5A] text-center max-w-[200px]">
-                Mendukung Virtual Account BCA, BNI, BRI, Permata, Mandiri, dll.
+            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3 px-4 text-center space-y-2">
+              <p className="text-sm font-semibold text-[#1A1A1A]">Pembayaran via Transfer Bank</p>
+              <p className="text-xs text-[#5A5A5A] max-w-[250px]">
+                Silakan lakukan transfer ke rekening pemilik Snapp.frame berikut sebesar:
+              </p>
+              <p className="text-lg font-black text-[#C88A58] my-1 font-mono">
+                {formatPrice(finalPrice)}
+              </p>
+              <div className="w-full border-t border-[#E0E0DA]/60 my-1" />
+              <div className="text-xs text-left w-full space-y-1 py-2 px-3 bg-white/50 rounded-lg font-medium">
+                <div className="flex justify-between">
+                  <span className="text-[#888888]">Bank:</span>
+                  <span className="text-[#1A1A1A] font-bold">{(site as any).payment.bankName}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[#888888]">No. Rekening:</span>
+                  <span className="text-[#1A1A1A] font-bold font-mono flex items-center gap-1">
+                    {(site as any).payment.bankAccount}
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText((site as any).payment.bankAccount);
+                        toast.success("Nomor rekening disalin!");
+                      }}
+                      className="p-1 hover:bg-[#F0EFE9] rounded text-[#C88A58] transition-colors"
+                      title="Salin No. Rekening"
+                    >
+                      <Copy size={10} />
+                    </button>
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#888888]">Atas Nama:</span>
+                  <span className="text-[#1A1A1A] font-bold">{(site as any).payment.bankOwner}</span>
+                </div>
+              </div>
+              <p className="text-[9px] text-[#A0A0A0] italic">
+                * Harap transfer dengan nominal yang tepat untuk mempermudah verifikasi.
               </p>
             </div>
           )}

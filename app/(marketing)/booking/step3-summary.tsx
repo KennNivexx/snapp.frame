@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tag, CheckCircle, XCircle } from "lucide-react";
 import { Package } from "@/data/packages";
 import { formatPrice } from "@/lib/utils";
@@ -27,6 +27,32 @@ export default function Step3Summary({ pkg, formData, referral, onReferralChange
   const [code, setCode] = useState(referral?.code ?? "");
   const [error, setError] = useState("");
   const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    // If no referral is currently applied, look for one in localStorage
+    if (!referral) {
+      const savedCode = localStorage.getItem("snapp_referral_code");
+      if (savedCode) {
+        setCode(savedCode);
+        setChecking(true);
+        setError("");
+        
+        validateReferral(savedCode)
+          .then((result) => {
+            if (result) {
+              onReferralChange(result);
+            } else {
+              // Remove invalid saved code to avoid loops
+              localStorage.removeItem("snapp_referral_code");
+            }
+          })
+          .catch(() => {})
+          .finally(() => {
+            setChecking(false);
+          });
+      }
+    }
+  }, [referral, onReferralChange]);
 
   const finalPrice = referral ? applyDiscount(pkg.price, referral.discountPct, referral.maxDiscountAmount) : pkg.price;
   const discount = pkg.price - finalPrice;

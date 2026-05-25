@@ -47,6 +47,49 @@ export async function updateBookingStatus(id: string, status: string) {
   if (error) {
     return { success: false, error: error.message };
   }
+
+  // Calculate and award commission if status becomes completed ("Selesai")
+  if (status === "Selesai") {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      const booking = await prisma.booking.findUnique({
+        where: { id },
+      });
+
+      if (booking && booking.referralCode) {
+        const code = booking.referralCode.trim().toUpperCase();
+        const ref = await prisma.referralCode.findUnique({
+          where: { code },
+          include: { owner: true }
+        });
+
+        // Award fee if referral code is owned by a SNAPPER
+        if (ref && ref.ownerId && ref.owner && ref.owner.role === "SNAPPER") {
+          // Prevent duplicate commission entries for same booking
+          const existingCommission = await prisma.affiliateCommission.findFirst({
+            where: { bookingId: id }
+          });
+
+          if (!existingCommission) {
+            const commissionAmount = booking.finalPrice * (ref.feePercentage / 100);
+
+            await prisma.affiliateCommission.create({
+              data: {
+                snapperId: ref.ownerId,
+                bookingId: id,
+                amount: commissionAmount,
+                status: "pending"
+              }
+            });
+            console.log(`[Commission] Succesfully awarded Rp ${commissionAmount} to Snapper ${ref.owner.name} (Code: ${code})`);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to reward commission on booking completion:", err);
+    }
+  }
+
   return { success: true };
 }
 export async function createBooking(data: any) {

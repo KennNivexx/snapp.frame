@@ -20,6 +20,8 @@ model ReferralCode {
   usageLimit        Int?            @map("usage_limit")
   usageCount        Int             @default(0) @map("usage_count")
   isActive          Boolean         @default(true) @map("is_active")
+  ownerId           String?         @unique @map("owner_id")
+  owner             User?           @relation("UserReferral", fields: [ownerId], references: [id])
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
   referral_usages   ReferralUsage[]
@@ -29,23 +31,24 @@ model ReferralCode {
 }
 
 model Booking {
-  id            String   @id @default(uuid())
-  invoiceNo     String   @unique @map("invoice_no")
-  packageId     String   @map("package_id")
-  packageName   String   @map("package_name")
-  customerName  String   @map("customer_name")
-  customerPhone String   @map("customer_phone")
-  sessionDate   String   @map("session_date")
-  sessionTime   String   @map("session_time")
+  id            String                @id @default(uuid())
+  invoiceNo     String                @unique @map("invoice_no")
+  packageId     String                @map("package_id")
+  packageName   String                @map("package_name")
+  customerName  String                @map("customer_name")
+  customerPhone String                @map("customer_phone")
+  sessionDate   String                @map("session_date")
+  sessionTime   String                @map("session_time")
   notes         String?
-  referralCode  String?  @map("referral_code")
-  discountPct   Float    @default(0) @map("discount_pct")
-  originalPrice Float    @map("original_price")
-  finalPrice    Float    @map("final_price")
-  paymentMethod String   @map("payment_method")
-  status        String   @default("pending")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  referralCode  String?               @map("referral_code")
+  discountPct   Float                 @default(0) @map("discount_pct")
+  originalPrice Float                 @map("original_price")
+  finalPrice    Float                 @map("final_price")
+  paymentMethod String                @map("payment_method")
+  status        String                @default("pending")
+  createdAt     DateTime              @default(now()) @map("created_at")
+  updatedAt     DateTime              @updatedAt @map("updated_at")
+  commissions   AffiliateCommission[]
 
   @@map("bookings")
 }
@@ -128,15 +131,20 @@ model Transaction {
 }
 
 model User {
-  id              String          @id(map: "User_pkey") @default(uuid())
+  id              String                @id(map: "User_pkey") @default(uuid())
   name            String
-  email           String          @unique(map: "User_email_key")
+  email           String                @unique(map: "User_email_key")
   password        String
-  role            Role            @default(CASHIER)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  role            Role                  @default(CASHIER)
+  phone           String?
+  bankName        String?               @map("bank_name")
+  bankAccount     String?               @map("bank_account")
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
   referral_usages ReferralUsage[]
   transactions    Transaction[]
+  referralCode    ReferralCode?         @relation("UserReferral")
+  commissions     AffiliateCommission[] @relation("SnapperCommissions")
 
   @@map("users")
 }
@@ -144,6 +152,7 @@ model User {
 enum Role {
   ADMIN
   CASHIER
+  SNAPPER
 }
 
 enum TransactionStatus {
@@ -196,4 +205,18 @@ model AffiliatePost {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("affiliate_posts")
+}
+
+model AffiliateCommission {
+  id        String   @id @default(uuid())
+  snapperId String   @map("snapper_id")
+  bookingId String   @map("booking_id")
+  amount    Float
+  status    String   @default("pending") // pending, paid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  snapper   User     @relation("SnapperCommissions", fields: [snapperId], references: [id])
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+
+  @@map("affiliate_commissions")
 }

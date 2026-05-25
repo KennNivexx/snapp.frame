@@ -20,6 +20,11 @@ export const site = {
     instagram: "https://instagram.com/snapp.frame",
     tiktok: "https://tiktok.com/@snapp.frame",
   },
+  payment: {
+    bankName: "BCA (Bank Central Asia)",
+    bankAccount: "7771234567",
+    bankOwner: "Snapp.frame Studio Owner",
+  },
   operatingHours: [
     { day: "Senin–Jumat", hours: "10.00–20.00" },
     { day: "Sabtu–Minggu", hours: "09.00–21.00" },

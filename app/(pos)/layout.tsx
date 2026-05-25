@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { site } from "@/data/site";
 import { Logo } from "@/components/ui/logo";
 import {
@@ -20,8 +20,8 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { signOut, getSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
@@ -31,16 +31,18 @@ const navItems = [
   { label: "Kelola Galeri", icon: ImageIcon, href: "/admin/gallery" },
   { label: "Booking", icon: Calendar, href: "/admin/bookings" },
   { label: "Pelanggan", icon: Users, href: "/admin/customers" },
-
   { label: "Promo & Referral", icon: Ticket, href: "/admin/referrals" },
   { label: "Laporan", icon: History, href: "/admin/reports" },
   { label: "Pengaturan Web", icon: Settings, href: "/admin/settings" },
 ];
 
-export default function POSLayout({ children }: { children: React.ReactNode }) {
+function POSLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPOSPage, setIsPOSPage] = useState(false);
+  const [session, setSession] = useState<any>(null);
+  const [loadingSession, setLoadingSession] = useState(true);
 
   useEffect(() => {
     setIsPOSPage(!!pathname && /kasir|katalog/.test(pathname));
@@ -48,16 +50,44 @@ export default function POSLayout({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
+    getSession().then((s) => {
+      setSession(s);
+      setLoadingSession(false);
+    });
+  }, []);
+
+  useEffect(() => {
     const handleOpenSidebar = () => setIsSidebarOpen(true);
     window.addEventListener("open-sidebar", handleOpenSidebar);
     return () => window.removeEventListener("open-sidebar", handleOpenSidebar);
   }, []);
 
+  const role = session?.user?.role || "CASHIER";
+
+  const activeNavItems = (() => {
+    if (loadingSession) return [];
+    if (role === "ADMIN") return navItems;
+    if (role === "SNAPPER") {
+      return [
+        { label: "Dashboard Snapper", icon: LayoutDashboard, href: "/snapper" },
+        { label: "Feed Promosi", icon: ImageIcon, href: "/snapper?tab=feed" },
+        { label: "Rekening Payout", icon: Settings, href: "/snapper?tab=bank" },
+      ];
+    }
+    // CASHIER
+    return [
+      { label: "Kasir POS", icon: ShoppingCart, href: "/kasir" },
+      { label: "Booking", icon: Calendar, href: "/admin/bookings" },
+    ];
+  })();
+
+  const currentTab = searchParams.get("tab");
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-[#FDFBF7] text-near-black border-r border-near-black/5 relative">
       {/* ── Logo Section ────────────────────────────────── */}
       <div className="pt-8 pb-4 flex flex-col items-center px-4">
-        <Link href="/admin" className="w-full flex justify-center group">
+        <Link href={role === "SNAPPER" ? "/snapper" : role === "ADMIN" ? "/admin" : "/kasir"} className="w-full flex justify-center group">
           <img 
             src="/logosnapframe-removebg-preview.png" 
             alt="Snapframe Logo" 
@@ -68,11 +98,13 @@ export default function POSLayout({ children }: { children: React.ReactNode }) {
 
       {/* ── Navigation ──────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto pt-0 pb-4 px-4 custom-scrollbar space-y-1">
-        {navItems.map((item) => {
+        {activeNavItems.map((item) => {
           const Icon = item.icon;
-          const isActive =
-            pathname === item.href ||
-            (item.href !== "/admin" && pathname.startsWith(item.href));
+          const itemTab = item.href.includes("?tab=") ? item.href.split("?tab=")[1] : null;
+          
+          const isActive = itemTab 
+            ? (pathname === "/snapper" && currentTab === itemTab)
+            : (pathname === item.href.split("?")[0] && !currentTab);
 
           return (
             <Link
@@ -118,14 +150,14 @@ export default function POSLayout({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-near-black/5 shadow-sm">
             <div className="w-9 h-9 rounded-xl bg-near-black flex items-center justify-center text-white font-black text-[10px]">
-              AD
+              {session?.user?.name ? session.user.name.substring(0, 2).toUpperCase() : "US"}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] font-black text-near-black truncate uppercase tracking-wider">
-                Administrator
+                {session?.user?.name || "User"}
               </p>
               <p className="text-[8px] text-muted font-bold truncate uppercase tracking-widest">
-                Studio Manager
+                {role === "ADMIN" ? "Administrator" : role === "SNAPPER" ? "Snapper Affiliator" : "Staff Cashier"}
               </p>
             </div>
           </div>
@@ -195,8 +227,12 @@ export default function POSLayout({ children }: { children: React.ReactNode }) {
               </button>
               <div className="flex flex-col">
                 <h1 className="text-lg font-black text-[#3B2211] tracking-tight">
-                  {navItems.find((i) => i.href === pathname)?.label ||
-                    "Dashboard"}
+                  {activeNavItems.find((i) => {
+                    const itemTab = i.href.includes("?tab=") ? i.href.split("?tab=")[1] : null;
+                    return itemTab 
+                      ? (pathname === "/snapper" && currentTab === itemTab)
+                      : (pathname === i.href.split("?")[0] && !currentTab);
+                  })?.label || "Dashboard"}
                 </h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
@@ -235,5 +271,18 @@ export default function POSLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function POSLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F8F6F4] flex flex-col items-center justify-center space-y-4">
+        <div className="w-10 h-10 rounded-full border-4 border-[#C88A58]/20 border-t-[#C88A58] animate-spin" />
+        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Loading POS System...</p>
+      </div>
+    }>
+      <POSLayoutContent>{children}</POSLayoutContent>
+    </Suspense>
   );
 }

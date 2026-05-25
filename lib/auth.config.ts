@@ -21,10 +21,28 @@ export const authConfig = {
     },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnProtected = nextUrl.pathname.startsWith("/admin") || nextUrl.pathname.startsWith("/kasir");
+      const userRole = (auth?.user as any)?.role;
+      const path = nextUrl.pathname;
+
+      const isOnAdmin = path.startsWith("/admin");
+      const isOnKasir = path.startsWith("/kasir");
+      const isOnSnapper = path.startsWith("/snapper");
+      const isOnProtected = isOnAdmin || isOnKasir || isOnSnapper;
+
       if (isOnProtected) {
-        if (isLoggedIn) return true;
-        return false; // Redirects to /login
+        if (!isLoggedIn) return false; // Redirects to /login
+
+        // Role-based authorization
+        if (isOnAdmin && userRole !== "ADMIN") {
+          return Response.redirect(new URL("/login", nextUrl));
+        }
+        if (isOnKasir && userRole !== "CASHIER" && userRole !== "ADMIN") {
+          return Response.redirect(new URL("/login", nextUrl));
+        }
+        if (isOnSnapper && userRole !== "SNAPPER" && userRole !== "ADMIN") {
+          return Response.redirect(new URL("/login", nextUrl));
+        }
+        return true;
       }
       return true;
     },

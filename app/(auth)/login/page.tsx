@@ -1,20 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { signIn, getSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn, Mail, Lock, Loader2, Zap, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const isRegistered = searchParams.get("registered") === "true";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +34,16 @@ export default function LoginPage() {
       if (res?.error) {
         setError("Email atau password salah. Silakan coba lagi.");
       } else {
-        router.push("/kasir");
+        const session = await getSession();
+        const role = (session?.user as any)?.role;
+        
+        if (role === "ADMIN") {
+          router.push("/admin");
+        } else if (role === "SNAPPER") {
+          router.push("/snapper");
+        } else {
+          router.push("/kasir");
+        }
       }
     } catch {
       setError("Terjadi kesalahan sistem. Coba lagi sebentar.");
@@ -246,6 +258,19 @@ export default function LoginPage() {
               )}
             </AnimatePresence>
 
+            {/* Success Registration Notification */}
+            <AnimatePresence>
+              {isRegistered && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, y: -10 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3.5 text-emerald-400 text-xs font-semibold text-center leading-normal"
+                >
+                  Registrasi berhasil! Silakan masuk dengan email dan kata sandi Anda.
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Submit Button */}
             <motion.button
               whileHover={{ scale: 1.01, translateY: -1 }}
@@ -263,6 +288,13 @@ export default function LoginPage() {
                 </>
               )}
             </motion.button>
+
+            <p className="text-center text-[10px] text-white/30 font-medium pt-3">
+              Ingin menjadi affiliator?{" "}
+              <Link href="/register" className="text-[#C88A58] font-bold hover:underline">
+                Daftar Sebagai Snapper
+              </Link>
+            </p>
           </form>
         </motion.div>
 
@@ -277,5 +309,18 @@ export default function LoginPage() {
         </motion.p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#090503] flex flex-col items-center justify-center space-y-4">
+        <div className="w-10 h-10 rounded-full border-4 border-[#C88A58]/20 border-t-[#C88A58] animate-spin" />
+        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Loading Login Portal...</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

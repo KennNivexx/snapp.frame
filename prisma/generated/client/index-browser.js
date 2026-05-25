@@ -133,6 +133,7 @@ exports.Prisma.ReferralCodeScalarFieldEnum = {
   usageLimit: 'usageLimit',
   usageCount: 'usageCount',
   isActive: 'isActive',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -218,6 +219,9 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   password: 'password',
   role: 'role',
+  phone: 'phone',
+  bankName: 'bankName',
+  bankAccount: 'bankAccount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -255,6 +259,16 @@ exports.Prisma.AffiliatePostScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AffiliateCommissionScalarFieldEnum = {
+  id: 'id',
+  snapperId: 'snapperId',
+  bookingId: 'bookingId',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -284,7 +298,8 @@ exports.TransactionStatus = exports.$Enums.TransactionStatus = {
 
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
-  CASHIER: 'CASHIER'
+  CASHIER: 'CASHIER',
+  SNAPPER: 'SNAPPER'
 };
 
 exports.Prisma.ModelName = {
@@ -298,7 +313,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   GalleryPhoto: 'GalleryPhoto',
   SiteSetting: 'SiteSetting',
-  AffiliatePost: 'AffiliatePost'
+  AffiliatePost: 'AffiliatePost',
+  AffiliateCommission: 'AffiliateCommission'
 };
 
 /**

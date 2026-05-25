@@ -2,6 +2,7 @@ import React from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
+import { ReferralTracker } from "@/components/layout/referral-tracker";
 
 export default function MarketingLayout({
   children,
@@ -10,6 +11,9 @@ export default function MarketingLayout({
 }) {
   return (
     <>
+      {/* Tracker for referral link code in URL (?ref=CODE) */}
+      <ReferralTracker />
+
       {/* Global Navbar */}
       <Navbar />
 
