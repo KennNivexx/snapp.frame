@@ -19,6 +19,7 @@ import {
   History,
   Image as ImageIcon,
   HeartHandshake,
+  Megaphone,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -72,6 +73,7 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
     if (role === "SNAPPER") {
       return [
         { label: "Dashboard Snapper", icon: LayoutDashboard, href: "/snapper" },
+        { label: "Kit Promosi", icon: Megaphone, href: "/snapper?tab=kit" },
         { label: "Feed Promosi", icon: ImageIcon, href: "/snapper?tab=feed" },
         { label: "Rekening Payout", icon: Settings, href: "/snapper?tab=bank" },
       ];
@@ -89,7 +91,8 @@ function POSLayoutContent({ children }: { children: React.ReactNode }) {
           <img 
             src="/logosnapframe-removebg-preview.png" 
             alt="Snapframe Logo" 
-            className="w-[180px] h-auto object-contain transition-transform duration-500 group-hover:scale-105" 
+            style={{ width: "180px", height: "auto" }}
+            className="object-contain transition-transform duration-500 group-hover:scale-105" 
           />
         </Link>
       </div>

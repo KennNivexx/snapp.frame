@@ -7,8 +7,8 @@ import {
   Coffee, Camera, Presentation, Recycle, MonitorPlay,
   GraduationCap, Users, Building, ShoppingBag, Handshake,
   BadgeDollarSign, TrendingUp, Award, CheckCircle2,
-  ChevronRight, ChevronLeft, Gift, ArrowRight, X,
-  ExternalLink, Search, ArrowLeft, MessageCircle,
+  ChevronRight, ChevronLeft, ChevronDown, Gift, ArrowRight, X,
+  Search, ArrowLeft, MessageCircle, ImageIcon,
   Heart, Copy, Check, Share2, Calendar, Sparkles, Eye, EyeOff,
 } from "lucide-react";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
@@ -17,7 +17,7 @@ import { getSiteSettings } from "@/app/actions/settings";
 import { toast } from "sonner";
 
 // ─── AFFILIATE DETAIL DATA ────────────────────────────────────────────────────
-const affiliateDetails: Record<string, { subtitle: string; intro: string; packages: { name: string; price: string; discount: string; afterDiscount?: string; commission: string }[]; whyInteresting: string[]; targetMarket: string[]; disclaimer: string }> = {
+const affiliateDetails: Record<string, { subtitle: string; intro: string; packages: { name: string; price: string; discount: string; afterDiscount?: string; commission: string; suitableFor?: string; services?: string[]; goal?: string }[]; whyInteresting: string[]; targetMarket: string[]; disclaimer: string; consultWa?: string }> = {
   "LP Academic Partner": {
     subtitle: "Pendamping Konsultan Tugas Akhir Mahasiswa",
     intro: "Bangun peluang penghasilan tambahan sambil membantu mahasiswa menyelesaikan Tugas Akhir lebih terarah & profesional 🎓\n\nSebagai Affiliate Partner, kamu akan mendapatkan:\n✅ Kode Referral Affiliate Khusus\n✅ Komisi Cash setiap transaksi berhasil\n✅ Customer mendapatkan potongan harga spesial\n✅ Bisa dijalankan online & fleksibel\n✅ Cocok untuk mahasiswa, alumni, mentor, komunitas, dan creator edukasi",
@@ -164,6 +164,165 @@ const affiliateDetails: Record<string, { subtitle: string; intro: string; packag
     targetMarket: ["🎓 Mahasiswa", "👔 Fresh Graduate", "📱 Content Creator", "💻 Freelancer", "👥 Organisasi & Komunitas", "🚀 Entrepreneur Muda"],
     disclaimer: "Harga layanan sewaktu-waktu dapat berubah sesuai promo yang sedang berjalan. Komisi affiliate dihitung dari transaksi yang valid & terdata menggunakan kode referral affiliate.",
   },
+  "Green Productive Academy": {
+    subtitle: "Sekolah Teknologi Hijau — Inovasi Produk Berbasis Lingkungan",
+    intro: "Jadilah bagian dari gerakan edukasi hijau dan dapatkan penghasilan sambil membantu banyak orang belajar teknologi ramah lingkungan 🌿\n\nSebagai Affiliate Partner, kamu akan mendapatkan:\n✅ Kode Referral Affiliate Khusus\n✅ Komisi Cash setiap transaksi berhasil\n✅ Customer mendapatkan potongan harga spesial\n✅ Bisa dijalankan online & fleksibel\n✅ Cocok untuk aktivis lingkungan, mahasiswa teknik, dan komunitas hijau",
+    packages: [
+      { name: "🌱 Program Teknologi Hijau Dasar", price: "Rp 1.500.000", discount: "Rp 500.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
+      { name: "♻️ Program Inovasi Produk Berkelanjutan", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / peserta" },
+    ],
+    whyInteresting: [
+      "Topik green tech sedang naik daun & relevan",
+      "Mendukung SDGs & keberlanjutan lingkungan",
+      "Cocok dipromosikan ke komunitas kampus & aktivis",
+      "Materi promosi siap pakai dari tim",
+      "Komisi cash per transaksi valid",
+      "Potensi kolaborasi dengan komunitas hijau",
+    ],
+    targetMarket: ["🌿 Aktivis lingkungan", "🎓 Mahasiswa teknik & sains", "🏭 Pelaku industri", "📱 Content creator eco", "♻️ Komunitas hijau & UMKM green"],
+    disclaimer: "Program promo, diskon, fee referral, bonus, maupun skema penawaran dalam Program Affiliate Green Productive Academy dapat berubah sewaktu-waktu pada setiap periode promo yang berlaku.",
+  },
+  "Brand Siap": {
+    subtitle: "Layanan Branding Cepat — Identitas Visual & Kemasan Produk",
+    intro: "Bantu pelaku usaha tampil profesional dan dapatkan komisi menarik setiap referral berhasil! 🎨\n\nBrand Siap menyediakan layanan super cepat pembuatan identitas visual, logo, kemasan produk, dan kesiapan branding usaha untuk UMKM dan pebisnis yang ingin tampil keren tanpa ribet.\n\nSebagai Affiliate Partner kamu bisa:\n✅ Promosikan layanan branding ke teman/klien yang butuh branding\n✅ Dapatkan komisi setiap proyek berhasil closing\n✅ Fleksibel, bisa dari mana saja",
+    packages: [
+      { name: "🎨 Paket Logo & Brand Identity", price: "Rp 500.000", discount: "Rp 100.000", afterDiscount: "Rp 400.000", commission: "Rp 50.000 / proyek" },
+      { name: "📦 Paket Kemasan & Packaging Design", price: "Rp 750.000", discount: "Rp 150.000", afterDiscount: "Rp 600.000", commission: "Rp 75.000 / proyek" },
+      { name: "🚀 Paket Brand Siap Lengkap", price: "Rp 1.500.000", discount: "Rp 300.000", afterDiscount: "Rp 1.200.000", commission: "Rp 150.000 / proyek" },
+    ],
+    whyInteresting: [
+      "Semua UMKM butuh branding yang kuat",
+      "Layanan cepat, hasil profesional",
+      "Mudah dipromosikan ke pelaku usaha",
+      "Komisi per proyek closing",
+      "Support tim desain berpengalaman",
+      "Bisa dikerjakan tanpa keahlian desain",
+    ],
+    targetMarket: ["🏪 UMKM & pebisnis", "🎓 Mahasiswa wirausaha", "📱 Content creator", "💻 Freelancer marketing", "🤝 Komunitas pebisnis muda"],
+    disclaimer: "Harga layanan Brand Siap sewaktu-waktu dapat berubah mengikuti paket promo yang sedang berjalan. Komisi affiliate diberikan untuk setiap transaksi valid menggunakan kode referral affiliate partner yang terdaftar.",
+  },
+  "Snapp Frame": {
+    subtitle: "Studio Foto Minimalis Premium — Cetak Kilat & Dokumentasi Visual",
+    intro: "Jadilah Affiliate Partner Snapp.frame Studio dan dapatkan komisi dari setiap pelanggan yang booking sesi foto menggunakan kode referral kamu! 📸\n\nSnapp.frame Studio adalah studio foto minimalis modern dengan konsep photobooth premium. Cocok untuk foto portrait, wisuda, ulang tahun, dan momen spesial lainnya.\n\nSebagai Affiliate Partner kamu bisa:\n✅ Bagikan link referral ke teman, keluarga, atau followers\n✅ Dapat komisi Rp3.500 per foto yang tercetak\n✅ Customer dapat diskon khusus pakai kode referralmu\n✅ Bisa dijalankan via WhatsApp, Instagram, TikTok",
+    packages: [
+      { name: "📸 Paket Solo (10 foto)", price: "Rp 75.000", discount: "Rp 15.000", afterDiscount: "Rp 60.000", commission: "Rp 35.000 / booking" },
+      { name: "👫 Paket Duo (15 foto)", price: "Rp 100.000", discount: "Rp 20.000", afterDiscount: "Rp 80.000", commission: "Rp 52.500 / booking" },
+      { name: "👨‍👩‍👧‍👦 Paket Group (20 foto)", price: "Rp 130.000", discount: "Rp 25.000", afterDiscount: "Rp 105.000", commission: "Rp 70.000 / booking" },
+    ],
+    whyInteresting: [
+      "Studio langsung di kotamu — dekat & terjangkau",
+      "Produk premium yang mudah dijual",
+      "Banyak event (wisuda, ultah, gathering) jadi peluang",
+      "Komisi per booking langsung",
+      "Materi promosi & konten siap pakai",
+      "Sistem tracking referral otomatis",
+    ],
+    targetMarket: ["📸 Pecinta foto", "🎓 Mahasiswa & pelajar", "💒 Pasangan & keluarga", "📱 Content creator", "🎉 Event organizer", "🏫 Organisasi kampus"],
+    disclaimer: "Komisi affiliate Snapp.frame dihitung per foto yang tercetak dari booking valid menggunakan kode referral terdaftar. Harga dan komisi dapat berubah sesuai promo yang sedang berjalan.",
+  },
+  "Standara Consulting": {
+    subtitle: "Konsultan & Pelatihan Standar, Mutu, dan Pengembangan Bisnis",
+    intro: "Standara Consulting hadir sebagai layanan konsultasi, pelatihan, dan pendampingan profesional yang membantu organisasi, UMKM, IKM, koperasi, LPK, hingga industri dalam meningkatkan tata kelola bisnis yang lebih profesional, terstruktur, dan berkelanjutan. 💼\n\nSebagai Affiliate Partner, kamu akan mendapatkan:\n✅ Peluang komisi menarik dari setiap proyek konsultasi B2B\n✅ Kode Referral Affiliate Khusus\n✅ Dukungan tim konsultan senior untuk presentasi ke prospek\n✅ Membantu industri lokal berkembang & terstandardisasi\n✅ Sistem tracking & pelaporan komisi transparan",
+    packages: [
+      {
+        name: "🥉 Paket Basic Business Improvement",
+        price: "Menyesuaikan",
+        discount: "Sesuai Proyek",
+        commission: "Komisi Menarik / Closing",
+        suitableFor: "Cocok untuk UMKM, usaha rintisan, dan koperasi yang ingin mulai membangun sistem bisnis yang lebih rapi dan profesional.",
+        services: [
+          "Konsultasi bisnis dasar",
+          "Penyusunan SOP sederhana",
+          "Evaluasi tata kelola usaha",
+          "Pelatihan dasar manajemen bisnis",
+          "Pendampingan branding & pemasaran dasar",
+          "Monitoring dan evaluasi usaha",
+        ],
+        goal: "Membantu bisnis lebih tertata, produktif, dan siap berkembang.",
+      },
+      {
+        name: "🥈 Paket Standard Growth Business",
+        price: "Menyesuaikan",
+        discount: "Sesuai Proyek",
+        commission: "Komisi Menarik / Closing",
+        suitableFor: "Cocok untuk UMKM, IKM, LPK, dan koperasi yang ingin meningkatkan performa bisnis dan pendapatan.",
+        services: [
+          "Penyusunan SOP & sistem kerja",
+          "Pelatihan SDM dan produktivitas",
+          "Penyusunan KPI sederhana",
+          "Konsultasi pemasaran & pengembangan pasar",
+          "Pendampingan legalitas & administrasi bisnis",
+          "Business coaching dan mentoring",
+          "Pendampingan peningkatan omzet usaha",
+        ],
+        goal: "Meningkatkan efektivitas operasional, kualitas SDM, serta pertumbuhan bisnis dan pendapatan.",
+      },
+      {
+        name: "🥇 Paket Professional Management System",
+        price: "Menyesuaikan",
+        discount: "Sesuai Proyek",
+        commission: "Komisi Menarik / Closing",
+        suitableFor: "Cocok untuk perusahaan, lembaga, dan industri yang ingin memiliki sistem kerja profesional dan siap bersaing.",
+        services: [
+          "Implementasi sistem manajemen mutu",
+          "Penyusunan SOP lengkap",
+          "Audit internal & evaluasi kinerja",
+          "Pelatihan leadership & management",
+          "Penyusunan KPI perusahaan",
+          "Konsultasi efisiensi operasional",
+          "Pendampingan pengembangan organisasi",
+          "Persiapan sertifikasi atau akreditasi",
+        ],
+        goal: "Membantu organisasi memiliki tata kelola yang profesional, efisien, dan berdaya saing tinggi.",
+      },
+      {
+        name: "🤝 Paket Business Expansion & Partnership",
+        price: "Menyesuaikan",
+        discount: "Sesuai Proyek",
+        commission: "Komisi Menarik / Closing",
+        suitableFor: "Cocok untuk bisnis yang ingin memperluas jaringan pasar dan mendapatkan peluang kolaborasi strategis.",
+        services: [
+          "Business matching dengan mitra potensial",
+          "Pendampingan kerja sama bisnis",
+          "Pengembangan strategi kemitraan",
+          "Konsultasi branding & positioning",
+          "Penyusunan proposal kerja sama",
+          "Pengembangan jaringan industri & komunitas",
+          "Pendampingan akses program CSR & kolaborasi",
+        ],
+        goal: "Membantu bisnis memperluas relasi, pasar, dan peluang pertumbuhan usaha.",
+      },
+      {
+        name: "🚀 Paket Integrated Business Transformation",
+        price: "Menyesuaikan",
+        discount: "Sesuai Proyek",
+        commission: "Komisi Menarik / Closing",
+        suitableFor: "Paket pendampingan lengkap dan menyeluruh untuk meningkatkan tata kelola, produktivitas, dan pertumbuhan bisnis secara berkelanjutan.",
+        services: [
+          "Analisa kebutuhan dan kondisi bisnis",
+          "Penyusunan sistem manajemen & SOP",
+          "Pelatihan SDM dan leadership",
+          "Pendampingan produktivitas dan efisiensi bisnis",
+          "Penyusunan KPI dan monitoring kinerja",
+          "Pendampingan branding & pemasaran",
+          "Konsultasi pengembangan usaha",
+          "Business matching dan kemitraan strategis",
+          "Evaluasi perkembangan bisnis berkala",
+        ],
+        goal: "Membantu organisasi dan pelaku usaha meningkatkan kualitas tata kelola, pertumbuhan pendapatan, serta memperluas pasar dan ekosistem bisnis.",
+      },
+    ],
+    whyInteresting: [
+      "Layanan B2B premium dengan nilai kontrak tinggi",
+      "Kebutuhan krusial bagi UMKM & industri (sertifikasi & standardisasi)",
+      "Didukung oleh portofolio industri nasional (Mitsubishi Chemical, Krakatau Steel, dsb.)",
+      "Materi promosi & support konsultasi disediakan penuh",
+      "Skema bagi hasil komisi yang sangat prospektif",
+    ],
+    targetMarket: ["🏪 Pemilik UMKM & IKM", "👥 Pengurus Koperasi", "🏢 Pengelola LPK / Sekolah", "🏭 Manajemen Pabrik / Industri", "📈 Pelaku Bisnis Menengah-Atas"],
+    disclaimer: "Biaya dan skema proyek disesuaikan secara khusus berdasarkan analisis skala bisnis dan kebutuhan operasional perusahaan. Komisi kemitraan dihitung secara persentase/nilai tetap yang disepakati untuk setiap kontrak kerja sama valid yang berhasil ditandatangani.",
+    consultWa: "https://wa.me/628138298543",
+  },
 };
 
 const products = [
@@ -233,27 +392,19 @@ const products = [
   },
   {
     name: "Green Productive Academy",
-    fee: "Coming Soon",
+    fee: "Sesuai Ketentuan",
     unit: "pendaftaran",
     icon: Recycle,
     desc: "Program edukasi dan akselerator produk inovatif berbasis kelestarian lingkungan hidup.",
-    url: "",
-  },
-  {
-    name: "Standara Consulting",
-    fee: "Coming Soon",
-    unit: "layanan",
-    icon: Handshake,
-    desc: "Konsultasi profesional penyusunan SOP standardisasi bisnis, legalitas usaha, dan sertifikasi.",
-    url: "",
+    url: "https://sites.google.com/view/link-productive/services/sekolah-teknologi-hijau/affiliate-sekolah-teknologi-hijau",
   },
   {
     name: "Brand Siap",
-    fee: "Coming Soon",
+    fee: "Sesuai Ketentuan",
     unit: "paket",
     icon: ShoppingBag,
     desc: "Layanan super cepat pembuatan identitas visual, logo, kemasan produk, dan kesiapan branding usaha.",
-    url: "",
+    url: "https://sites.google.com/view/link-productive/services/brand-siap/affiliate-brand-siap",
   },
   {
     name: "Snapp Frame",
@@ -261,7 +412,15 @@ const products = [
     unit: "foto",
     icon: Camera,
     desc: "Layanan fotografi studio modern, foto portrait, cetak kilat, dan dokumentasi visual premium.",
-    url: "",
+    url: "https://www.linkproductive.com/marketplace/snapp-frame/affiliate-snapp-frame",
+  },
+  {
+    name: "Standara Consulting",
+    fee: "Sesuai Ketentuan",
+    unit: "layanan",
+    icon: Handshake,
+    desc: "Konsultasi profesional penyusunan SOP standardisasi bisnis, legalitas usaha, dan sertifikasi.",
+    url: "https://www.linkproductive.com/services/standara-consulting",
   },
   {
     name: "Rata Coffee",
@@ -282,9 +441,9 @@ const discountData = [
   { name: "Cuan Creator Academy", maxDiscount: "Menyesuaikan", fee: "Komisi Menarik" },
   { name: "Tekno AI Academy", maxDiscount: "Menyesuaikan", fee: "Komisi Menarik" },
   { name: "Mental Bahasa Academy", maxDiscount: "Menyesuaikan", fee: "Komisi Menarik" },
-  { name: "Green Productive Academy", maxDiscount: "Menyesuaikan", fee: "Coming Soon" },
-  { name: "Standara Consulting", maxDiscount: "Menyesuaikan", fee: "Coming Soon" },
-  { name: "Brand Siap", maxDiscount: "Menyesuaikan", fee: "Coming Soon" },
+  { name: "Green Productive Academy", maxDiscount: "Menyesuaikan", fee: "Komisi Menarik" },
+  { name: "Standara Consulting", maxDiscount: "Menyesuaikan", fee: "Komisi Menarik" },
+  { name: "Brand Siap", maxDiscount: "Menyesuaikan", fee: "Komisi Menarik" },
   { name: "Snapp Frame", maxDiscount: "Rp5.000", fee: "Rp3.500" },
   { name: "Rata Coffee", maxDiscount: "Rp2.000", fee: "Rp1.000" },
 ];
@@ -745,6 +904,10 @@ const POSTER_KEYS: Record<string, string> = {
   "Cuan Creator Academy": "affiliate_poster_cuan_creator",
   "Tekno AI Academy": "affiliate_poster_tekno_ai",
   "Mental Bahasa Academy": "affiliate_poster_mental_bahasa",
+  "Green Productive Academy": "affiliate_poster_green_productive",
+  "Brand Siap": "affiliate_poster_brand_siap",
+  "Snapp Frame": "affiliate_poster_snapp_frame",
+  "Standara Consulting": "affiliate_poster_standara",
 };
 
 const DEFAULT_POSTERS: Record<string, string> = {
@@ -756,6 +919,10 @@ const DEFAULT_POSTERS: Record<string, string> = {
   "Cuan Creator Academy": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
   "Tekno AI Academy": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600&auto=format&fit=crop",
   "Mental Bahasa Academy": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600&auto=format&fit=crop",
+  "Green Productive Academy": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=600&auto=format&fit=crop",
+  "Brand Siap": "https://images.unsplash.com/photo-1634942537034-2531766767d1?q=80&w=600&auto=format&fit=crop",
+  "Snapp Frame": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop",
+  "Standara Consulting": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop",
 };
 
 const slideVariants = {
@@ -780,7 +947,7 @@ const swipePower = (offset: number, velocity: number) => {
   return Math.abs(offset) * velocity;
 };
 
-function ProgramPosterCarousel({ urls, productName }: { urls: string[]; productName: string }) {
+function ProgramPosterCarousel({ urls, productName, onImageClick }: { urls: string[]; productName: string; onImageClick?: (url: string) => void }) {
   const [[page, direction], setPage] = useState([0, 0]);
 
   if (urls.length === 0) return null;
@@ -831,7 +998,8 @@ function ProgramPosterCarousel({ urls, productName }: { urls: string[]; productN
               }
             }}
             alt={`${productName} poster ${currentIndex + 1}`}
-            className="absolute inset-0 w-full h-full object-contain bg-[#1A1A1A] select-none touch-pan-y"
+            className="absolute inset-0 w-full h-full object-contain bg-[#1A1A1A] select-none touch-pan-y cursor-zoom-in"
+            onClick={() => onImageClick?.(urls[currentIndex])}
             loading="lazy"
           />
         </AnimatePresence>
@@ -884,6 +1052,48 @@ const pkgSlugMap: Record<string, string> = {
   "cuan-creator-academy": "Cuan Creator Academy",
   "tekno-ai-academy": "Tekno AI Academy",
   "mental-bahasa-academy": "Mental Bahasa Academy",
+  "green-productive-academy": "Green Productive Academy",
+  "brand-siap": "Brand Siap",
+  "snapp-frame": "Snapp Frame",
+  "standara-consulting": "Standara Consulting",
+};
+
+const generatePromoText = (progName: string, refCode: string) => {
+  const codeText = refCode ? `@${refCode.trim().replace("@", "")}` : "[KODE_REFERRAL_KAMU]";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
+  const slug = Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === progName) || "";
+  const linkText = refCode 
+    ? `${origin}/affiliate?ref=${refCode.trim().replace("@", "")}&pkg=${slug}`
+    : `${origin}/affiliate?pkg=${slug}`;
+
+  switch (progName) {
+    case "LP Academic Partner":
+      return `Bantu teman mahasiswa menyelesaikan Tugas Akhir secara terarah dan profesional! 🎓\nDapatkan pendampingan konsultasi terbaik dari Link Productive dengan potongan diskon khusus menggunakan kode: ${codeText}\n\nSelengkapnya dan pendaftaran di: ${linkText}\n#LPAcademicPartner #KonsultasiTA #Skripsi`;
+    case "LP Career Ready":
+      return `Mau lulus kuliah langsung dilirik HRD BUMN & Swasta Nasional? 💼\nPersiapkan kariermu secara matang di LP Career Ready. CV & LinkedIn review, mock interview, dan strategi karier. Gunakan kode diskon: ${codeText}\n\nDaftar sekarang: ${linkText}\n#LPCareerReady #PersiapanKerja #CVReview`;
+    case "LP Entrepreneur Launchpad":
+      return `Belajar bisnis dari nol bareng mentor berpengalaman di LP Entrepreneur Launchpad! 🚀\nBuat rancangan bisnis yang solid untuk pelajar & mahasiswa. Masukkan kode referral ini untuk potongan khusus: ${codeText}\n\nInfo detail: ${linkText}\n#LPEntrepreneurLaunchpad #BelajarBisnis #BootcampBisnis`;
+    case "Bisapreneur Academy":
+      return `Mulai langkah wirausaha pertamamu dengan percaya diri di Bisapreneur Academy! 🏪\nKelas bisnis praktis dari nol untuk pemula & UMKM. Dapatkan harga promo khusus dengan kode: ${codeText}\n\nDaftar di: ${linkText}\n#BisapreneurAcademy #WirausahaPemula #KelasBisnis`;
+    case "Baristara Academy":
+      return `Ingin jago meracik kopi dan punya bisnis coffee shop sendiri? ☕\nIkuti pelatihan barista profesional di Baristara Academy. Dapatkan diskon khusus menggunakan kode referral: ${codeText}\n\nInfo selengkapnya: ${linkText}\n#BaristaraAcademy #SekolahBarista #BisnisKopi`;
+    case "Cuan Creator Academy":
+      return `Mulai hasilkan income nyata dari keahlian Digital Marketing! 📈\nBelajar praktis berbasis project nyata di Cuan Creator Academy. Gunakan kode referral saya untuk promo khusus: ${codeText}\n\nDaftar di sini: ${linkText}\n#CuanCreatorAcademy #DigitalMarketing #BelajarDigital`;
+    case "Tekno AI Academy":
+      return `Jangan tertinggal di era kecerdasan buatan! Belajar coding & AI productivity untuk bisnis di Tekno AI Academy 🤖\nUbah caramu bekerja & dapatkan diskon khusus dengan kode: ${codeText}\n\nInfo pendaftaran: ${linkText}\n#TeknoAIAcademy #BelajarCoding #AIBusiness`;
+    case "Mental Bahasa Academy":
+      return `Tingkatkan kepercayaan diri, public speaking, & kemampuan bahasa Inggris di Mental Bahasa Academy! 🎤\nGabungan self-growth & komunikasi interaktif. Gunakan kode diskon saya: ${codeText}\n\nDaftar di: ${linkText}\n#MentalBahasaAcademy #PublicSpeaking #EnglishSpeaking`;
+    case "Green Productive Academy":
+      return `Pelajari teknologi hijau dasar dan inovasi produk ramah lingkungan di Green Productive Academy! 🌿\nMari berkontribusi pada masa depan berkelanjutan. Gunakan kode diskon khusus: ${codeText}\n\nDaftar kelas: ${linkText}\n#GreenProductiveAcademy #EcoTechnology #GreenInnovation`;
+    case "Brand Siap":
+      return `Butuh logo, identitas visual, atau desain kemasan produk super cepat dan profesional? 🎨\nPercayakan pada Brand Siap! Gunakan kode diskon referral saya untuk potongan harga: ${codeText}\n\nOrder layanan di: ${linkText}\n#BrandSiap #DesainLogo #JasaBranding`;
+    case "Snapp Frame":
+      return `Mau foto studio portrait premium, minimalis, dan cetak kilat? 📸\nBooking sesi fotomu di Snapp.frame Studio dan nikmati potongan harga khusus dengan kode: ${codeText}\n\nBooking sekarang: ${linkText}\n#SnappFrame #StudioFoto #SelfPhotoStudio`;
+    case "Standara Consulting":
+      return `Tingkatkan tata kelola bisnis, SOP, dan standardisasi industri Anda bersama Standara Consulting! 💼\nKonsultan mutu senior siap mendampingi UMKM & industri. Dapatkan penawaran khusus dengan kode: ${codeText}\n\nAjukan konsultasi: ${linkText}\n#StandaraConsulting #StandardisasiBisnis #SOPPerusahaan`;
+    default:
+      return `Yuk gabung program affiliate dan dapatkan produk/layanan terbaik dengan potongan harga spesial menggunakan kode referral saya: ${codeText}\n\nInfo selengkapnya: ${linkText}`;
+  }
 };
 
 // ─── MAIN PAGE CONTENT ────────────────────────────────────────────────────────
@@ -897,6 +1107,8 @@ function AffiliateContent() {
   const [likedPosts, setLikedPosts] = useState<Record<string, boolean>>({});
   const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [expandedPkg, setExpandedPkg] = useState<number | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
 
@@ -917,6 +1129,11 @@ function AffiliateContent() {
       }
     }
   }, [searchParams]);
+
+  // Reset expanded package when active product changes
+  useEffect(() => {
+    setExpandedPkg(null);
+  }, [activeProduct]);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -1007,20 +1224,239 @@ function AffiliateContent() {
 
   return (
     <>
-      {/* Detail Modal */}
+      {/* Register Modal (popup) */}
+      <AnimatePresence>
+        {showModal && <RegisterModal onClose={() => setShowModal(false)} />}
+      </AnimatePresence>
+
+      {/* FULL PAGE DETAIL VIEW */}
       <AnimatePresence>
         {activeProduct && (
-          <AffiliateDetailModal
-            product={activeProduct}
-            onClose={() => setActiveProduct(null)}
-            onRegister={() => setShowModal(true)}
-          />
+          <motion.div
+            key="detail-fullpage"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[90] bg-near-black overflow-y-auto"
+          >
+            {/* Back Bar */}
+            <div className="sticky top-0 z-10 bg-near-black/95 backdrop-blur-md border-b border-white/10 px-4 md:px-8 py-4 flex items-center justify-between">
+              <button
+                onClick={() => setActiveProduct(null)}
+                className="flex items-center gap-2 text-white/60 hover:text-white transition-colors font-black text-[11px] uppercase tracking-widest"
+              >
+                <ArrowLeft size={16} />
+                Kembali ke Daftar Program
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="max-w-3xl mx-auto px-4 md:px-8 py-10 pb-24">
+              {/* Program Header */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-14 h-14 rounded-2xl bg-gold/20 flex items-center justify-center text-gold flex-shrink-0">
+                  <activeProduct.icon size={26} />
+                </div>
+                <div>
+                  <h1 className="text-xl md:text-2xl font-black text-white uppercase tracking-wide leading-tight">{activeProduct.name}</h1>
+                  {affiliateDetails[activeProduct.name] && (
+                    <p className="text-[11px] text-white/40 font-bold mt-1">{affiliateDetails[activeProduct.name].subtitle}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Poster */}
+              {(() => {
+                const posterKey = POSTER_KEYS[activeProduct.name];
+                const rawPosters = settings[posterKey] || DEFAULT_POSTERS[activeProduct.name] || "";
+                const posterUrls = rawPosters.split(",").map((u) => u.trim()).filter(Boolean);
+                return posterUrls.length > 0 ? (
+                  <div className="mb-8 max-w-xs mx-auto">
+                    <ProgramPosterCarousel 
+                      urls={posterUrls} 
+                      productName={activeProduct.name} 
+                      onImageClick={(url) => setLightboxUrl(url)}
+                    />
+                  </div>
+                ) : null;
+              })()}
+
+              {affiliateDetails[activeProduct.name] ? (
+                <div className="space-y-8">
+                  {/* Intro */}
+                  <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                    <p className="text-[13px] text-white/75 leading-relaxed whitespace-pre-line">{affiliateDetails[activeProduct.name].intro}</p>
+                  </div>
+
+                  {/* Packages */}
+                  <div>
+                    <h2 className="text-[11px] font-black text-gold uppercase tracking-widest mb-4">📦 Detail Program & Komisi</h2>
+                    <div className="space-y-4">
+                      {affiliateDetails[activeProduct.name].packages.map((pkg, i) => (
+                        <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                          <p className="text-[13px] font-black text-white mb-4">{pkg.name}</p>
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="bg-white/5 rounded-xl p-3 text-center">
+                              <p className="text-[9px] text-white/40 font-bold uppercase mb-1">Harga Normal</p>
+                              <p className="text-[11px] font-black text-white/60 line-through">{pkg.price}</p>
+                            </div>
+                            <div className="bg-gold/10 border border-gold/20 rounded-xl p-3 text-center">
+                              <p className="text-[9px] text-gold font-bold uppercase mb-1">Diskon Customer</p>
+                              <p className="text-[11px] font-black text-gold">{pkg.discount}</p>
+                              {pkg.afterDiscount && <p className="text-[10px] text-white/60 font-bold mt-0.5">→ {pkg.afterDiscount}</p>}
+                            </div>
+                            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-center">
+                              <p className="text-[9px] text-emerald-400 font-bold uppercase mb-1">Komisi Affiliate</p>
+                              <p className="text-[11px] font-black text-emerald-400">{pkg.commission}</p>
+                            </div>
+                          </div>
+                          {/* Per-package accordion — Lihat Detail (content built within snapp.frame) */}
+                          {(pkg.services || pkg.suitableFor) && (
+                            <>
+                              <button
+                                onClick={() => setExpandedPkg(expandedPkg === i ? null : i)}
+                                className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 text-white/60 hover:text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all"
+                              >
+                                {expandedPkg === i ? "Tutup Detail" : "Lihat Detail"}
+                                <ChevronDown
+                                  size={12}
+                                  className={`transition-transform duration-300 ${expandedPkg === i ? "rotate-180" : ""}`}
+                                />
+                              </button>
+                              <AnimatePresence>
+                                {expandedPkg === i && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="mt-3 space-y-3 border-t border-white/10 pt-4">
+                                      {pkg.suitableFor && (
+                                        <p className="text-[11px] text-white/50 italic leading-relaxed">{pkg.suitableFor}</p>
+                                      )}
+                                      {pkg.services && pkg.services.length > 0 && (
+                                        <div>
+                                          <p className="text-[9px] text-gold font-black uppercase tracking-widest mb-2">Layanan dalam Paket</p>
+                                          <ul className="space-y-1.5">
+                                            {pkg.services.map((svc, si) => (
+                                              <li key={si} className="flex items-start gap-2">
+                                                <CheckCircle2 size={11} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                                                <span className="text-[11px] text-white/60 font-medium">{svc}</span>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      )}
+                                      {pkg.goal && (
+                                        <div className="bg-gold/5 border border-gold/20 rounded-xl p-3">
+                                          <p className="text-[9px] text-gold font-black uppercase tracking-widest mb-1">Tujuan</p>
+                                          <p className="text-[11px] text-white/60 font-medium leading-relaxed">{pkg.goal}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Why Interesting */}
+                  <div>
+                    <h2 className="text-[11px] font-black text-gold uppercase tracking-widest mb-4">🎯 Kenapa Program Ini Menarik?</h2>
+                    <div className="bg-white/5 rounded-2xl p-5 border border-white/5 space-y-3">
+                      {affiliateDetails[activeProduct.name].whyInteresting.map((reason, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <CheckCircle2 size={14} className="text-gold flex-shrink-0 mt-0.5" />
+                          <span className="text-[13px] text-white/70 font-medium">{reason}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Target Market */}
+                  <div>
+                    <h2 className="text-[11px] font-black text-gold uppercase tracking-widest mb-4">💼 Cocok Untuk</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {affiliateDetails[activeProduct.name].targetMarket.map((target, i) => (
+                        <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[11px] text-white/60 font-bold">
+                          {target}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Disclaimer */}
+                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5">
+                    <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-widest mb-2">📢 Info Penting</p>
+                    <p className="text-[12px] text-white/50 leading-relaxed">{affiliateDetails[activeProduct.name].disclaimer}</p>
+                  </div>
+
+                  {/* Konsultasi Lebih Lanjut — WhatsApp CTA (matches linkproductive.com) */}
+                  {affiliateDetails[activeProduct.name].consultWa && (
+                    <a
+                      href={affiliateDetails[activeProduct.name].consultWa}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-3 w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-lg shadow-emerald-500/20"
+                    >
+                      <MessageCircle size={16} />
+                      Konsultasi Lebih Lanjut
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <p className="text-white/40 text-sm text-center py-16">Detail program belum tersedia.</p>
+              )}
+
+              {/* Bottom CTA */}
+              <div className="mt-12">
+                <button
+                  onClick={() => { setActiveProduct(null); setShowModal(true); }}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gold hover:bg-gold/90 text-near-black text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-gold/20"
+                >
+                  Daftar Affiliate Sekarang
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Register Modal */}
+      {/* Fullscreen Poster Lightbox */}
       <AnimatePresence>
-        {showModal && <RegisterModal onClose={() => setShowModal(false)} />}
+        {lightboxUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setLightboxUrl(null)}
+          >
+            <button
+              onClick={() => setLightboxUrl(null)}
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors border border-white/10"
+            >
+              <X size={20} />
+            </button>
+            <motion.img
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              src={lightboxUrl}
+              alt="Poster Lightbox Preview"
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <main className="min-h-screen bg-warm-white overflow-x-hidden w-full">

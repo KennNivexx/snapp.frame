@@ -34,13 +34,13 @@ export const authConfig = {
 
         // Role-based authorization
         if (isOnAdmin && userRole !== "ADMIN") {
-          return Response.redirect(new URL("/login", nextUrl));
+          return Response.redirect(new URL(userRole === "SNAPPER" ? "/snapper" : "/", nextUrl));
         }
         if (isOnKasir && userRole !== "ADMIN") {
-          return Response.redirect(new URL("/login", nextUrl));
+          return Response.redirect(new URL(userRole === "SNAPPER" ? "/snapper" : "/", nextUrl));
         }
         if (isOnSnapper && userRole !== "SNAPPER" && userRole !== "ADMIN") {
-          return Response.redirect(new URL("/login", nextUrl));
+          return Response.redirect(new URL("/", nextUrl));
         }
         return true;
       }

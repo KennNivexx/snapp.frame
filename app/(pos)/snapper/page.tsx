@@ -7,11 +7,15 @@ import { getSession } from "next-auth/react";
 import {
   DollarSign, Gift, Copy, Check, Landmark, CreditCard,
   TrendingUp, Users, Share2, ExternalLink, Sparkles, Clock,
-  CheckCircle2, Calendar, ImageIcon, BookOpen, AlertCircle, Phone
+  CheckCircle2, Calendar, ImageIcon, BookOpen, AlertCircle, Phone,
+  GraduationCap, Award, Building, Coffee, MonitorPlay, Presentation,
+  Recycle, ShoppingBag, Camera, Handshake, ChevronDown, ChevronUp, ChevronRight,
+  Download, Megaphone
 } from "lucide-react";
 import { getSnapperDashboardData, updateSnapperReferralProduct } from "@/app/actions/snapper";
 import { getAffiliatePosts } from "@/app/actions/affiliate-posts";
 import { getProducts } from "@/app/actions/products";
+import { getSiteSettings } from "@/app/actions/settings";
 import { toast } from "sonner";
 
 interface Commission {
@@ -49,7 +53,167 @@ const AFFILIATE_PROGRAMS = [
   { sku: "cuan-creator-academy", name: "Cuan Creator Academy" },
   { sku: "tekno-ai-academy", name: "Tekno AI Academy" },
   { sku: "mental-bahasa-academy", name: "Mental Bahasa Academy" },
+  { sku: "green-productive-academy", name: "Green Productive Academy" },
+  { sku: "brand-siap", name: "Brand Siap" },
+  { sku: "snapp-frame", name: "Snapp Frame" },
+  { sku: "standara-consulting", name: "Standara Consulting" },
 ];
+
+// ─── Package pricing data per program (dari poster) ───────────────────────
+const PROGRAM_PACKAGES: Record<string, { name: string; price: string; discount: string; afterDiscount?: string; commission: string }[]> = {
+  "LP Academic Partner": [
+    { name: "🥉 Paket Starter Consultation", price: "Rp 799.000", discount: "Rp 250.000", commission: "Rp 100.000 / transaksi" },
+    { name: "🥈 Paket Regular Academic Partner", price: "Rp 2.499.000", discount: "Rp 600.000", commission: "Rp 150.000 / transaksi" },
+    { name: "🥇 Paket Premium Academic Partner", price: "Rp 4.999.000", discount: "Rp 1.300.000", commission: "Rp 250.000 / transaksi" },
+    { name: "🚀 Paket Intensive Sidang & Revisi", price: "Rp 1.499.000", discount: "Rp 400.000", commission: "Rp 100.000 / transaksi" },
+  ],
+  "LP Career Ready": [
+    { name: "📌 Pembelian H-1 Minggu", price: "Rp 699.000", discount: "-", afterDiscount: "Rp 699.000", commission: "Rp 50.000 / peserta" },
+    { name: "🚀 Promo H-7 s/d H-20", price: "Rp 699.000", discount: "Rp 400.000", afterDiscount: "Rp 299.000", commission: "Rp 50.000 / peserta" },
+    { name: "🚀 Promo H-21 & Seterusnya", price: "Rp 699.000", discount: "Rp 500.000", afterDiscount: "Rp 199.000", commission: "Rp 50.000 / peserta" },
+  ],
+  "LP Entrepreneur Launchpad": [
+    { name: "⏳ H-1 Minggu Sebelum Acara", price: "Rp 750.000", discount: "-", commission: "Rp 75.000 / peserta" },
+    { name: "⏳ H-7 s/d H-20", price: "Rp 750.000", discount: "Rp 400.000", afterDiscount: "Rp 350.000", commission: "Rp 75.000 / peserta" },
+    { name: "⏳ H-21 & Seterusnya", price: "Rp 750.000", discount: "Rp 500.000", afterDiscount: "Rp 250.000", commission: "Rp 75.000 / peserta" },
+  ],
+  "Bisapreneur Academy": [
+    { name: "💼 Kelas Wirausaha Pemula", price: "Rp 1.250.000", discount: "Rp 250.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
+  ],
+  "Baristara Academy": [
+    { name: "☕ Program Barista Profesional", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / peserta" },
+    { name: "☕ Program Barista & Bisnis Kopi", price: "Rp 3.500.000", discount: "Rp 1.200.000", afterDiscount: "Rp 2.300.000", commission: "Rp 200.000 / peserta" },
+  ],
+  "Cuan Creator Academy": [
+    { name: "🎓 Cuan Creator Academy", price: "Rp 3.500.000", discount: "Rp 1.200.000", afterDiscount: "Rp 2.300.000", commission: "Rp 200.000 / peserta" },
+  ],
+  "Tekno AI Academy": [
+    { name: "🤖 AI Business Productivity Class", price: "Rp 2.700.000", discount: "Rp 1.000.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / transaksi" },
+    { name: "🌐 Web Developer for Business", price: "Rp 3.500.000", discount: "Rp 1.200.000", afterDiscount: "Rp 2.300.000", commission: "Rp 200.000 / transaksi" },
+    { name: "🏢 AI for Office & Administration", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / transaksi" },
+    { name: "🏭 AI Industry & Smart Manufacturing", price: "Rp 2.800.000", discount: "Rp 900.000", afterDiscount: "Rp 1.900.000", commission: "Rp 150.000 / transaksi" },
+  ],
+  "Mental Bahasa Academy": [
+    { name: "🎤 Public Speaking & Confidence", price: "Rp 1.500.000", discount: "Rp 700.000", afterDiscount: "Rp 800.000", commission: "Rp 50.000 / peserta" },
+    { name: "🌐 English Speaking & Confidence", price: "Rp 2.000.000", discount: "Rp 1.000.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
+    { name: "🧠 Self Growth & Mental Health", price: "Rp 1.500.000", discount: "Rp 700.000", afterDiscount: "Rp 800.000", commission: "Rp 50.000 / peserta" },
+  ],
+  "Green Productive Academy": [
+    { name: "🌱 Program Teknologi Hijau Dasar", price: "Rp 1.500.000", discount: "Rp 500.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
+    { name: "♻️ Program Inovasi Produk Berkelanjutan", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / peserta" },
+  ],
+  "Brand Siap": [
+    { name: "🎨 Paket Logo & Brand Identity", price: "Rp 500.000", discount: "Rp 100.000", afterDiscount: "Rp 400.000", commission: "Rp 50.000 / proyek" },
+    { name: "📦 Paket Kemasan & Packaging Design", price: "Rp 750.000", discount: "Rp 150.000", afterDiscount: "Rp 600.000", commission: "Rp 75.000 / proyek" },
+    { name: "🚀 Paket Brand Siap Lengkap", price: "Rp 1.500.000", discount: "Rp 300.000", afterDiscount: "Rp 1.200.000", commission: "Rp 150.000 / proyek" },
+  ],
+  "Snapp Frame": [
+    { name: "🤳 Paket Solo (10 foto)", price: "Rp 75.000", discount: "Rp 15.000", afterDiscount: "Rp 60.000", commission: "Rp 35.000 / booking" },
+    { name: "📸 Paket Duo (15 foto)", price: "Rp 100.000", discount: "Rp 20.000", afterDiscount: "Rp 80.000", commission: "Rp 52.500 / booking" },
+    { name: "👨‍👩‍👧‍👦 Paket Group (20 foto)", price: "Rp 130.000", discount: "Rp 25.000", afterDiscount: "Rp 105.000", commission: "Rp 70.000 / booking" },
+  ],
+  "Standara Consulting": [
+    { name: "📋 Paket Basic Business Improvement", price: "Menyesuaikan", discount: "Sesuai Proyek", commission: "Komisi Menarik / Closing" },
+  ],
+};
+
+const pkgSlugMap: Record<string, string> = {
+  "lp-academic-partner": "LP Academic Partner",
+  "lp-career-ready": "LP Career Ready",
+  "lp-entrepreneur-launchpad": "LP Entrepreneur Launchpad",
+  "bisapreneur-academy": "Bisapreneur Academy",
+  "baristara-academy": "Baristara Academy",
+  "cuan-creator-academy": "Cuan Creator Academy",
+  "tekno-ai-academy": "Tekno AI Academy",
+  "mental-bahasa-academy": "Mental Bahasa Academy",
+  "green-productive-academy": "Green Productive Academy",
+  "brand-siap": "Brand Siap",
+  "snapp-frame": "Snapp Frame",
+  "standara-consulting": "Standara Consulting",
+};
+
+const POSTER_KEYS: Record<string, string> = {
+  "LP Academic Partner": "affiliate_poster_academic",
+  "LP Career Ready": "affiliate_poster_career",
+  "LP Entrepreneur Launchpad": "affiliate_poster_entrepreneur",
+  "Bisapreneur Academy": "affiliate_poster_bisapreneur",
+  "Baristara Academy": "affiliate_poster_baristara",
+  "Cuan Creator Academy": "affiliate_poster_cuan_creator",
+  "Tekno AI Academy": "affiliate_poster_tekno_ai",
+  "Mental Bahasa Academy": "affiliate_poster_mental_bahasa",
+  "Green Productive Academy": "affiliate_poster_green_productive",
+  "Brand Siap": "affiliate_poster_brand_siap",
+  "Snapp Frame": "affiliate_poster_snapp_frame",
+  "Standara Consulting": "affiliate_poster_standara",
+};
+
+const DEFAULT_POSTERS: Record<string, string> = {
+  "LP Academic Partner": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop",
+  "LP Career Ready": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop",
+  "LP Entrepreneur Launchpad": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop",
+  "Bisapreneur Academy": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?q=80&w=600&auto=format&fit=crop",
+  "Baristara Academy": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=600&auto=format&fit=crop",
+  "Cuan Creator Academy": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
+  "Tekno AI Academy": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600&auto=format&fit=crop",
+  "Mental Bahasa Academy": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600&auto=format&fit=crop",
+  "Green Productive Academy": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=600&auto=format&fit=crop",
+  "Brand Siap": "https://images.unsplash.com/photo-1634942537034-2531766767d1?q=80&w=600&auto=format&fit=crop",
+  "Snapp Frame": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop",
+  "Standara Consulting": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop",
+};
+
+const skuIconMap: Record<string, React.ComponentType<any>> = {
+  "lp-academic-partner": GraduationCap,
+  "lp-career-ready": Award,
+  "lp-entrepreneur-launchpad": TrendingUp,
+  "bisapreneur-academy": Building,
+  "baristara-academy": Coffee,
+  "cuan-creator-academy": MonitorPlay,
+  "tekno-ai-academy": Presentation,
+  "mental-bahasa-academy": Users,
+  "green-productive-academy": Recycle,
+  "brand-siap": ShoppingBag,
+  "snapp-frame": Camera,
+  "standara-consulting": Handshake,
+};
+
+const generatePromoText = (progName: string, refCode: string) => {
+  const codeText = refCode ? `@${refCode.trim().replace("@", "")}` : "[KODE_REFERRAL_KAMU]";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
+  const slug = Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === progName) || "";
+  const linkText = refCode 
+    ? `${origin}/booking?ref=${refCode.trim().replace("@", "")}&pkg=${slug}`
+    : `${origin}/booking?pkg=${slug}`;
+
+  switch (progName) {
+    case "LP Academic Partner":
+      return `Bantu teman mahasiswa menyelesaikan Tugas Akhir secara terarah dan profesional! 🎓\nDapatkan pendampingan konsultasi terbaik dari Link Productive dengan potongan diskon khusus menggunakan kode: ${codeText}\n\nSelengkapnya dan pendaftaran di: ${linkText}\n#LPAcademicPartner #KonsultasiTA #Skripsi`;
+    case "LP Career Ready":
+      return `Mau lulus kuliah langsung dilirik HRD BUMN & Swasta Nasional? 💼\nPersiapkan kariermu secara matang di LP Career Ready. CV & LinkedIn review, mock interview, dan strategi karier. Gunakan kode diskon: ${codeText}\n\nDaftar sekarang: ${linkText}\n#LPCareerReady #PersiapanKerja #CVReview`;
+    case "LP Entrepreneur Launchpad":
+      return `Belajar bisnis dari nol bareng mentor berpengalaman di LP Entrepreneur Launchpad! 🚀\nBuat rancangan bisnis yang solid untuk pelajar & mahasiswa. Masukkan kode referral ini untuk potongan khusus: ${codeText}\n\nInfo detail: ${linkText}\n#LPEntrepreneurLaunchpad #BelajarBisnis #BootcampBisnis`;
+    case "Bisapreneur Academy":
+      return `Mulai langkah wirausaha pertamamu dengan percaya diri di Bisapreneur Academy! 🏪\nKelas bisnis praktis dari nol untuk pemula & UMKM. Dapatkan harga promo khusus dengan kode: ${codeText}\n\nDaftar di: ${linkText}\n#BisapreneurAcademy #WirausahaPemula #KelasBisnis`;
+    case "Baristara Academy":
+      return `Ingin jago meracik kopi dan punya bisnis coffee shop sendiri? ☕\nIkuti pelatihan barista profesional di Baristara Academy. Dapatkan diskon khusus menggunakan kode referral: ${codeText}\n\nInfo selengkapnya: ${linkText}\n#BaristaraAcademy #SekolahBarista #BisnisKopi`;
+    case "Cuan Creator Academy":
+      return `Mulai hasilkan income nyata dari keahlian Digital Marketing! 📈\nBelajar praktis berbasis project nyata di Cuan Creator Academy. Gunakan kode referral saya untuk promo khusus: ${codeText}\n\nDaftar di sini: ${linkText}\n#CuanCreatorAcademy #DigitalMarketing #BelajarDigital`;
+    case "Tekno AI Academy":
+      return `Jangan tertinggal di era kecerdasan buatan! Belajar coding & AI productivity untuk bisnis di Tekno AI Academy 🤖\nUbah caramu bekerja & dapatkan diskon khusus dengan kode: ${codeText}\n\nInfo pendaftaran: ${linkText}\n#TeknoAIAcademy #BelajarCoding #AIBusiness`;
+    case "Mental Bahasa Academy":
+      return `Tingkatkan kepercayaan diri, public speaking, & kemampuan bahasa Inggris di Mental Bahasa Academy! 🎤\nGabungan self-growth & komunikasi interaktif. Gunakan kode diskon saya: ${codeText}\n\nDaftar di: ${linkText}\n#MentalBahasaAcademy #PublicSpeaking #EnglishSpeaking`;
+    case "Green Productive Academy":
+      return `Pelajari teknologi hijau dasar dan inovasi produk ramah lingkungan di Green Productive Academy! 🌿\nMari berkontribusi pada masa depan berkelanjutan. Gunakan kode diskon khusus: ${codeText}\n\nDaftar kelas: ${linkText}\n#GreenProductiveAcademy #EcoTechnology #GreenInnovation`;
+    case "Brand Siap":
+      return `Butuh logo, identitas visual, atau desain kemasan produk super cepat dan profesional? 🎨\nPercayakan pada Brand Siap! Gunakan kode diskon referral saya untuk potongan harga: ${codeText}\n\nOrder layanan di: ${linkText}\n#BrandSiap #DesainLogo #JasaBranding`;
+    case "Snapp Frame":
+      return `Mau foto studio portrait premium, minimalis, dan cetak kilat? 📸\nBooking sesi fotomu di Snapp.frame Studio dan nikmati potongan harga khusus dengan kode: ${codeText}\n\nBooking sekarang: ${linkText}\n#SnappFrame #StudioFoto #SelfPhotoStudio`;
+    case "Standara Consulting":
+      return `Tingkatkan tata kelola bisnis, SOP, dan standardisasi industri Anda bersama Standara Consulting! 💼\nKonsultan mutu senior siap mendampingi UMKM & industri. Dapatkan penawaran khusus dengan kode: ${codeText}\n\nAjukan konsultasi: ${linkText}\n#StandaraConsulting #StandardisasiBisnis #SOPPerusahaan`;
+    default:
+      return `Yuk gabung program affiliate dan dapatkan produk/layanan terbaik dengan potongan harga spesial menggunakan kode referral saya: ${codeText}\n\nInfo selengkapnya: ${linkText}`;
+  }
+};
 
 export default function SnapperDashboard() {
   const router = useRouter();
@@ -67,6 +231,8 @@ export default function SnapperDashboard() {
   const [productsList, setProductsList] = useState<any[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [savingProduct, setSavingProduct] = useState(false);
+  const [settings, setSettings] = useState<Record<string, string>>({});
+  const [activeKitSku, setActiveKitSku] = useState<string>("lp-academic-partner");
 
   // Auto-redirect if not logged in or wrong role
   useEffect(() => {
@@ -92,10 +258,11 @@ export default function SnapperDashboard() {
       setLoading(true);
       try {
         const userId = session.user.id;
-        const [dashRes, postsRes, prodRes] = await Promise.all([
+        const [dashRes, postsRes, prodRes, settingsRes] = await Promise.all([
           getSnapperDashboardData(userId),
           getAffiliatePosts(),
-          getProducts()
+          getProducts(),
+          getSiteSettings()
         ]);
 
         if (dashRes.success && dashRes.data) {
@@ -113,6 +280,10 @@ export default function SnapperDashboard() {
 
         if (prodRes.success && prodRes.data) {
           setProductsList(prodRes.data);
+        }
+
+        if (settingsRes) {
+          setSettings(settingsRes);
         }
       } catch (err) {
         console.error(err);
@@ -163,12 +334,16 @@ export default function SnapperDashboard() {
       "baristara-academy",
       "cuan-creator-academy",
       "tekno-ai-academy",
-      "mental-bahasa-academy"
+      "mental-bahasa-academy",
+      "green-productive-academy",
+      "brand-siap",
+      "snapp-frame",
+      "standara-consulting"
     ].includes(target);
 
     let shareUrl = "";
     if (isAffiliateProg) {
-      shareUrl = `${origin}/affiliate?ref=${code}&pkg=${target}`;
+      shareUrl = `${origin}/booking?ref=${code}&pkg=${target}`;
     } else {
       shareUrl = `${origin}/booking?ref=${code}`;
       if (target) {
@@ -383,9 +558,13 @@ export default function SnapperDashboard() {
                         "baristara-academy",
                         "cuan-creator-academy",
                         "tekno-ai-academy",
-                        "mental-bahasa-academy"
+                        "mental-bahasa-academy",
+                        "green-productive-academy",
+                        "brand-siap",
+                        "snapp-frame",
+                        "standara-consulting"
                       ].includes(dashboardData.referralCode.targetProductId) ? (
-                        `affiliate?ref=${referralCode}&pkg=${dashboardData.referralCode.targetProductId}`
+                        `booking?ref=${referralCode}&pkg=${dashboardData.referralCode.targetProductId}`
                       ) : (
                         `booking?ref=${referralCode}${dashboardData.referralCode?.targetProductId ? `&pkg=${dashboardData.referralCode.targetProductId}` : ""}`
                       )}
@@ -584,6 +763,225 @@ export default function SnapperDashboard() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {tabParam === "kit" && (
+        <div className="space-y-8">
+          <div>
+            <h3 className="text-xl font-black text-[#3B2211]" style={{ fontFamily: "var(--font-syne)" }}>Kit Promosi Affiliate</h3>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">
+              Materi promosi copywriting & poster untuk dibagikan ke media sosial Anda
+            </p>
+          </div>
+
+          {/* Referral Info Bar */}
+          <div className="p-6 bg-gradient-to-br from-[#1E110A] to-[#120703] text-white rounded-[2rem] shadow-xl border border-white/5 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2 relative z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10 text-[10px] font-bold text-[#E5AB7A] uppercase tracking-wider">
+                <Sparkles size={11} /> Kode Referral Aktif Anda
+              </span>
+              <h4 className="text-xl md:text-2xl font-black text-[#E5AB7A] tracking-wider">@{referralCode}</h4>
+              <p className="text-[11px] text-white/50 max-w-xl">
+                Semua tautan & copywriting di bawah ini otomatis tersemat dengan kode referral Anda. Cukup salin dan sebarkan untuk mulai mendapatkan komisi!
+              </p>
+            </div>
+            <button
+              onClick={() => handleCopyCode(referralCode)}
+              className="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#C88A58] hover:bg-[#C88A58]/95 text-white rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-[#C88A58]/20"
+            >
+              <Copy size={12} />
+              Salin Kode Anda
+            </button>
+          </div>
+
+          {/* Master-Detail Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Master List of 12 Programs */}
+            <div className="lg:col-span-4 bg-white rounded-3xl border border-[#F0EBE5] p-5 space-y-2">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 mb-3">Daftar Program ({AFFILIATE_PROGRAMS.length})</p>
+              <div className="space-y-1.5 max-h-[600px] overflow-y-auto custom-scrollbar pr-1">
+                {AFFILIATE_PROGRAMS.map((prog) => {
+                  const SkuIcon = skuIconMap[prog.sku] || Sparkles;
+                  const isActive = activeKitSku === prog.sku;
+                  return (
+                    <button
+                      key={prog.sku}
+                      onClick={() => setActiveKitSku(prog.sku)}
+                      className={`w-full text-left p-3.5 rounded-2xl flex items-center justify-between gap-3 transition-all duration-300 ${
+                        isActive
+                          ? "bg-[#3B2211] text-white shadow-lg shadow-[#3B2211]/15"
+                          : "hover:bg-gray-50 text-[#3B2211] border border-transparent"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          isActive ? "bg-white/10 text-white" : "bg-[#C88A58]/10 text-[#C88A58]"
+                        }`}>
+                          <SkuIcon size={16} />
+                        </div>
+                        <span className={`text-[11px] font-black uppercase tracking-wide truncate ${
+                          isActive ? "text-white" : "text-[#3B2211]"
+                        }`}>
+                          {prog.name}
+                        </span>
+                      </div>
+                      <ChevronRight size={14} className={isActive ? "text-white" : "text-gray-400 flex-shrink-0"} />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Column: Spacious Promotion Kit Details */}
+            <div className="lg:col-span-8 bg-white rounded-3xl border border-[#F0EBE5] p-6 lg:p-8">
+              {(() => {
+                const prog = AFFILIATE_PROGRAMS.find(p => p.sku === activeKitSku);
+                if (!prog) return null;
+
+                const SkuIcon = skuIconMap[prog.sku] || Sparkles;
+                const posterKey = POSTER_KEYS[prog.name];
+                const rawPosters = settings[posterKey] || DEFAULT_POSTERS[prog.name] || "";
+                const posterUrls = rawPosters.split(",").map((u) => u.trim()).filter(Boolean);
+                const posterUrl = posterUrls[0] || "";
+
+                return (
+                  <div className="space-y-6">
+                    {/* Header */}
+                    <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                      <div className="w-12 h-12 rounded-2xl bg-[#C88A58]/10 flex items-center justify-center text-[#C88A58]">
+                        <SkuIcon size={24} />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-black text-[#3B2211] uppercase tracking-wide">{prog.name}</h4>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Bahan Promosi & Tautan Afiliasi</p>
+                      </div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                      {/* Left: Poster Image Preview */}
+                      <div className="md:col-span-5 space-y-4">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Poster Kemitraan</span>
+                        {posterUrl ? (
+                          <div className="aspect-[3/4] w-full max-w-[260px] mx-auto rounded-2xl overflow-hidden border border-[#F0EBE5] bg-gray-50 relative group shadow-sm">
+                            <img
+                              src={posterUrl}
+                              alt={`${prog.name} Poster`}
+                              className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <a
+                                href={posterUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-4 py-2.5 bg-white rounded-xl text-[#3B2211] hover:bg-gold transition-colors shadow-lg flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider"
+                              >
+                                <ImageIcon size={14} /> Lihat Poster
+                              </a>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="aspect-[3/4] rounded-2xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 bg-gray-50/50">
+                            <ImageIcon size={28} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest mt-2">Belum Ada Poster</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right: Caption Copywriting & Referral Links */}
+                      <div className="md:col-span-7 space-y-6">
+                        {/* Copywriting */}
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                              Materi Copywriting
+                            </span>
+                            <button
+                              onClick={() => {
+                                const text = generatePromoText(prog.name, referralCode);
+                                navigator.clipboard.writeText(text);
+                                toast.success(`Caption promosi ${prog.name} disalin!`);
+                              }}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3B2211] hover:bg-[#C88A58] text-white rounded-xl text-[9px] font-black uppercase tracking-wider transition-all"
+                            >
+                              <Copy size={11} /> Salin Caption
+                            </button>
+                          </div>
+                          <textarea
+                            readOnly
+                            value={generatePromoText(prog.name, referralCode)}
+                            className="w-full bg-gray-50/70 border border-gray-200 rounded-2xl p-4 text-[11px] text-gray-600 font-medium leading-relaxed resize-none h-[180px] focus:outline-none focus:border-[#C88A58] custom-scrollbar"
+                          />
+                        </div>
+
+                        {/* Package Pricing Table */}
+                        {PROGRAM_PACKAGES[prog.name] && (
+                          <div className="space-y-2">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Daftar Paket &amp; Harga</span>
+                            <div className="rounded-2xl border border-[#F0EBE5] overflow-hidden">
+                              {/* Table Header */}
+                              <div className="grid grid-cols-4 gap-2 px-3 py-2 bg-[#F8F5F2] border-b border-[#F0EBE5]">
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider col-span-1">Paket</span>
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider text-center">Harga</span>
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider text-center">Setelah Diskon</span>
+                                <span className="text-[9px] font-black text-[#C88A58] uppercase tracking-wider text-right">Komisi Anda</span>
+                              </div>
+                              {/* Rows */}
+                              {PROGRAM_PACKAGES[prog.name].map((pkg, i) => (
+                                <div key={i} className={`grid grid-cols-4 gap-2 px-3 py-2.5 items-center ${
+                                  i < PROGRAM_PACKAGES[prog.name].length - 1 ? "border-b border-[#F8F5F2]" : ""
+                                }`}>
+                                  <span className="text-[10px] font-bold text-[#3B2211] col-span-1 leading-tight">{pkg.name}</span>
+                                  <div className="text-center">
+                                    <span className="text-[10px] font-bold text-gray-400 line-through block">{pkg.price}</span>
+                                    {pkg.discount !== "-" && (
+                                      <span className="text-[9px] font-black text-emerald-600">-{pkg.discount}</span>
+                                    )}
+                                  </div>
+                                  <span className="text-[10px] font-black text-[#3B2211] text-center">
+                                    {pkg.afterDiscount || (pkg.discount === "-" ? pkg.price : "—")}
+                                  </span>
+                                  <span className="text-[10px] font-black text-[#C88A58] text-right">{pkg.commission}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Referral Links */}
+                        <div className="space-y-3">
+                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Tautan Khusus Anda</span>
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <button
+                              onClick={() => {
+                                const slug = Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === prog.name) || "";
+                                const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
+                                const linkUrl = `${origin}/booking?ref=${referralCode}&pkg=${slug}`;
+                                navigator.clipboard.writeText(linkUrl);
+                                toast.success("Tautan khusus Anda berhasil disalin!");
+                              }}
+                              className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-white border border-[#E5DFD9] hover:bg-gray-50 text-[#3B2211] text-[10px] font-black uppercase tracking-wider rounded-xl transition-all"
+                            >
+                              <Share2 size={13} /> Salin Link Referral
+                            </button>
+                            <a
+                              href={`/booking?pkg=${Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === prog.name) || ""}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-white border border-[#E5DFD9] hover:bg-gray-50 text-[#3B2211] text-[10px] font-black uppercase tracking-wider rounded-xl transition-all"
+                            >
+                              <ExternalLink size={13} /> Pratinjau Halaman
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
         </div>
       )}
 
