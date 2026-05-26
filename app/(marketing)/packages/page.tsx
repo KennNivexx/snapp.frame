@@ -49,7 +49,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         {/* Header */}
         <div className="mb-8">
           <p className="text-[10px] font-black tracking-[0.2em] text-gold uppercase mb-3">
-            {pkg.duration} • {pkg.photoCount}
+            {[pkg.duration, pkg.photoCount].filter(Boolean).join(" • ") || "Program Pelatihan"}
           </p>
           <h2
             className="text-2xl sm:text-3xl font-black text-near-black mb-4 leading-tight group-hover:text-black transition-colors"

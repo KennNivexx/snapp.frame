@@ -132,9 +132,9 @@ export default function Step1Package({ packagesList, loading, selected, onSelect
                   "flex flex-wrap gap-x-3 gap-y-1 text-xs mb-4",
                   isSelected ? "text-[#FAFAF8]/70" : "text-[#888888]"
                 ].join(" ")}>
-                  <span>{pkg.duration}</span>
-                  <span>·</span>
-                  <span>{pkg.photoCount}</span>
+                  {pkg.duration && <span>{pkg.duration}</span>}
+                  {pkg.duration && pkg.photoCount && <span>·</span>}
+                  {pkg.photoCount && <span>{pkg.photoCount}</span>}
                 </div>
 
                 <div className={[

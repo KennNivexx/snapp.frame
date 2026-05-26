@@ -45,75 +45,118 @@ interface AffiliatePost {
 }
 
 const AFFILIATE_PROGRAMS = [
-  { sku: "lp-academic-partner", name: "LP Academic Partner" },
+  { sku: "lp-academic-starter", name: "LP Academic Partner - Starter Consultation" },
+  { sku: "lp-academic-regular", name: "LP Academic Partner - Regular Partner" },
+  { sku: "lp-academic-premium", name: "LP Academic Partner - Premium Partner" },
+  { sku: "lp-academic-intensive", name: "LP Academic Partner - Intensive Sidang" },
   { sku: "lp-career-ready", name: "LP Career Ready" },
   { sku: "lp-entrepreneur-launchpad", name: "LP Entrepreneur Launchpad" },
   { sku: "bisapreneur-academy", name: "Bisapreneur Academy" },
-  { sku: "baristara-academy", name: "Baristara Academy" },
+  { sku: "baristara-profesional", name: "Baristara Academy - Barista Profesional" },
+  { sku: "baristara-bisnis", name: "Baristara Academy - Barista & Bisnis Kopi" },
   { sku: "cuan-creator-academy", name: "Cuan Creator Academy" },
-  { sku: "tekno-ai-academy", name: "Tekno AI Academy" },
-  { sku: "mental-bahasa-academy", name: "Mental Bahasa Academy" },
-  { sku: "green-productive-academy", name: "Green Productive Academy" },
-  { sku: "brand-siap", name: "Brand Siap" },
-  { sku: "snapp-frame", name: "Snapp Frame" },
-  { sku: "standara-consulting", name: "Standara Consulting" },
+  { sku: "tekno-ai-productivity", name: "Tekno AI Academy - AI Business Productivity" },
+  { sku: "tekno-ai-webdev", name: "Tekno AI Academy - Web Developer" },
+  { sku: "tekno-ai-office", name: "Tekno AI Academy - AI for Office" },
+  { sku: "tekno-ai-industry", name: "Tekno AI Academy - AI Industry" },
+  { sku: "mental-public-speaking", name: "Mental Bahasa Academy - Public Speaking" },
+  { sku: "mental-english", name: "Mental Bahasa Academy - English Speaking" },
+  { sku: "mental-self-growth", name: "Mental Bahasa Academy - Self Growth" },
+  { sku: "green-tech-dasar", name: "Green Productive Academy - Teknologi Hijau" },
+  { sku: "green-tech-inovasi", name: "Green Productive Academy - Inovasi" },
+  { sku: "brand-siap-logo", name: "Brand Siap - Logo & Brand Identity" },
+  { sku: "brand-siap-packaging", name: "Brand Siap - Packaging Design" },
+  { sku: "brand-siap-lengkap", name: "Brand Siap - Paket Lengkap" },
+  { sku: "standara-basic", name: "Standara Consulting - Basic" },
+  { sku: "standara-growth", name: "Standara Consulting - Growth" },
+  { sku: "standara-professional", name: "Standara Consulting - Professional" },
 ];
 
-// ─── Package pricing data per program (dari poster) ───────────────────────
+// ─── Package pricing data per product (dari poster) ───────────────────────
 const PROGRAM_PACKAGES: Record<string, { name: string; price: string; discount: string; afterDiscount?: string; commission: string }[]> = {
-  "LP Academic Partner": [
+  "lp-academic-starter": [
     { name: "🥉 Paket Starter Consultation", price: "Rp 799.000", discount: "Rp 250.000", commission: "Rp 100.000 / transaksi" },
+  ],
+  "lp-academic-regular": [
     { name: "🥈 Paket Regular Academic Partner", price: "Rp 2.499.000", discount: "Rp 600.000", commission: "Rp 150.000 / transaksi" },
+  ],
+  "lp-academic-premium": [
     { name: "🥇 Paket Premium Academic Partner", price: "Rp 4.999.000", discount: "Rp 1.300.000", commission: "Rp 250.000 / transaksi" },
+  ],
+  "lp-academic-intensive": [
     { name: "🚀 Paket Intensive Sidang & Revisi", price: "Rp 1.499.000", discount: "Rp 400.000", commission: "Rp 100.000 / transaksi" },
   ],
-  "LP Career Ready": [
+  "lp-career-ready": [
     { name: "📌 Pembelian H-1 Minggu", price: "Rp 699.000", discount: "-", afterDiscount: "Rp 699.000", commission: "Rp 50.000 / peserta" },
     { name: "🚀 Promo H-7 s/d H-20", price: "Rp 699.000", discount: "Rp 400.000", afterDiscount: "Rp 299.000", commission: "Rp 50.000 / peserta" },
     { name: "🚀 Promo H-21 & Seterusnya", price: "Rp 699.000", discount: "Rp 500.000", afterDiscount: "Rp 199.000", commission: "Rp 50.000 / peserta" },
   ],
-  "LP Entrepreneur Launchpad": [
+  "lp-entrepreneur-launchpad": [
     { name: "⏳ H-1 Minggu Sebelum Acara", price: "Rp 750.000", discount: "-", commission: "Rp 75.000 / peserta" },
     { name: "⏳ H-7 s/d H-20", price: "Rp 750.000", discount: "Rp 400.000", afterDiscount: "Rp 350.000", commission: "Rp 75.000 / peserta" },
     { name: "⏳ H-21 & Seterusnya", price: "Rp 750.000", discount: "Rp 500.000", afterDiscount: "Rp 250.000", commission: "Rp 75.000 / peserta" },
   ],
-  "Bisapreneur Academy": [
+  "bisapreneur-academy": [
     { name: "💼 Kelas Wirausaha Pemula", price: "Rp 1.250.000", discount: "Rp 250.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
   ],
-  "Baristara Academy": [
+  "baristara-profesional": [
     { name: "☕ Program Barista Profesional", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / peserta" },
+  ],
+  "baristara-bisnis": [
     { name: "☕ Program Barista & Bisnis Kopi", price: "Rp 3.500.000", discount: "Rp 1.200.000", afterDiscount: "Rp 2.300.000", commission: "Rp 200.000 / peserta" },
   ],
-  "Cuan Creator Academy": [
+  "cuan-creator-academy": [
     { name: "🎓 Cuan Creator Academy", price: "Rp 3.500.000", discount: "Rp 1.200.000", afterDiscount: "Rp 2.300.000", commission: "Rp 200.000 / peserta" },
   ],
-  "Tekno AI Academy": [
+  "tekno-ai-productivity": [
     { name: "🤖 AI Business Productivity Class", price: "Rp 2.700.000", discount: "Rp 1.000.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / transaksi" },
+  ],
+  "tekno-ai-webdev": [
     { name: "🌐 Web Developer for Business", price: "Rp 3.500.000", discount: "Rp 1.200.000", afterDiscount: "Rp 2.300.000", commission: "Rp 200.000 / transaksi" },
+  ],
+  "tekno-ai-office": [
     { name: "🏢 AI for Office & Administration", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / transaksi" },
+  ],
+  "tekno-ai-industry": [
     { name: "🏭 AI Industry & Smart Manufacturing", price: "Rp 2.800.000", discount: "Rp 900.000", afterDiscount: "Rp 1.900.000", commission: "Rp 150.000 / transaksi" },
   ],
-  "Mental Bahasa Academy": [
+  "mental-public-speaking": [
     { name: "🎤 Public Speaking & Confidence", price: "Rp 1.500.000", discount: "Rp 700.000", afterDiscount: "Rp 800.000", commission: "Rp 50.000 / peserta" },
+  ],
+  "mental-english": [
     { name: "🌐 English Speaking & Confidence", price: "Rp 2.000.000", discount: "Rp 1.000.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
+  ],
+  "mental-self-growth": [
     { name: "🧠 Self Growth & Mental Health", price: "Rp 1.500.000", discount: "Rp 700.000", afterDiscount: "Rp 800.000", commission: "Rp 50.000 / peserta" },
   ],
-  "Green Productive Academy": [
+  "green-tech-dasar": [
     { name: "🌱 Program Teknologi Hijau Dasar", price: "Rp 1.500.000", discount: "Rp 500.000", afterDiscount: "Rp 1.000.000", commission: "Rp 100.000 / peserta" },
+  ],
+  "green-tech-inovasi": [
     { name: "♻️ Program Inovasi Produk Berkelanjutan", price: "Rp 2.500.000", discount: "Rp 800.000", afterDiscount: "Rp 1.700.000", commission: "Rp 150.000 / peserta" },
   ],
-  "Brand Siap": [
+  "brand-siap-logo": [
     { name: "🎨 Paket Logo & Brand Identity", price: "Rp 500.000", discount: "Rp 100.000", afterDiscount: "Rp 400.000", commission: "Rp 50.000 / proyek" },
+  ],
+  "brand-siap-packaging": [
     { name: "📦 Paket Kemasan & Packaging Design", price: "Rp 750.000", discount: "Rp 150.000", afterDiscount: "Rp 600.000", commission: "Rp 75.000 / proyek" },
+  ],
+  "brand-siap-lengkap": [
     { name: "🚀 Paket Brand Siap Lengkap", price: "Rp 1.500.000", discount: "Rp 300.000", afterDiscount: "Rp 1.200.000", commission: "Rp 150.000 / proyek" },
   ],
-  "Snapp Frame": [
+  "snapp-frame": [
     { name: "🤳 Paket Solo (10 foto)", price: "Rp 75.000", discount: "Rp 15.000", afterDiscount: "Rp 60.000", commission: "Rp 35.000 / booking" },
     { name: "📸 Paket Duo (15 foto)", price: "Rp 100.000", discount: "Rp 20.000", afterDiscount: "Rp 80.000", commission: "Rp 52.500 / booking" },
     { name: "👨‍👩‍👧‍👦 Paket Group (20 foto)", price: "Rp 130.000", discount: "Rp 25.000", afterDiscount: "Rp 105.000", commission: "Rp 70.000 / booking" },
   ],
-  "Standara Consulting": [
+  "standara-basic": [
     { name: "📋 Paket Basic Business Improvement", price: "Menyesuaikan", discount: "Sesuai Proyek", commission: "Komisi Menarik / Closing" },
+  ],
+  "standara-growth": [
+    { name: "📋 Paket Standard Growth Business", price: "Menyesuaikan", discount: "Sesuai Proyek", commission: "Komisi Menarik / Closing" },
+  ],
+  "standara-professional": [
+    { name: "📋 Paket Professional Management System", price: "Menyesuaikan", discount: "Sesuai Proyek", commission: "Komisi Menarik / Closing" },
   ],
 };
 
@@ -326,29 +369,9 @@ export default function SnapperDashboard() {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
     const target = dashboardData?.referralCode?.targetProductId || "";
     
-    const isAffiliateProg = [
-      "lp-academic-partner",
-      "lp-career-ready",
-      "lp-entrepreneur-launchpad",
-      "bisapreneur-academy",
-      "baristara-academy",
-      "cuan-creator-academy",
-      "tekno-ai-academy",
-      "mental-bahasa-academy",
-      "green-productive-academy",
-      "brand-siap",
-      "snapp-frame",
-      "standara-consulting"
-    ].includes(target);
-
-    let shareUrl = "";
-    if (isAffiliateProg) {
-      shareUrl = `${origin}/booking?ref=${code}&pkg=${target}`;
-    } else {
-      shareUrl = `${origin}/booking?ref=${code}`;
-      if (target) {
-        shareUrl += `&pkg=${target}`;
-      }
+    let shareUrl = `${origin}/booking?ref=${code}`;
+    if (target) {
+      shareUrl += `&pkg=${target}`;
     }
 
     navigator.clipboard.writeText(shareUrl);
@@ -550,24 +573,12 @@ export default function SnapperDashboard() {
                   <div className="truncate mr-2">
                     <p className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Link Tautan Otomatis</p>
                     <p className="text-xs font-bold text-white/80 truncate">
-                      {dashboardData.referralCode?.targetProductId && [
-                        "lp-academic-partner",
-                        "lp-career-ready",
-                        "lp-entrepreneur-launchpad",
-                        "bisapreneur-academy",
-                        "baristara-academy",
-                        "cuan-creator-academy",
-                        "tekno-ai-academy",
-                        "mental-bahasa-academy",
-                        "green-productive-academy",
-                        "brand-siap",
-                        "snapp-frame",
-                        "standara-consulting"
-                      ].includes(dashboardData.referralCode.targetProductId) ? (
-                        `booking?ref=${referralCode}&pkg=${dashboardData.referralCode.targetProductId}`
-                      ) : (
-                        `booking?ref=${referralCode}${dashboardData.referralCode?.targetProductId ? `&pkg=${dashboardData.referralCode.targetProductId}` : ""}`
-                      )}
+                      {(() => {
+                        const target = dashboardData.referralCode?.targetProductId;
+                        return target
+                          ? `booking?ref=${referralCode}&pkg=${target}`
+                          : `booking?ref=${referralCode}`;
+                      })()}
                     </p>
                   </div>
                   <button

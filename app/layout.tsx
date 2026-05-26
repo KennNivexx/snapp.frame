@@ -1,7 +1,7 @@
 // app/layout.tsx — Root layout dengan font, metadata, navbar, footer, WA button
 
 import type { Metadata } from "next";
-import { Syne, Outfit } from "next/font/google";
+import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
 import { CustomCursor } from "@/components/ui/custom-cursor";
@@ -9,18 +9,20 @@ import { Toaster } from "sonner";
 
 /* ─── Fonts ─────────────────────────────────────────────── */
 
-const syne = Syne({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-syne",
   display: "swap",
+  fallback: ["Georgia", "serif"],
 });
 
-const outfit = Outfit({
+const lato = Lato({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["100", "300", "400", "700", "900"],
   variable: "--font-outfit",
   display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
 /* ─── Metadata ────────────────────────────────────────────── */
@@ -73,11 +75,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${syne.variable} ${outfit.variable}`}>
+    <html lang="id" className={`${playfair.variable} ${lato.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-outfit)] antialiased cursor-default min-h-screen overflow-x-hidden w-full">
+      <body className="bg-[#FAFAF8] text-[#1A1A1A] font-[family-name:var(--font-lato)] antialiased cursor-default min-h-screen overflow-x-hidden w-full">
         {/* Viewport lock wrapper */}
         <div className="relative flex min-h-screen flex-col w-full">
           <CustomCursor />

@@ -238,3 +238,72 @@ export async function seedProductsFromStatic() {
     return { success: false, error: error.message };
   }
 }
+
+export async function seedBrandProducts() {
+  try {
+    const { brandProducts } = await import("@/data/brand-products");
+
+    const existingSkus = await prisma.product.findMany({
+      where: { sku: { in: brandProducts.map(p => p.sku) } },
+      select: { sku: true },
+    });
+    const existingSkuSet = new Set(existingSkus.map(p => p.sku));
+
+    const newProducts = brandProducts.filter(p => !existingSkuSet.has(p.sku));
+
+    if (newProducts.length === 0) {
+      return { success: true, message: "All brand products already seeded", count: 0 };
+    }
+
+    // Group by category
+    const categoryNames = [...new Set(newProducts.map(p => p.categoryName))];
+
+    // Ensure all categories exist
+    const categoryMap: Record<string, string> = {};
+    for (const catName of categoryNames) {
+      let category = await prisma.category.findFirst({
+        where: { name: catName }
+      });
+      if (!category) {
+        category = await prisma.category.create({
+          data: {
+            name: catName,
+            slug: catName.toLowerCase().replace(/\s+/g, "-")
+          }
+        });
+      }
+      categoryMap[catName] = category.id;
+    }
+
+    // Create products
+    let created = 0;
+    for (const p of newProducts) {
+      await prisma.product.create({
+        data: {
+          sku: p.sku,
+          name: p.name,
+          price: p.price,
+          stock: 999,
+          categoryId: categoryMap[p.categoryName],
+          duration: p.duration || null,
+          photoCount: p.photoCount || null,
+          features: p.features,
+          isPopular: p.isPopular || false,
+          sortOrder: p.sortOrder || 0,
+          isActive: true,
+        }
+      });
+      created++;
+    }
+
+    revalidatePath("/admin/products");
+    revalidatePath("/kasir");
+    revalidatePath("/packages");
+    revalidatePath("/booking");
+    revalidatePath("/");
+    return { success: true, message: `Seeded ${created} brand products`, count: created };
+  } catch (error: any) {
+    console.error("seedBrandProducts Error:", error);
+    return { success: false, error: error.message };
+  }
+}

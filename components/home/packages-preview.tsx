@@ -35,7 +35,7 @@ function PackageCard({ pkg }: { pkg: (typeof packages)[0] }) {
         {/* Header */}
         <div className="mb-6">
           <p className="text-[9px] font-black tracking-[0.2em] text-gold uppercase mb-2">
-            {pkg.duration}
+            {pkg.duration || pkg.photoCount || ""}
           </p>
           <h3
             className="text-lg sm:text-xl font-black text-near-black mb-3 leading-tight"
