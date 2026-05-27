@@ -273,6 +273,7 @@ export default function SnapperDashboard() {
   // Referral campaign States
   const [productsList, setProductsList] = useState<any[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [referralType, setReferralType] = useState<"foto" | "affiliate">("foto");
   const [savingProduct, setSavingProduct] = useState(false);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [activeKitSku, setActiveKitSku] = useState<string>("lp-academic-partner");
@@ -310,7 +311,10 @@ export default function SnapperDashboard() {
 
         if (dashRes.success && dashRes.data) {
           setDashboardData(dashRes.data);
-          setSelectedProductId(dashRes.data.referralCode?.targetProductId || "");
+          const initialTarget = dashRes.data.referralCode?.targetProductId || "";
+          setSelectedProductId(initialTarget);
+          const isAff = AFFILIATE_PROGRAMS.some((p) => p.sku === initialTarget);
+          setReferralType(isAff ? "affiliate" : "foto");
         } else {
           toast.error(dashRes.error || "Gagal memuat data dashboard.");
         }
@@ -369,7 +373,10 @@ export default function SnapperDashboard() {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
     const target = dashboardData?.referralCode?.targetProductId || "";
     
-    let shareUrl = `${origin}/booking?ref=${code}`;
+    const isAffiliate = AFFILIATE_PROGRAMS.some((p) => p.sku === target);
+    const path = isAffiliate ? "/daftar" : "/booking";
+    
+    let shareUrl = `${origin}${path}?ref=${code}`;
     if (target) {
       shareUrl += `&pkg=${target}`;
     }
@@ -504,52 +511,114 @@ export default function SnapperDashboard() {
               </div>
 
               {/* Target Campaign Selector */}
-              <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3 relative z-10">
+              <div className="mt-6 p-5 bg-white/5 rounded-2xl border border-white/10 space-y-5 relative z-10">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#E5AB7A]">Target Produk Referral (Hanya 1 Produk)</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#E5AB7A]">Pilih Tipe Referral Campaign</span>
                   {selectedProductId && (
                     <button 
-                      onClick={() => setSelectedProductId("")} 
+                      onClick={() => {
+                        setSelectedProductId("");
+                        setReferralType("foto");
+                      }} 
                       className="text-[9px] font-bold text-rose-400 hover:underline"
                     >
-                      Reset (General Link)
+                      Reset ke Link Umum
                     </button>
                   )}
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <select
-                    value={selectedProductId}
-                    onChange={(e) => setSelectedProductId(e.target.value)}
-                    className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-[#C88A58] transition-colors"
-                  >
-                    <option value="" className="bg-[#1E110A] text-white/50">Semua Produk/Layanan (General)</option>
-                    
-                    <optgroup label="Layanan Studio Snapp.frame" className="bg-[#1E110A] text-white/60">
-                      {productsList.map((p) => (
-                        <option key={p.id} value={p.sku} className="bg-[#1E110A] text-white font-normal">
-                          {p.name} - Rp {p.price.toLocaleString("id-ID")}
-                        </option>
-                      ))}
-                    </optgroup>
 
-                    <optgroup label="Program Kemitraan Affiliate" className="bg-[#1E110A] text-white/60">
-                      {AFFILIATE_PROGRAMS.map((prog) => (
-                        <option key={prog.sku} value={prog.sku} className="bg-[#1E110A] text-white font-normal">
-                          {prog.name} (Affiliate)
-                        </option>
-                      ))}
-                    </optgroup>
-                  </select>
+                {/* 2 Visual Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Card Foto */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReferralType("foto");
+                      setSelectedProductId(""); // default to general photo link
+                    }}
+                    className={`p-4 rounded-xl border text-left transition-all duration-300 flex items-start gap-3.5 ${
+                      referralType === "foto"
+                        ? "bg-white/10 border-[#C88A58] ring-1 ring-[#C88A58]"
+                        : "bg-white/5 border-white/5 hover:border-white/10"
+                    }`}
+                  >
+                    <div className={`p-2.5 rounded-lg flex-shrink-0 ${referralType === "foto" ? "bg-[#C88A58] text-[#1E110A]" : "bg-white/5 text-white/60"}`}>
+                      <Camera size={18} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">📸 Referral Foto Studio</h4>
+                      <p className="text-[10px] text-white/50 mt-1 leading-relaxed">
+                        Mengarahkan pelanggan ke halaman booking foto studio Snapp.frame (Solo, Duo, Group, etc).
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Card Affiliate */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReferralType("affiliate");
+                      setSelectedProductId("lp-academic-starter"); // default to first affiliate package
+                    }}
+                    className={`p-4 rounded-xl border text-left transition-all duration-300 flex items-start gap-3.5 ${
+                      referralType === "affiliate"
+                        ? "bg-white/10 border-[#C88A58] ring-1 ring-[#C88A58]"
+                        : "bg-white/5 border-white/5 hover:border-white/10"
+                    }`}
+                  >
+                    <div className={`p-2.5 rounded-lg flex-shrink-0 ${referralType === "affiliate" ? "bg-[#C88A58] text-[#1E110A]" : "bg-white/5 text-white/60"}`}>
+                      <Handshake size={18} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">🤝 Referral Pelatihan (Affiliate)</h4>
+                      <p className="text-[10px] text-white/50 mt-1 leading-relaxed">
+                        Mengarahkan calon peserta ke form pendaftaran kelas pelatihan & program kemitraan kami.
+                      </p>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Specific Dropdown */}
+                <div className="flex flex-col sm:flex-row gap-3 items-end pt-1">
+                  <div className="flex-1 space-y-1.5 w-full">
+                    <label className="text-[9px] font-black uppercase tracking-wider text-white/40">
+                      Pilih Detail Paket / Program Spesifik
+                    </label>
+                    <select
+                      value={selectedProductId}
+                      onChange={(e) => setSelectedProductId(e.target.value)}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-[#C88A58] transition-colors"
+                    >
+                      {referralType === "foto" ? (
+                        <>
+                          <option value="" className="bg-[#1E110A] text-white/50">Semua Paket Foto (General booking link)</option>
+                          {productsList.map((p) => (
+                            <option key={p.id} value={p.sku} className="bg-[#1E110A] text-white font-normal">
+                              {p.name} - Rp {p.price.toLocaleString("id-ID")}
+                            </option>
+                          ))}
+                        </>
+                      ) : (
+                        <>
+                          {AFFILIATE_PROGRAMS.map((prog) => (
+                            <option key={prog.sku} value={prog.sku} className="bg-[#1E110A] text-white font-normal">
+                              {prog.name}
+                            </option>
+                          ))}
+                        </>
+                      )}
+                    </select>
+                  </div>
                   <button
                     onClick={handleSaveTargetProduct}
                     disabled={savingProduct || (dashboardData.referralCode?.targetProductId || "") === selectedProductId}
-                    className="px-4 py-2.5 bg-gold hover:bg-gold/90 text-near-black text-[10px] font-black uppercase tracking-wider rounded-xl transition-all disabled:opacity-40"
+                    className="w-full sm:w-auto px-5 py-3 bg-gold hover:bg-gold/90 text-near-black text-[10px] font-black uppercase tracking-wider rounded-xl transition-all disabled:opacity-40 flex-shrink-0"
                   >
                     {savingProduct ? "Menyimpan..." : "Simpan Target"}
                   </button>
                 </div>
                 <p className="text-[9px] text-white/40 leading-normal">
-                  * Memilih produk di atas akan memodifikasi link rujukan Anda secara otomatis agar langsung memilih dan menargetkan produk tersebut saat pelanggan melakukan booking. Anda hanya bisa mengaktifkan 1 produk dalam satu waktu.
+                  * Klik <strong>Simpan Target</strong> setelah memilih di atas. Link referral otomatis disesuaikan menuju booking form studio foto atau pendaftaran program affiliate yang tepat.
                 </p>
               </div>
 
@@ -575,8 +644,10 @@ export default function SnapperDashboard() {
                     <p className="text-xs font-bold text-white/80 truncate">
                       {(() => {
                         const target = dashboardData.referralCode?.targetProductId;
+                        const isAffiliate = AFFILIATE_PROGRAMS.some((p) => p.sku === target);
+                        const path = isAffiliate ? "daftar" : "booking";
                         return target
-                          ? `booking?ref=${referralCode}&pkg=${target}`
+                          ? `${path}?ref=${referralCode}&pkg=${target}`
                           : `booking?ref=${referralCode}`;
                       })()}
                     </p>

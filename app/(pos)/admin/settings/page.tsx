@@ -23,6 +23,7 @@ export default function SettingsPage() {
         contact_email: data.contact_email || "hello@snappframe.com",
         contact_phone: data.contact_phone || "+62 812 3456 7890",
         contact_wa: data.contact_wa || "6281234567890",
+        affiliate_whatsapp: data.affiliate_whatsapp || data.contact_wa || "6281234567890",
         contact_ig: data.contact_ig || "@snapp.frame",
         contact_address: data.contact_address || "Jl. Sudirman No. 123, Jakarta Selatan",
         operational_hours: data.operational_hours || "Setiap Hari: 09:00 - 21:00",
@@ -198,6 +199,16 @@ export default function SettingsPage() {
                   type="text"
                   value={settings.contact_wa}
                   onChange={(e) => handleChange("contact_wa", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                  placeholder="6281234567890"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor WhatsApp Affiliate (tanpa +)</label>
+                <input
+                  type="text"
+                  value={settings.affiliate_whatsapp || ""}
+                  onChange={(e) => handleChange("affiliate_whatsapp", e.target.value)}
                   className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
                   placeholder="6281234567890"
                 />

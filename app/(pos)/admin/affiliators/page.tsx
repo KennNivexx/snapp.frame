@@ -54,6 +54,11 @@ import {
   createAffiliator,
   deleteAffiliator,
 } from "@/app/actions/affiliators";
+import {
+  getAffiliateLeads,
+  updateAffiliateLeadStatus,
+  deleteAffiliateLead,
+} from "@/app/actions/affiliate-leads";
 import { toast } from "sonner";
 
 /* ─────────────────────────── Types ─────────────────────────── */
@@ -93,6 +98,7 @@ interface AffiliateApplication {
   name: string;
   email: string;
   phone: string;
+  password: string;
   instagram: string | null;
   tiktok: string | null;
   occupation: string | null;
@@ -103,6 +109,23 @@ interface AffiliateApplication {
   notes: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
+}
+
+interface AffiliateLead {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  city: string | null;
+  occupation: string | null;
+  productSku: string | null;
+  productName: string | null;
+  referralCode: string | null;
+  snapperId: string | null;
+  notes: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const APP_STATUS_CONFIG = {
@@ -786,7 +809,7 @@ export default function AffiliatorsPage() {
   });
 
   // ── Post state ──
-  const [tab, setTab] = useState<"affiliators" | "posts" | "pendaftaran">("pendaftaran");
+  const [tab, setTab] = useState<"affiliators" | "posts" | "pendaftaran" | "permintaan">("pendaftaran");
   const [posts, setPosts] = useState<AffiliatePost[]>([]);
   const [postsLoading, setPostsLoading] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
@@ -798,6 +821,12 @@ export default function AffiliatorsPage() {
   const [appsLoading, setAppsLoading] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AffiliateApplication | null>(null);
   const [appStatusFilter, setAppStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+
+  // ── Lead state ──
+  const [leads, setLeads] = useState<AffiliateLead[]>([]);
+  const [leadsLoading, setLeadsLoading] = useState(false);
+  const [leadStatusFilter, setLeadStatusFilter] = useState<string>("all");
+  const [selectedLead, setSelectedLead] = useState<AffiliateLead | null>(null);
 
   // ── Affiliator actions ──
   const fetchAffiliators = async () => {
@@ -977,11 +1006,45 @@ export default function AffiliatorsPage() {
     }
   };
 
+  // ── Lead actions ──
+  const fetchLeads = async () => {
+    setLeadsLoading(true);
+    const res = await getAffiliateLeads(leadStatusFilter !== "all" ? leadStatusFilter : undefined);
+    if (res.success) setLeads((res.data as AffiliateLead[]) ?? []);
+    setLeadsLoading(false);
+  };
+
+  const handleLeadStatus = async (id: string, status: string) => {
+    const res = await updateAffiliateLeadStatus(id, status);
+    if (res.success) {
+      toast.success("Status permintaan diperbarui.");
+      setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status } : l));
+    } else {
+      toast.error(res.error || "Gagal mengubah status.");
+    }
+  };
+
+  const handleDeleteLead = async (id: string) => {
+    if (!confirm("Hapus permintaan ini?")) return;
+    const res = await deleteAffiliateLead(id);
+    if (res.success) {
+      toast.success("Permintaan dihapus.");
+      setLeads((prev) => prev.filter((l) => l.id !== id));
+    } else {
+      toast.error("Gagal menghapus.");
+    }
+  };
+
   useEffect(() => {
     if (tab === "posts") fetchPosts();
     if (tab === "pendaftaran") fetchApplications();
     if (tab === "affiliators") fetchAffiliators();
+    if (tab === "permintaan") fetchLeads();
   }, [tab]);
+
+  useEffect(() => {
+    if (tab === "permintaan") fetchLeads();
+  }, [leadStatusFilter]);
 
   // Auto-load applications and affiliators on first mount
   useEffect(() => {
@@ -1120,6 +1183,24 @@ export default function AffiliatorsPage() {
           {posts.length > 0 && (
             <span className="ml-1 px-2 py-0.5 bg-white/20 rounded-full text-[8px]">
               {posts.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setTab("permintaan")}
+          className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            tab === "permintaan"
+              ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+              : "text-gray-400 hover:text-[#3B2211]"
+          }`}
+        >
+          <Send size={14} />
+          Permintaan
+          {leads.filter((l) => l.status === "pending").length > 0 && (
+            <span className={`ml-1 px-2 py-0.5 rounded-full text-[8px] font-black ${
+              tab === "permintaan" ? "bg-white/20 text-white" : "bg-blue-500 text-white"
+            }`}>
+              {leads.filter((l) => l.status === "pending").length}
             </span>
           )}
         </button>
@@ -1775,6 +1856,288 @@ export default function AffiliatorsPage() {
                 </AnimatePresence>
               </div>
             )}
+          </motion.div>
+        )}
+
+        {/* ════════════ PERMINTAAN (LEADS) TAB ════════════ */}
+        {tab === "permintaan" && (
+          <motion.div
+            key="permintaan"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-8"
+          >
+            {/* Leads Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { label: "Total Permintaan", value: leads.length, icon: Send, color: "text-blue-600", bg: "bg-blue-50" },
+                { label: "Menunggu Follow-up", value: leads.filter(l => l.status === "pending").length, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
+                { label: "Sedang Dihubungi", value: leads.filter(l => l.status === "followed_up").length, icon: AtSign, color: "text-indigo-600", bg: "bg-indigo-50" },
+                { label: "Closed / Deal", value: leads.filter(l => l.status === "closed").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+              ].map((s, i) => (
+                <motion.div
+                  key={s.label}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07 }}
+                  className="p-6 bg-white rounded-2xl border border-white shadow-sm flex items-center gap-5 hover:shadow-xl hover:shadow-[#3B2211]/5 transition-all duration-500"
+                >
+                  <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center ${s.color}`}>
+                    <s.icon size={22} />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">
+                      {s.label}
+                    </p>
+                    <span className="text-3xl font-black text-[#3B2211] tracking-tighter">
+                      {s.value}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Filter Buttons */}
+            <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
+              {(["all", "pending", "followed_up", "closed"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setLeadStatusFilter(s)}
+                  className={`px-5 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                    leadStatusFilter === s
+                      ? "bg-blue-500 text-white shadow-sm"
+                      : "text-gray-400 hover:text-[#3B2211]"
+                  }`}
+                >
+                  {s === "all" ? "Semua" : s === "pending" ? "Menunggu" : s === "followed_up" ? "Followed Up" : "Closed / Deal"}
+                </button>
+              ))}
+            </div>
+
+            {/* Table & Detail Split View */}
+            <div className={`grid ${selectedLead ? "grid-cols-5" : "grid-cols-1"} gap-6`}>
+              {/* Table */}
+              <div className={`${selectedLead ? "col-span-3" : "col-span-1"} bg-white rounded-2xl border border-white shadow-sm overflow-hidden`}>
+                {leadsLoading ? (
+                  <div className="py-20 flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="bg-[#F8F6F4]/50 text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+                          <th className="px-6 py-5 font-black">Lead / Calon</th>
+                          <th className="px-6 py-5 font-black">Program / Tipe</th>
+                          <th className="px-6 py-5 font-black">Referral</th>
+                          <th className="px-6 py-5 font-black text-center">Status</th>
+                          <th className="px-6 py-5 font-black text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#F8F6F4] text-sm">
+                        {leads
+                          .filter(l => leadStatusFilter === "all" || l.status === leadStatusFilter)
+                          .length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-8 py-20 text-center">
+                              <div className="flex flex-col items-center gap-3">
+                                <AlertCircle size={32} className="text-gray-200" />
+                                <p className="text-sm font-black text-gray-300 uppercase tracking-widest">Tidak ada permintaan</p>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          leads
+                            .filter(l => leadStatusFilter === "all" || l.status === leadStatusFilter)
+                            .map((lead) => {
+                              const isAffProduct = lead.productSku && !lead.productSku.startsWith("pkg-");
+                              const leadTypeLabel = isAffProduct ? "Affiliate" : "Foto Studio";
+                              const leadTypeColor = isAffProduct 
+                                ? "bg-purple-50 text-purple-600 border-purple-200" 
+                                : "bg-orange-50 text-orange-600 border-orange-200";
+
+                              const cfg = lead.status === "closed"
+                                ? { label: "Closed", icon: CheckCircle2, className: "text-emerald-600 bg-emerald-50 border-emerald-200" }
+                                : lead.status === "followed_up"
+                                ? { label: "Followed Up", icon: AtSign, className: "text-blue-600 bg-blue-50 border-blue-200" }
+                                : { label: "Menunggu", icon: Clock, className: "text-amber-600 bg-amber-50 border-amber-200" };
+
+                              const StatusIcon = cfg.icon;
+                              const isSelected = selectedLead?.id === lead.id;
+
+                              return (
+                                <tr
+                                  key={lead.id}
+                                  onClick={() => setSelectedLead(isSelected ? null : lead)}
+                                  className={`cursor-pointer transition-colors ${
+                                    isSelected ? "bg-blue-50 border-l-4 border-l-blue-500" : "hover:bg-[#F8F6F4]/30"
+                                  }`}
+                                >
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs flex-shrink-0">
+                                        {lead.name.slice(0, 2).toUpperCase()}
+                                      </div>
+                                      <div>
+                                        <p className="font-bold text-[#3B2211] text-sm">{lead.name}</p>
+                                        <p className="text-[10px] text-gray-400 font-medium">{lead.phone}</p>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div>
+                                      <p className="font-bold text-[#3B2211] text-xs max-w-[180px] truncate">{lead.productName || "General Link"}</p>
+                                      <span className={`inline-block px-1.5 py-0.5 rounded border text-[8px] font-black uppercase mt-1 ${leadTypeColor}`}>
+                                        {leadTypeLabel}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    {lead.referralCode ? (
+                                      <span className="font-black text-[#C88A58] bg-[#C88A58]/5 px-2 py-1 rounded text-xs font-mono">
+                                        @{lead.referralCode}
+                                      </span>
+                                    ) : (
+                                      <span className="text-gray-400 text-xs font-medium">-</span>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex justify-center">
+                                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${cfg.className}`}>
+                                        <StatusIcon size={9} />
+                                        {cfg.label}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 text-right">
+                                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                                      {lead.status !== "closed" && (
+                                        <button
+                                          onClick={() => handleLeadStatus(lead.id, "closed")}
+                                          className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                                          title="Mark Closed / Deal"
+                                        >
+                                          <CheckCircle2 size={14} />
+                                        </button>
+                                      )}
+                                      {lead.status === "pending" && (
+                                        <button
+                                          onClick={() => handleLeadStatus(lead.id, "followed_up")}
+                                          className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                          title="Mark Followed Up"
+                                        >
+                                          <AtSign size={14} />
+                                        </button>
+                                      )}
+                                      <button
+                                        onClick={() => handleDeleteLead(lead.id)}
+                                        className="p-1.5 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                        title="Hapus"
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Detail Panel */}
+              <AnimatePresence>
+                {selectedLead && (
+                  <motion.div
+                    key={selectedLead.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className="col-span-2 bg-white rounded-2xl border border-white shadow-sm p-6 space-y-5 self-start sticky top-6"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-lg mb-3">
+                          {selectedLead.name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <h3 className="text-lg font-black text-[#3B2211]">{selectedLead.name}</h3>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                          Permintaan Masuk: {new Date(selectedLead.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedLead(null)}
+                        className="p-2 text-gray-300 hover:text-[#3B2211] hover:bg-[#3B2211]/5 rounded-xl"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {([
+                        { label: "Nomor WhatsApp", value: selectedLead.phone },
+                        { label: "Email", value: selectedLead.email || "-" },
+                        { label: "Kota Domisili", value: selectedLead.city || "-" },
+                        { label: "Pekerjaan", value: selectedLead.occupation || "-" },
+                        { label: "Kode Referral", value: selectedLead.referralCode ? `@${selectedLead.referralCode}` : "-" },
+                        { label: "Layanan/Paket", value: selectedLead.productName || "General Link" },
+                        { label: "SKU Produk", value: selectedLead.productSku || "-" },
+                      ] as const).map(({ label, value }) => (
+                        <div key={label} className="flex items-center justify-between gap-3 text-xs">
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest w-24 flex-shrink-0">{label}</span>
+                          <span className="text-xs font-bold text-[#3B2211] text-right">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {selectedLead.notes && (
+                      <div className="bg-[#F8F6F4] rounded-xl p-4">
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Catatan Pendaftar</p>
+                        <p className="text-xs text-gray-600 font-medium leading-relaxed">{selectedLead.notes}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2 pt-2">
+                      {/* Update Status Actions */}
+                      <div className="flex gap-2">
+                        {selectedLead.status === "pending" && (
+                          <button
+                            onClick={() => handleLeadStatus(selectedLead.id, "followed_up")}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                          >
+                            <AtSign size={13} /> Followed Up
+                          </button>
+                        )}
+                        {selectedLead.status !== "closed" && (
+                          <button
+                            onClick={() => handleLeadStatus(selectedLead.id, "closed")}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                          >
+                            <CheckCircle2 size={13} /> Closed / Deal
+                          </button>
+                        )}
+                      </div>
+
+                      {/* WhatsApp Quick Action */}
+                      <a
+                        href={`https://wa.me/${selectedLead.phone.replace(/^0/, "62").replace(/\D/g, "")}?text=${encodeURIComponent(
+                          `Halo ${selectedLead.name}! Saya Admin Snapp.frame ingin menindaklanjuti pendaftaran Anda untuk program ${selectedLead.productName || "kemitraan"}.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-center"
+                      >
+                        <Phone size={13} /> Hubungi via WhatsApp
+                      </a>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
