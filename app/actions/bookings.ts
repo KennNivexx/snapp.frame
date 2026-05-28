@@ -27,6 +27,8 @@ function mapPrismaBookingToSnakeCase(b: any) {
 
 export async function getBookings() {
   try {
+    // Fix #2: Fetch semua booking (untuk halaman bookings management)
+    // Untuk customers page, gunakan getTransactionReports yang sudah difilter by status
     const bookings = await prisma.booking.findMany({
       orderBy: { createdAt: "desc" }
     });
@@ -89,6 +91,21 @@ export async function updateBookingStatus(id: string, status: string) {
   } catch (error: any) {
     console.error("Error updating booking status via Prisma:", error);
     return { success: false, error: error.message };
+  }
+}
+
+// Fix #5: Dedicated function untuk fetch hanya pending bookings — lebih efisien
+// daripada getBookings() yang tarik semua data
+export async function getPendingBookings() {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { status: "pending" },
+      orderBy: { createdAt: "desc" }
+    });
+    return { data: bookings.map(mapPrismaBookingToSnakeCase), error: null };
+  } catch (error: any) {
+    console.error("Error fetching pending bookings via Prisma:", error);
+    return { data: [], error: error.message };
   }
 }
 
@@ -175,16 +192,16 @@ export async function updateBooking(id: string, data: {
     const updated = await prisma.booking.update({
       where: { id },
       data: {
-        ...(data.customer_name  !== undefined && { customerName:  data.customer_name }),
+        ...(data.customer_name !== undefined && { customerName: data.customer_name }),
         ...(data.customer_phone !== undefined && { customerPhone: data.customer_phone }),
-        ...(data.package_name   !== undefined && { packageName:   data.package_name }),
-        ...(data.session_date   !== undefined && { sessionDate:   data.session_date }),
-        ...(data.session_time   !== undefined && { sessionTime:   data.session_time }),
-        ...(data.notes          !== undefined && { notes:         data.notes }),
+        ...(data.package_name !== undefined && { packageName: data.package_name }),
+        ...(data.session_date !== undefined && { sessionDate: data.session_date }),
+        ...(data.session_time !== undefined && { sessionTime: data.session_time }),
+        ...(data.notes !== undefined && { notes: data.notes }),
         ...(data.payment_method !== undefined && { paymentMethod: data.payment_method }),
         ...(data.original_price !== undefined && { originalPrice: data.original_price }),
-        ...(data.final_price    !== undefined && { finalPrice:    data.final_price }),
-        ...(data.status         !== undefined && { status:        data.status }),
+        ...(data.final_price !== undefined && { finalPrice: data.final_price }),
+        ...(data.status !== undefined && { status: data.status }),
       },
     });
     return { success: true, data: mapPrismaBookingToSnakeCase(updated) };

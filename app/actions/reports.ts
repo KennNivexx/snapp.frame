@@ -21,28 +21,31 @@ export async function getTransactionReports(filters: {
     }
 
     const [transactions, bookings] = await Promise.all([
-      type === "ALL" || type === "POS" 
+      type === "ALL" || type === "POS"
         ? prisma.transaction.findMany({
-            where: {
-              createdAt: Object.keys(dateFilter).length > 0 ? dateFilter : undefined,
-            },
-            include: {
-              cashier: { select: { name: true } },
-              referralCode: { select: { code: true } },
-              items: {
-                include: { product: true }
-              }
-            },
-            orderBy: { createdAt: "desc" }
-          })
+          where: {
+            createdAt: Object.keys(dateFilter).length > 0 ? dateFilter : undefined,
+          },
+          include: {
+            cashier: { select: { name: true } },
+            referralCode: { select: { code: true } },
+            items: {
+              include: { product: true }
+            }
+          },
+          orderBy: { createdAt: "desc" }
+        })
         : Promise.resolve([]),
       type === "ALL" || type === "BOOKING"
         ? prisma.booking.findMany({
-            where: {
-              createdAt: Object.keys(dateFilter).length > 0 ? dateFilter : undefined,
-            },
-            orderBy: { createdAt: "desc" }
-          })
+          where: {
+            createdAt: Object.keys(dateFilter).length > 0 ? dateFilter : undefined,
+            // Fix #1: Hanya booking confirmed/completed/success yang masuk laporan revenue
+            // Booking pending/cancelled tidak dihitung sebagai pendapatan
+            status: { in: ["confirmed", "completed", "success"] },
+          },
+          orderBy: { createdAt: "desc" }
+        })
         : Promise.resolve([])
     ]);
 
@@ -82,8 +85,8 @@ export async function getTransactionReports(filters: {
       .filter(t => t.status === "COMPLETED" || t.status === "SUCCESS")
       .reduce((sum, t) => sum + t.total, 0);
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       data: {
         transactions: combined,
         summary: {
@@ -92,7 +95,7 @@ export async function getTransactionReports(filters: {
           posCount: normalizedPos.length,
           bookingCount: normalizedBookings.length
         }
-      } 
+      }
     };
   } catch (error: any) {
     console.error("Reports Action Error:", error);
