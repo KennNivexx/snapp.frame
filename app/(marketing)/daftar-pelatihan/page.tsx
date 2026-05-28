@@ -152,7 +152,7 @@ function DaftarPelatihanForm() {
     siteSettings.training_payment_wa ||
     siteSettings.affiliate_whatsapp ||
     siteSettings.contact_wa ||
-    "6281234567890";
+    "6287778059221";
 
   const handleCopy = (text: string, type: "bank" | "dana" | "gopay") => {
     navigator.clipboard.writeText(text);

@@ -607,7 +607,7 @@ function RegisterModal({ onClose }: { onClose: () => void }) {
                   Tutup
                 </button>
                 <a
-                  href={`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo Snapp.frame! Saya ${form.name} baru saja mendaftar sebagai affiliate partner. Mohon informasi lebih lanjut.`)}`}
+                  href={`https://wa.me/6287778059221?text=${encodeURIComponent(`Halo Snapp.frame! Saya ${form.name} baru saja mendaftar sebagai affiliate partner. Mohon informasi lebih lanjut.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-[2] flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all"
@@ -1031,9 +1031,8 @@ function ProgramPosterCarousel({ urls, productName, onImageClick }: { urls: stri
                   const dir = idx > currentIndex ? 1 : -1;
                   setPage([idx, dir]);
                 }}
-                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                  currentIndex === idx ? "bg-gold w-3" : "bg-white/40 hover:bg-white/70"
-                }`}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${currentIndex === idx ? "bg-gold w-3" : "bg-white/40 hover:bg-white/70"
+                  }`}
               />
             ))}
           </div>
@@ -1062,7 +1061,7 @@ const generatePromoText = (progName: string, refCode: string) => {
   const codeText = refCode ? `@${refCode.trim().replace("@", "")}` : "[KODE_REFERRAL_KAMU]";
   const origin = typeof window !== "undefined" ? window.location.origin : "https://snappframe.id";
   const slug = Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === progName) || "";
-  const linkText = refCode 
+  const linkText = refCode
     ? `${origin}/affiliate?ref=${refCode.trim().replace("@", "")}&pkg=${slug}`
     : `${origin}/affiliate?pkg=${slug}`;
 
@@ -1273,9 +1272,9 @@ function AffiliateContent() {
                 const posterUrls = rawPosters.split(",").map((u) => u.trim()).filter(Boolean);
                 return posterUrls.length > 0 ? (
                   <div className="mb-8 max-w-xs mx-auto">
-                    <ProgramPosterCarousel 
-                      urls={posterUrls} 
-                      productName={activeProduct.name} 
+                    <ProgramPosterCarousel
+                      urls={posterUrls}
+                      productName={activeProduct.name}
                       onImageClick={(url) => setLightboxUrl(url)}
                     />
                   </div>
@@ -1419,9 +1418,8 @@ function AffiliateContent() {
               <div className="mt-12 flex flex-col sm:flex-row gap-3">
                 {activeProduct.name !== "Snapp Frame" && (
                   <a
-                    href={`/daftar-pelatihan?pkg=${
-                      Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === activeProduct.name) || ""
-                    }`}
+                    href={`/daftar-pelatihan?pkg=${Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === activeProduct.name) || ""
+                      }`}
                     className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-purple-600/20"
                   >
                     Ikut / Daftar Pelatihan
@@ -1588,11 +1586,10 @@ function AffiliateContent() {
                           <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
                             <prod.icon size={22} />
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                            prod.url
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${prod.url
                               ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                               : "bg-near-black/5 text-near-black/40"
-                          }`}>
+                            }`}>
                             {prod.url ? "Link Aktif" : "Segera Hadir"}
                           </span>
                         </div>
@@ -1618,15 +1615,15 @@ function AffiliateContent() {
                             <ChevronRight size={12} />
                           </button>
                         ) : (
-                        <span className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-near-black/5 text-near-black/30 text-[10px] font-black uppercase tracking-wider rounded-xl cursor-default">
-                          Coming Soon
-                        </span>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })
-            )}
+                          <span className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-near-black/5 text-near-black/30 text-[10px] font-black uppercase tracking-wider rounded-xl cursor-default">
+                            Coming Soon
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })
+              )}
             </div>
           </div>
         </section>
@@ -1723,11 +1720,10 @@ function AffiliateContent() {
                 <button
                   key={tabItem.id}
                   onClick={() => setActiveFilter(tabItem.id as any)}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 border ${
-                    activeFilter === tabItem.id
+                  className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 border ${activeFilter === tabItem.id
                       ? "bg-near-black text-white border-near-black shadow-md scale-[1.02]"
                       : "bg-white text-near-black/60 border-near-black/10 hover:border-near-black/20 hover:text-near-black"
-                  }`}
+                    }`}
                 >
                   {tabItem.label}
                 </button>
@@ -1750,10 +1746,10 @@ function AffiliateContent() {
                   const isCopied = copiedPostId === post.id;
                   const formattedDate = post.createdAt
                     ? new Date(post.createdAt).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
                     : "";
 
                   return (
@@ -1819,9 +1815,8 @@ function AffiliateContent() {
                           >
                             <Heart
                               size={20}
-                              className={`transition-all duration-300 group-hover/like:scale-110 ${
-                                isLiked ? "fill-rose-500 text-rose-500" : "text-near-black/40 hover:text-rose-500"
-                              }`}
+                              className={`transition-all duration-300 group-hover/like:scale-110 ${isLiked ? "fill-rose-500 text-rose-500" : "text-near-black/40 hover:text-rose-500"
+                                }`}
                             />
                             <span className="text-xs font-black text-near-black/70">
                               {post.likeCount}
@@ -1831,11 +1826,10 @@ function AffiliateContent() {
 
                         <button
                           onClick={() => handleCopyCaption(post)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
-                            isCopied
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${isCopied
                               ? "bg-green-50 text-green-700 border border-green-200"
                               : "bg-gold/10 text-gold hover:bg-gold/20 border border-transparent"
-                          }`}
+                            }`}
                         >
                           {isCopied ? (
                             <>

@@ -22,8 +22,8 @@ export default function SettingsPage() {
       setSettings({
         contact_email: data.contact_email || "hello@snappframe.com",
         contact_phone: data.contact_phone || "+62 812 3456 7890",
-        contact_wa: data.contact_wa || "6281234567890",
-        affiliate_whatsapp: data.affiliate_whatsapp || data.contact_wa || "6281234567890",
+        contact_wa: data.contact_wa || "6287778059221",
+        affiliate_whatsapp: data.affiliate_whatsapp || data.contact_wa || "6287778059221",
         contact_ig: data.contact_ig || "@snapp.frame",
         contact_address: data.contact_address || "Jl. Sudirman No. 123, Jakarta Selatan",
         operational_hours: data.operational_hours || "Setiap Hari: 09:00 - 21:00",
@@ -45,7 +45,7 @@ export default function SettingsPage() {
         payment_bank_account: data.payment_bank_account || "7771234567",
         payment_bank_owner: data.payment_bank_owner || "Snapp.frame Owner",
         payment_qris_image: data.payment_qris_image || "",
-        training_payment_wa: data.training_payment_wa || "6281234567890",
+        training_payment_wa: data.training_payment_wa || "6287778059221",
         payment_dana_number: data.payment_dana_number || "",
         payment_dana_owner: data.payment_dana_owner || "",
         payment_gopay_number: data.payment_gopay_number || "",
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                   value={settings.contact_wa}
                   onChange={(e) => handleChange("contact_wa", e.target.value)}
                   className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-                  placeholder="6281234567890"
+                  placeholder="6287778059221"
                 />
               </div>
               <div>
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                   value={settings.affiliate_whatsapp || ""}
                   onChange={(e) => handleChange("affiliate_whatsapp", e.target.value)}
                   className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-                  placeholder="6281234567890"
+                  placeholder="6287778059221"
                 />
               </div>
               <div>
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                   value={settings.training_payment_wa || ""}
                   onChange={(e) => handleChange("training_payment_wa", e.target.value)}
                   className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
-                  placeholder="Contoh: 6281234567890"
+                  placeholder="Contoh: 6287778059221"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -510,7 +510,7 @@ export default function SettingsPage() {
                 return (
                   <div key={prog.key} className="space-y-3 border-b border-near-black/5 pb-4 last:border-b-0 last:pb-0">
                     <label className="block text-xs font-bold text-near-black uppercase tracking-wide">{prog.label}</label>
-                    
+
                     {/* Poster Previews Grid */}
                     <div className="space-y-3">
                       {urls.length > 0 ? (
