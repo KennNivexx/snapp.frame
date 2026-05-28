@@ -1251,7 +1251,7 @@ function AffiliateContent() {
             </div>
 
             {/* Content */}
-            <div className="max-w-3xl mx-auto px-4 md:px-8 py-10 pb-24">
+            <div className="max-w-5xl mx-auto px-4 md:px-8 py-10 pb-24">
               {/* Program Header */}
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-14 h-14 rounded-2xl bg-gold/20 flex items-center justify-center text-gold flex-shrink-0">
@@ -1415,24 +1415,25 @@ function AffiliateContent() {
               )}
 
               {/* Bottom CTA */}
-              <div className="mt-12 flex flex-col sm:flex-row gap-3">
-                {activeProduct.name !== "Snapp Frame" && (
+              <div className="mt-12">
+                {activeProduct.name === "Snapp Frame" ? (
+                  <a
+                    href="/booking"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gold hover:bg-gold/90 text-near-black text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-gold/20"
+                  >
+                    Booking Sesi Foto Sekarang
+                    <Camera size={14} />
+                  </a>
+                ) : (
                   <a
                     href={`/daftar-pelatihan?pkg=${Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === activeProduct.name) || ""
                       }`}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-purple-600/20"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#C4956A] hover:bg-[#B07D52] text-white text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-[#C4956A]/30"
                   >
                     Ikut / Daftar Pelatihan
                     <GraduationCap size={14} />
                   </a>
                 )}
-                <button
-                  onClick={() => { setActiveProduct(null); setShowModal(true); }}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gold hover:bg-gold/90 text-near-black text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-gold/20"
-                >
-                  Daftar Affiliate Sekarang
-                  <ArrowRight size={14} />
-                </button>
               </div>
             </div>
           </motion.div>
@@ -1694,6 +1695,38 @@ function AffiliateContent() {
           </div>
         </section>
 
+        {/* ── CTA Daftar Affiliate ── */}
+        <section className="bg-near-black text-white py-16 border-t-4 border-gold">
+          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="text-center md:text-left flex-1">
+              <h2 className="text-3xl md:text-4xl font-black mb-4 uppercase" style={{ fontFamily: "var(--font-heading)" }}>
+                Yuk, Gabung <span className="text-gold">Sekarang!</span>
+              </h2>
+              <p className="text-white/70 font-bold mb-8 max-w-md">Bangun penghasilan, relasi, dan masa depan bersama Snapp.frame Studio!</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gold text-near-black font-black uppercase tracking-widest text-sm rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gold/30"
+              >
+                Daftar Gratis! <ArrowRight size={18} />
+              </button>
+            </div>
+
+            <div className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-8 w-full">
+              <div className="text-center mb-6">
+                <span className="bg-gold text-near-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Cara Bergabung</span>
+              </div>
+              <div className="grid grid-cols-2 sm:flex sm:flex-row items-center justify-between gap-4 sm:gap-2">
+                {["Daftar via WhatsApp", "Dapatkan kode referral", "Promosikan produk", "Dapat komisi!"].map((step, i) => (
+                  <div key={i} className="flex flex-col items-center text-center flex-1 relative">
+                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black text-gold mb-3 text-lg">{i + 1}</div>
+                    <span className="text-[10px] font-bold text-white/80 max-w-[90px]">{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── Galeri Kegiatan & Materi Promosi ── */}
         <section className="py-20 bg-warm-light/40 border-y border-border/40">
           <div className="max-w-6xl mx-auto px-6">
@@ -1903,37 +1936,7 @@ function AffiliateContent() {
           </div>
         </section>
 
-        {/* ── Footer CTA ── */}
-        <section className="bg-near-black text-white py-16 border-t-4 border-gold">
-          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="text-center md:text-left flex-1">
-              <h2 className="text-3xl md:text-4xl font-black mb-4 uppercase" style={{ fontFamily: "var(--font-heading)" }}>
-                Yuk, Gabung <span className="text-gold">Sekarang!</span>
-              </h2>
-              <p className="text-white/70 font-bold mb-8 max-w-md">Bangun penghasilan, relasi, dan masa depan bersama Snapp.frame Studio!</p>
-              <button
-                onClick={() => setShowModal(true)}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gold text-near-black font-black uppercase tracking-widest text-sm rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-gold/30"
-              >
-                Daftar Gratis! <ArrowRight size={18} />
-              </button>
-            </div>
 
-            <div className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-8 w-full">
-              <div className="text-center mb-6">
-                <span className="bg-gold text-near-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Cara Bergabung</span>
-              </div>
-              <div className="grid grid-cols-2 sm:flex sm:flex-row items-center justify-between gap-4 sm:gap-2">
-                {["Daftar via WhatsApp", "Dapatkan kode referral", "Promosikan produk", "Dapat komisi!"].map((step, i) => (
-                  <div key={i} className="flex flex-col items-center text-center flex-1 relative">
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black text-gold mb-3 text-lg">{i + 1}</div>
-                    <span className="text-[10px] font-bold text-white/80 max-w-[90px]">{step}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
     </>
   );
