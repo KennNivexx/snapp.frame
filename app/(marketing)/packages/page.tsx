@@ -25,7 +25,7 @@ interface PkgProps {
 
 function PackageCard({ pkg, isAffiliate }: { pkg: PkgProps; isAffiliate: boolean }) {
   const ctaUrl = isAffiliate 
-    ? `/daftar?pkg=${pkg.sku || pkg.id}` 
+    ? `/daftar-pelatihan?pkg=${pkg.sku || pkg.id}` 
     : `/booking?pkg=${pkg.id}`;
 
   return (

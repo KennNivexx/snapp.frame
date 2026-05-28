@@ -1932,7 +1932,7 @@ export default function AffiliatorsPage() {
                           <th className="px-6 py-5 font-black">Program / Tipe</th>
                           <th className="px-6 py-5 font-black">Referral</th>
                           <th className="px-6 py-5 font-black text-center">Status</th>
-                          <th className="px-6 py-5 font-black text-right">Aksi</th>
+                  <th className="px-6 py-5 font-black text-right">Aksi</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F8F6F4] text-sm">
@@ -1952,7 +1952,7 @@ export default function AffiliatorsPage() {
                             .filter(l => leadStatusFilter === "all" || l.status === leadStatusFilter)
                             .map((lead) => {
                               const isAffProduct = lead.productSku && !lead.productSku.startsWith("pkg-");
-                              const leadTypeLabel = isAffProduct ? "Affiliate" : "Foto Studio";
+                              const leadTypeLabel = isAffProduct ? "Pelatihan" : "Foto Studio";
                               const leadTypeColor = isAffProduct 
                                 ? "bg-purple-50 text-purple-600 border-purple-200" 
                                 : "bg-orange-50 text-orange-600 border-orange-200";

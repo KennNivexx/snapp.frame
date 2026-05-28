@@ -45,6 +45,11 @@ export default function SettingsPage() {
         payment_bank_account: data.payment_bank_account || "7771234567",
         payment_bank_owner: data.payment_bank_owner || "Snapp.frame Owner",
         payment_qris_image: data.payment_qris_image || "",
+        training_payment_wa: data.training_payment_wa || "6281234567890",
+        payment_dana_number: data.payment_dana_number || "",
+        payment_dana_owner: data.payment_dana_owner || "",
+        payment_gopay_number: data.payment_gopay_number || "",
+        payment_gopay_owner: data.payment_gopay_owner || "",
       });
     } catch (error) {
       toast.error("Gagal memuat pengaturan");
@@ -275,6 +280,60 @@ export default function SettingsPage() {
                   className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
                   placeholder="Contoh: Snapp.frame Studio Owner"
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor WA Konfirmasi Pembayaran Pelatihan (tanpa +)</label>
+                <input
+                  type="text"
+                  value={settings.training_payment_wa || ""}
+                  onChange={(e) => handleChange("training_payment_wa", e.target.value)}
+                  className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                  placeholder="Contoh: 6281234567890"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor DANA</label>
+                  <input
+                    type="text"
+                    value={settings.payment_dana_number || ""}
+                    onChange={(e) => handleChange("payment_dana_number", e.target.value)}
+                    className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                    placeholder="Contoh: 08123456789"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Pemilik DANA</label>
+                  <input
+                    type="text"
+                    value={settings.payment_dana_owner || ""}
+                    onChange={(e) => handleChange("payment_dana_owner", e.target.value)}
+                    className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                    placeholder="Contoh: Nama Pemilik"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Nomor GOPAY</label>
+                  <input
+                    type="text"
+                    value={settings.payment_gopay_number || ""}
+                    onChange={(e) => handleChange("payment_gopay_number", e.target.value)}
+                    className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                    placeholder="Contoh: 08123456789"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-near-black mb-2 uppercase tracking-wide">Pemilik GOPAY</label>
+                  <input
+                    type="text"
+                    value={settings.payment_gopay_owner || ""}
+                    onChange={(e) => handleChange("payment_gopay_owner", e.target.value)}
+                    className="w-full px-4 py-3 bg-warm-white/50 border border-near-black/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all"
+                    placeholder="Contoh: Nama Pemilik"
+                  />
+                </div>
               </div>
 
               <div className="border-t border-near-black/5 pt-4">
