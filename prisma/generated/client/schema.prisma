@@ -240,3 +240,22 @@ model AffiliateApplication {
 
   @@map("affiliate_applications")
 }
+
+model AffiliateLead {
+  id           String   @id @default(uuid())
+  name         String
+  phone        String
+  email        String?
+  city         String?
+  occupation   String?
+  productSku   String?  @map("product_sku")
+  productName  String?  @map("product_name")
+  referralCode String?  @map("referral_code")
+  snapperId    String?  @map("snapper_id")
+  notes        String?  @db.Text
+  status       String   @default("pending") // pending, followed_up, closed
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("affiliate_leads")
+}

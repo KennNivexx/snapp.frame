@@ -1416,10 +1416,21 @@ function AffiliateContent() {
               )}
 
               {/* Bottom CTA */}
-              <div className="mt-12">
+              <div className="mt-12 flex flex-col sm:flex-row gap-3">
+                {activeProduct.name !== "Snapp Frame" && (
+                  <a
+                    href={`/daftar-pelatihan?pkg=${
+                      Object.keys(pkgSlugMap).find(key => pkgSlugMap[key] === activeProduct.name) || ""
+                    }`}
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-purple-600/20"
+                  >
+                    Ikut / Daftar Pelatihan
+                    <GraduationCap size={14} />
+                  </a>
+                )}
                 <button
                   onClick={() => { setActiveProduct(null); setShowModal(true); }}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gold hover:bg-gold/90 text-near-black text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-gold/20"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gold hover:bg-gold/90 text-near-black text-[11px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-xl shadow-gold/20"
                 >
                   Daftar Affiliate Sekarang
                   <ArrowRight size={14} />

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Script from "next/script";
-import { MessageCircle, Copy, Check, RotateCcw, AlertCircle, Loader2, CreditCard } from "lucide-react";
+import { MessageCircle, Copy, Check, RotateCcw, AlertCircle, Loader2 } from "lucide-react";
 import { Package } from "@/data/packages";
 import { formatPrice } from "@/lib/utils";
 import { applyDiscount, ReferralCode } from "@/lib/referral";
@@ -11,11 +10,9 @@ import { PaymentMethod } from "./step4-payment";
 import { site } from "@/data/site";
 import { btn } from "@/lib/button-classes";
 import { createClient } from "@/lib/supabase/client";
-import { env } from "@/lib/env";
 import { createBooking, getBookingStatus } from "@/app/actions/bookings";
 import { toast } from "sonner";
-
-/* ─── Helpers ─────────────────────────── */
+import { motion, AnimatePresence } from "framer-motion";
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return "-";
@@ -27,10 +24,6 @@ function generateInvoice(): string {
   const ts = Date.now().toString();
   return "SNF-" + ts.slice(-6);
 }
-
-/* ─── Removed Fake SVG & Bank List ─── */
-
-/* ─── Main Component ─────────────────── */
 
 interface Step5Props {
   pkg: Package;
@@ -49,16 +42,24 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   const [invoice] = useState(generateInvoice);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [saveError, setSaveError] = useState("");
-  const [isPaying, setIsPaying] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "failed">("pending");
   const [dbStatus, setDbStatus] = useState<string>("pending");
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const hasSaved = useRef(false);
+
+  useEffect(() => {
+    if (dbStatus === "confirmed" || dbStatus === "completed") {
+      setShowSuccessOverlay(true);
+      const timer = setTimeout(() => {
+        window.location.href = "/";
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [dbStatus]);
 
   // Listen to realtime status updates from database with a robust polling fallback
   useEffect(() => {
     if (saveState !== "saved") return;
 
-    // 1. Supabase Realtime Listener
     const supabase = createClient();
     const channel = supabase
       .channel(`booking-status-${invoice}`)
@@ -74,24 +75,16 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           console.log("Realtime status update received:", payload.new);
           if (payload.new && payload.new.status) {
             setDbStatus(payload.new.status);
-            if (payload.new.status === "confirmed" || payload.new.status === "completed") {
-              setPaymentStatus("success");
-            }
           }
         }
       )
       .subscribe();
 
-    // 2. Database Polling Fallback (runs every 3 seconds to guarantee updates)
     const interval = setInterval(async () => {
       try {
         const res = await getBookingStatus(invoice);
         if (res.success && res.status) {
-          console.log("Polled booking status:", res.status);
           setDbStatus(res.status);
-          if (res.status === "confirmed" || res.status === "completed") {
-            setPaymentStatus("success");
-          }
         }
       } catch (err) {
         console.error("Error polling booking status:", err);
@@ -103,11 +96,6 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
       clearInterval(interval);
     };
   }, [saveState, invoice]);
-
-  // Environment variables Midtrans client
-  const midtransClientKey = env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-  const isProd = env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
-  const snapSrc = isProd ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
 
   // Insert booking to database exactly once when Step 5 mounts
   useEffect(() => {
@@ -152,73 +140,11 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handlePayment() {
-    setIsPaying(true);
-
-    // Deteksi jika key Midtrans masih berupa placeholder / mockup
-    const isMock = !midtransClientKey || midtransClientKey.includes("xxx") || midtransClientKey.includes("client-xxx");
-
-    if (isMock) {
-      console.log("✨ [Midtrans Mock Mode] Menjalankan simulasi pembayaran...");
-      setTimeout(() => {
-        setPaymentStatus("success");
-        setIsPaying(false);
-        alert("✨ [Simulasi] Pembayaran Berhasil! (Menggunakan Midtrans Mockup Mode karena Kunci Asli belum dikonfigurasi di env)");
-      }, 1500);
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/payment/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: invoice,
-          grossAmount: finalPrice,
-          customerName: formData.name,
-          customerPhone: formData.whatsapp,
-          itemName: pkg.name,
-          itemId: pkg.id,
-          paymentGroup: paymentMethod === "qris" ? "qris" : "bank_transfer",
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal mendapatkan token pembayaran");
-
-      // @ts-expect-error snap is injected by midtrans script
-      window.snap.pay(data.snapToken, {
-        onSuccess: function (result: any) {
-          setPaymentStatus("success");
-          console.log("payment success!", result);
-        },
-        onPending: function (result: any) {
-          setPaymentStatus("pending");
-          console.log("wating your payment!", result);
-        },
-        onError: function (result: any) {
-          setPaymentStatus("failed");
-          console.log("payment failed!", result);
-        },
-        onClose: function () {
-          setIsPaying(false);
-          console.log("you closed the popup without finishing the payment");
-        },
-      });
-    } catch (err: any) {
-      console.error("[Midtrans] Payment processing error:", err);
-      
-      // Fallback interaktif jika fetch / koneksi ke Midtrans gagal
-      const useSimulation = confirm(
-        `Gagal terhubung ke layanan pembayaran digital (${err.message || "Koneksi Terputus"}).\n\nApakah Anda ingin mensimulasikan pembayaran berhasil (Lunas) untuk keperluan uji coba booking?`
-      );
-      
-      if (useSimulation) {
-        setPaymentStatus("success");
-        alert("✨ Simulasi pembayaran lunas berhasil diaktifkan!");
-      }
-      setIsPaying(false);
-    }
+  function getPaymentMethodLabel() {
+    if (paymentMethod === "transfer") return "Transfer Bank";
+    if (paymentMethod === "dana") return "DANA";
+    if (paymentMethod === "gopay") return "GoPay";
+    return paymentMethod;
   }
 
   function buildWhatsAppMsg(): string {
@@ -226,38 +152,39 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
     const lines = [
       `Halo Snapp.frame Studio! 👋`,
       ``,
-      `Saya sudah melakukan booking sesi foto dan ingin konfirmasi pembayaran.`,
+      `Saya sudah melakukan booking sesi foto dan ingin mengonfirmasi pembayaran saya.`,
       ``,
       `📋 *Detail Booking*`,
       `• Nama: ${formData.name}`,
       `• Paket: ${pkg.name}`,
       `• Tanggal: ${date}`,
       `• Jam: ${formData.time} WIB`,
-      `• Durasi: ${pkg.duration}`,
+      `• Durasi: ${pkg.duration || "-"}`,
       formData.notes ? `• Catatan: ${formData.notes}` : "",
       ``,
       `💳 *Pembayaran*`,
-      `• Metode: ${paymentMethod === "qris" ? "QRIS" : "Transfer Bank"}`,
+      `• Metode: ${getPaymentMethodLabel()}`,
       referral ? `• Kode Referral: ${referral.code} (diskon ${referral.discountPct}%)` : "",
       referral ? `• Diskon: - ${formatPrice(discount)}` : "",
       `• Total: ${formatPrice(finalPrice)}`,
       ``,
       `🧾 No. Invoice: ${invoice}`,
       ``,
-      `Mohon konfirmasi booking saya ya, terima kasih! 🙏`,
+      `Berikut saya lampirkan bukti transfer pembayarannya. Mohon segera dikonfirmasi ya, terima kasih! 🙏`,
     ].filter(Boolean).join("\n");
 
-    return `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(lines)}`;
+    // Gunakan custom WA number dari setting admin jika ada, jika tidak fallback ke default site WA
+    const waNumber = siteSettings.training_payment_wa || site.contact.whatsapp;
+    return `https://wa.me/${waNumber}?text=${encodeURIComponent(lines)}`;
   }
 
   const dottedDivider = <div className="border-t border-dashed border-[#E0E0DA] my-4" />;
 
   return (
     <div>
-      <Script src={snapSrc} data-client-key={midtransClientKey} strategy="lazyOnload" />
-
       <div className="mb-8 text-center">
-        <div className={["w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-500",
+        <div className={[
+          "w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-500",
           saveState === "saving"
             ? "bg-[#E0E0DA]"
             : dbStatus === "confirmed" || dbStatus === "completed"
@@ -274,7 +201,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
             <AlertCircle size={26} className="text-white" />
           )}
         </div>
-        <h2 className="text-2xl sm:text-3xl font-semibold text-[#1A1A1A] tracking-tight transition-all duration-300" style={{ fontFamily: "var(--font-heading)" }}>
+        <h2 className="text-2xl sm:text-3xl font-black text-[#3B2211] tracking-tight transition-all duration-300" style={{ fontFamily: "var(--font-heading)" }}>
           {saveState === "saving"
             ? "Menyimpan Booking..."
             : dbStatus === "confirmed"
@@ -285,7 +212,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
             ? "Booking Dibatalkan"
             : "Pesanan Menunggu Konfirmasi"}
         </h2>
-        <p className="text-[#5A5A5A] text-sm mt-2 transition-all duration-300">
+        <p className="text-gray-500 text-sm mt-2 transition-all duration-300 font-bold">
           {saveState === "saving"
             ? "Mohon tunggu sebentar."
             : dbStatus === "confirmed"
@@ -294,7 +221,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
             ? "Terima kasih telah melakukan pemotretan di Snapp.frame Studio."
             : dbStatus === "cancelled"
             ? "Booking Anda telah dibatalkan. Silakan hubungi admin jika ada pertanyaan."
-            : "Selesaikan pembayaran dan konfirmasi via WhatsApp. Admin akan memverifikasi pesanan Anda."}
+            : "Selesaikan pembayaran dan kirimkan bukti transfer ke WhatsApp admin melalui link di bawah."}
         </p>
         {saveState === "saved" && (
           <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all duration-500 bg-amber-50 border-amber-200">
@@ -323,7 +250,6 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
         )}
       </div>
 
-      {/* Error banner — non-blocking */}
       {saveState === "error" && (
         <div className="flex items-start gap-3 mb-6 p-4 rounded-xl border border-red-200 bg-red-50 max-w-md mx-auto">
           <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
@@ -342,7 +268,7 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
       {/* Receipt Card */}
       <div className="rounded-2xl border border-[#E0E0DA] bg-white overflow-hidden mb-6 max-w-md mx-auto">
         {/* Header */}
-        <div className="bg-[#1A1A1A] text-[#FAFAF8] px-6 py-5 text-center">
+        <div className="bg-[#3B2211] text-[#FAFAF8] px-6 py-5 text-center">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#FAFAF8]/60 mb-1">Struk Digital</p>
           <h3 className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)" }}>Snapp.frame Studio</h3>
           <p className="text-xs text-[#FAFAF8]/60 mt-0.5">{site.tagline}</p>
@@ -355,20 +281,20 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
             { label: "Nama",     value: formData.name },
             { label: "WhatsApp", value: formData.whatsapp },
             { label: "Paket",    value: pkg.name },
-            { label: "Durasi",   value: pkg.duration },
-            { label: "Foto",     value: pkg.photoCount },
+            { label: "Durasi",   value: pkg.duration || "-" },
+            { label: "Foto",     value: pkg.photoCount || "-" },
             { label: "Tanggal",  value: formatDate(formData.date) },
             { label: "Jam",      value: `${formData.time} WIB` },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between gap-4 py-1.5 text-xs">
               <span className="text-[#888888]">{label}</span>
-              <span className="text-[#1A1A1A] font-medium text-right max-w-[55%]">{value}</span>
+              <span className="text-[#1A1A1A] font-bold text-right max-w-[55%]">{value}</span>
             </div>
           ))}
           {formData.notes && (
             <div className="flex justify-between gap-4 py-1.5 text-xs">
               <span className="text-[#888888]">Catatan</span>
-              <span className="text-[#1A1A1A] font-medium text-right max-w-[55%]">{formData.notes}</span>
+              <span className="text-[#1A1A1A] font-bold text-right max-w-[55%]">{formData.notes}</span>
             </div>
           )}
 
@@ -378,148 +304,131 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
               <span className="text-[#888888]">Harga normal</span>
-              <span className="text-[#1A1A1A]">{formatPrice(pkg.price)}</span>
+              <span className="text-[#1A1A1A] font-medium">{formatPrice(pkg.price)}</span>
             </div>
             {referral && (
               <div className="flex justify-between text-xs">
-                <span className="text-[#5A371F]">
+                <span className="text-[#5A371F] font-bold">
                   Diskon {referral.discountPct}% ({referral.code})
                 </span>
-                <span className="text-[#5A371F]">- {formatPrice(discount)}</span>
+                <span className="text-[#5A371F] font-bold">- {formatPrice(discount)}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm font-bold pt-1">
-              <span className="text-[#1A1A1A]">TOTAL</span>
-              <span className="text-[#1A1A1A]" style={{ fontFamily: "var(--font-heading)" }}>{formatPrice(finalPrice)}</span>
+            <div className="flex justify-between text-sm font-black pt-1">
+              <span className="text-[#3B2211]">TOTAL</span>
+              <span className="text-[#3B2211]" style={{ fontFamily: "var(--font-heading)" }}>{formatPrice(finalPrice)}</span>
             </div>
           </div>
 
           {dottedDivider}
 
-          <p className="text-xs text-[#888888] mb-3">
-            Metode: <span className="font-semibold text-[#1A1A1A]">{paymentMethod === "qris" ? "QRIS" : "Transfer Bank"}</span>
+          <p className="text-xs text-gray-500 mb-3 font-bold">
+            Metode Pembayaran: <span className="font-black text-[#3B2211]">{getPaymentMethodLabel()}</span>
           </p>
 
-          {paymentMethod === "qris" ? (
-            <div className="flex flex-col items-center py-5 bg-[#FAF9F5] border border-[#E2CFBF] rounded-2xl mt-3 px-4 text-center shadow-inner relative overflow-hidden">
-              {/* QRIS Header branding */}
-              <div className="flex justify-between items-center w-full px-2 mb-3">
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-black text-red-600 italic tracking-tighter">QR</span>
-                  <span className="text-[10px] font-black text-blue-800 italic tracking-tighter">IS</span>
-                </div>
-                <div className="text-[7px] font-black text-[#5D4037]/40 uppercase tracking-widest">
-                  GPN / Indonesian QR Code
-                </div>
-              </div>
-
-              {/* Dynamic or Uploaded QR Code Image */}
-              <div className="p-3 bg-white rounded-2xl shadow-md border border-[#E2CFBF]/50 mb-3 relative group">
-                {siteSettings.payment_qris_image ? (
-                  <img
-                    src={siteSettings.payment_qris_image}
-                    alt="QRIS Merchant"
-                    className="w-40 h-40 object-contain"
-                  />
-                ) : (
-                  <>
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=5D4037&data=QRIS_DUMMY_SNEAPICI_STUDIO_INVOICE_${invoice}_TOTAL_${finalPrice}`}
-                      alt="QRIS Code Dummy"
-                      className="w-40 h-40 object-contain mix-blend-multiply"
-                    />
-                    <div className="absolute inset-0 bg-white/95 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 rounded-2xl">
-                      <p className="text-[10px] font-black text-[#5D4037]">QRIS DUMMY</p>
-                      <p className="text-[8px] text-[#5D4037]/60 mt-1">Hanya untuk simulasi uji coba</p>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Merchant Details */}
-              <p className="text-xs font-black text-[#3B2211] uppercase tracking-wider mb-1">
-                {siteSettings.payment_bank_owner || "SNAPP.FRAME STUDIO"}
-              </p>
-              {!siteSettings.payment_qris_image && (
-                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-3">NMID: ID1020304050</p>
-              )}
-              
-              <div className="w-full border-t border-dashed border-[#E2CFBF] my-2" />
-
-              <p className="text-[11px] font-bold text-[#3B2211] mb-3">
-                Total Transfer: <span className="text-[#C88A58] font-mono text-xs">{formatPrice(finalPrice)}</span>
-              </p>
-
-              {/* DEV SIMULATOR BUTTON */}
-              {dbStatus === "pending" && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const confirmSim = confirm("✨ [SIMULASI DEV] Apakah Anda ingin menyimulasikan pembayaran QRIS ini berhasil (Lunas)?\n\nTindakan ini akan langsung mengonfirmasi booking di database.");
-                    if (!confirmSim) return;
-                    
-                    try {
-                      const { updateBookingStatusByInvoice } = await import("@/app/actions/bookings");
-                      const res = await updateBookingStatusByInvoice(invoice, "confirmed");
-                      if (res.success) {
-                        toast.success("✨ Simulasi Pembayaran QRIS Lunas Berhasil!");
-                      } else {
-                        toast.error("Gagal menjalankan simulasi: " + res.error);
-                      }
-                    } catch (err: any) {
-                      toast.error("Error simulasi: " + err.message);
-                    }
-                  }}
-                  className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300"
-                >
-                  ⚡ Simulasikan Pembayaran Lunas (Dev)
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center py-4 bg-[#F0EFE9] rounded-xl mt-3 px-4 text-center space-y-2">
-              <p className="text-sm font-semibold text-[#1A1A1A]">Pembayaran via Transfer Bank</p>
-              <p className="text-xs text-[#5A5A5A] max-w-[250px]">
-                Silakan lakukan transfer ke rekening pemilik Snapp.frame berikut sebesar:
-              </p>
-              <p className="text-lg font-black text-[#C88A58] my-1 font-mono">
+          {/* Dynamic Payment Details Display */}
+          {paymentMethod === "transfer" && (
+            <div className="flex flex-col items-center py-4 bg-[#F8F6F4] rounded-xl mt-3 px-4 text-center space-y-2 border border-[#E0E0DA]/50">
+              <p className="text-xs font-black text-[#3B2211] uppercase tracking-wider">Silakan Transfer Ke Rekening Bank</p>
+              <p className="text-xl font-black text-[#C88A58] my-1 font-mono">
                 {formatPrice(finalPrice)}
               </p>
-              <div className="w-full border-t border-[#E0E0DA]/60 my-1" />
-              <div className="text-xs text-left w-full space-y-1 py-2 px-3 bg-white/50 rounded-lg font-medium">
+              <div className="w-full border-t border-[#E0E0DA] my-1" />
+              <div className="text-xs text-left w-full space-y-1 py-2 px-3 bg-white/60 rounded-lg font-bold text-gray-600">
                 <div className="flex justify-between">
-                  <span className="text-[#888888]">Bank:</span>
-                  <span className="text-[#1A1A1A] font-bold">{siteSettings.payment_bank_name || site.payment.bankName}</span>
+                  <span>Bank:</span>
+                  <span className="text-[#3B2211]">{siteSettings.payment_bank_name || site.payment.bankName}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[#888888]">No. Rekening:</span>
-                  <span className="text-[#1A1A1A] font-bold font-mono flex items-center gap-1">
+                  <span>No. Rekening:</span>
+                  <span className="text-[#3B2211] font-mono flex items-center gap-1">
                     {siteSettings.payment_bank_account || site.payment.bankAccount}
                     <button 
                       onClick={() => {
                         navigator.clipboard.writeText(siteSettings.payment_bank_account || site.payment.bankAccount);
                         toast.success("Nomor rekening disalin!");
                       }}
-                      className="p-1 hover:bg-[#F0EFE9] rounded text-[#C88A58] transition-colors"
+                      className="p-1 hover:bg-[#F8F6F4] rounded text-[#C88A58] transition-colors"
                       title="Salin No. Rekening"
                     >
-                      <Copy size={10} />
+                      <Copy size={11} />
                     </button>
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#888888]">Atas Nama:</span>
-                  <span className="text-[#1A1A1A] font-bold">{siteSettings.payment_bank_owner || site.payment.bankOwner}</span>
+                  <span>Atas Nama:</span>
+                  <span className="text-[#3B2211]">{siteSettings.payment_bank_owner || site.payment.bankOwner}</span>
                 </div>
               </div>
-              <p className="text-[9px] text-[#A0A0A0] italic">
-                * Harap transfer dengan nominal yang tepat untuk mempermudah verifikasi.
+            </div>
+          )}
+
+          {paymentMethod === "dana" && (
+            <div className="flex flex-col items-center py-4 bg-[#F8F6F4] rounded-xl mt-3 px-4 text-center space-y-2 border border-[#E0E0DA]/50">
+              <p className="text-xs font-black text-[#3B2211] uppercase tracking-wider">Silakan Kirim Saldo DANA</p>
+              <p className="text-xl font-black text-[#C88A58] my-1 font-mono">
+                {formatPrice(finalPrice)}
               </p>
+              <div className="w-full border-t border-[#E0E0DA] my-1" />
+              <div className="text-xs text-left w-full space-y-1 py-2 px-3 bg-white/60 rounded-lg font-bold text-gray-600">
+                <div className="flex justify-between items-center">
+                  <span>No. DANA:</span>
+                  <span className="text-[#3B2211] font-mono flex items-center gap-1">
+                    {siteSettings.payment_dana_number || "081234567890"}
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(siteSettings.payment_dana_number || "081234567890");
+                        toast.success("Nomor DANA disalin!");
+                      }}
+                      className="p-1 hover:bg-[#F8F6F4] rounded text-[#C88A58] transition-colors"
+                      title="Salin No. DANA"
+                    >
+                      <Copy size={11} />
+                    </button>
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Atas Nama:</span>
+                  <span className="text-[#3B2211]">{siteSettings.payment_dana_owner || "Snapp.frame Studio"}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {paymentMethod === "gopay" && (
+            <div className="flex flex-col items-center py-4 bg-[#F8F6F4] rounded-xl mt-3 px-4 text-center space-y-2 border border-[#E0E0DA]/50">
+              <p className="text-xs font-black text-[#3B2211] uppercase tracking-wider">Silakan Kirim Saldo GoPay</p>
+              <p className="text-xl font-black text-[#C88A58] my-1 font-mono">
+                {formatPrice(finalPrice)}
+              </p>
+              <div className="w-full border-t border-[#E0E0DA] my-1" />
+              <div className="text-xs text-left w-full space-y-1 py-2 px-3 bg-white/60 rounded-lg font-bold text-gray-600">
+                <div className="flex justify-between items-center">
+                  <span>No. GoPay:</span>
+                  <span className="text-[#3B2211] font-mono flex items-center gap-1">
+                    {siteSettings.payment_gopay_number || "081234567890"}
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(siteSettings.payment_gopay_number || "081234567890");
+                        toast.success("Nomor GoPay disalin!");
+                      }}
+                      className="p-1 hover:bg-[#F8F6F4] rounded text-[#C88A58] transition-colors"
+                      title="Salin No. GoPay"
+                    >
+                      <Copy size={11} />
+                    </button>
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Atas Nama:</span>
+                  <span className="text-[#3B2211]">{siteSettings.payment_gopay_owner || "Snapp.frame Studio"}</span>
+                </div>
+              </div>
             </div>
           )}
 
           {dottedDivider}
-          <p className="text-center text-[10px] text-[#C0C0BC]">Terima kasih telah memilih Snapp.frame Studio ✦</p>
+          <p className="text-center text-[10px] text-gray-300 font-bold uppercase tracking-widest">Terima kasih telah memilih Snapp.frame Studio ✦</p>
         </div>
       </div>
 
@@ -529,50 +438,89 @@ export default function Step5Receipt({ pkg, formData, referral, paymentMethod, o
           href={buildWhatsAppMsg()}
           target="_blank"
           rel="noopener noreferrer"
-          className={[btn.whatsapp, "w-full rounded-xl justify-center py-4 text-base"].join(" ")}
+          className={[btn.whatsapp, "w-full rounded-xl justify-center py-4 text-base font-black uppercase tracking-wider"].join(" ")}
         >
           <MessageCircle size={20} />
-          Konfirmasi via WhatsApp
+          Kirim Bukti Pembayaran (WA)
         </a>
 
-        <div className="relative py-4">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-[#E0E0DA]"></span>
-          </div>
-          <div className="relative flex justify-center text-xs uppercase tracking-widest text-[#888888]">
-            <span className="bg-[#FAFAF8] px-2 font-black">Atau Bayar Sekarang</span>
-          </div>
-        </div>
-
-        {paymentStatus === "success" ? (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
-            <p className="text-green-800 font-semibold">Lunas via Midtrans ✓</p>
-          </div>
-        ) : (
-          <button
-            onClick={handlePayment}
-            disabled={saveState !== "saved" || isPaying}
-            className={[
-              btn.secondary, 
-              "w-full rounded-xl justify-center font-bold text-sm",
-              (saveState !== "saved" || isPaying) ? "opacity-50 cursor-not-allowed" : ""
-            ].join(" ")}
-          >
-            {isPaying ? (
-              <><Loader2 size={16} className="animate-spin" /> Membuka Snap...</>
-            ) : (
-              <><CreditCard size={16} /> Bayar Digital (Midtrans)</>
-            )}
-          </button>
-        )}
         <button
           onClick={onReset}
-          className={[btn.secondary, "w-full rounded-xl justify-center gap-2"].join(" ")}
+          className={[btn.secondary, "w-full rounded-xl justify-center gap-2 font-bold text-xs uppercase tracking-widest py-3"].join(" ")}
         >
           <RotateCcw size={15} />
-          Booking Lagi
+          Booking Sesi Baru
         </button>
       </div>
+
+      {/* Confirmation Success Overlay (Green Flash + Checkmark Animation) */}
+      <AnimatePresence>
+        {showSuccessOverlay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
+          >
+            {/* Green Flash Effect */}
+            <motion.div
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute inset-0 bg-[#22C55E]"
+            />
+
+            {/* Checkmark Animation Container */}
+            <div className="relative z-10 flex flex-col items-center text-center px-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -45 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 10,
+                  delay: 0.3
+                }}
+                className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-6"
+              >
+                <motion.svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={4}
+                  stroke="currentColor"
+                  className="w-12 h-12 text-[#22C55E]"
+                  initial={{ strokeDasharray: 50, strokeDashoffset: 50 }}
+                  animate={{ strokeDashoffset: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </motion.svg>
+              </motion.div>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="text-2xl font-black text-[#3B2211] mb-2"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Booking Dikonfirmasi!
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+                className="text-xs text-gray-500 font-bold"
+              >
+                Terima kasih, pembayaran Anda berhasil diverifikasi oleh admin.
+                <span className="block mt-2 font-medium text-[#C88A58] animate-pulse">Mengalihkan ke beranda...</span>
+              </motion.p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

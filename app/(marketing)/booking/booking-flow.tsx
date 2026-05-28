@@ -93,7 +93,11 @@ export default function BookingFlow() {
       try {
         const res = await getProducts();
         if (res.success && res.data && res.data.length > 0) {
-          setPackagesList(res.data as any[]);
+          const studio = res.data.filter((p: any) => {
+            const cat = p.category.toLowerCase();
+            return cat.includes("foto") || cat === "layanan" || p.sku.startsWith("pkg-") || p.sku.startsWith("STUDIO-");
+          });
+          setPackagesList(studio.length > 0 ? (studio as any[]) : packages);
         } else {
           setPackagesList(packages);
         }

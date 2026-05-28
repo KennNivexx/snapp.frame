@@ -40,6 +40,18 @@ export async function createAffiliateLead(data: {
   }
 }
 
+export async function getAffiliateLeadStatus(id: string) {
+  try {
+    const lead = await prisma.affiliateLead.findUnique({
+      where: { id }
+    });
+    if (!lead) return { success: false, error: "Pendaftaran tidak ditemukan" };
+    return { success: true, status: lead.status };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
 export async function getAffiliateLeads(statusFilter?: string) {
   try {
     const where: any = {};

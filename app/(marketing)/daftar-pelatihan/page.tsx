@@ -9,11 +9,12 @@ import {
   User, CreditCard, Copy, Check
 } from "lucide-react";
 import { getProducts } from "@/app/actions/products";
-import { createAffiliateLead } from "@/app/actions/affiliate-leads";
+import { createAffiliateLead, getAffiliateLeadStatus } from "@/app/actions/affiliate-leads";
 import { getSiteSettings } from "@/app/actions/settings";
 import { brandProducts } from "@/data/brand-products";
 import { formatPrice } from "@/lib/utils";
 import { btn } from "@/lib/button-classes";
+import { toast } from "sonner";
 
 interface ProductInfo {
   id: string;
@@ -28,13 +29,18 @@ interface ProductInfo {
 
 function DaftarPelatihanForm() {
   const searchParams = useSearchParams();
-  const refCode = searchParams.get("ref") || "";
   const pkgSku = searchParams.get("pkg") || "";
 
+  const [productsList, setProductsList] = useState<ProductInfo[]>([]);
   const [product, setProduct] = useState<ProductInfo | null>(null);
+  const [refCode, setRefCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [createdLeadId, setCreatedLeadId] = useState("");
+  const [leadStatus, setLeadStatus] = useState("pending");
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
+
   const [copiedBank, setCopiedBank] = useState(false);
   const [copiedDana, setCopiedDana] = useState(false);
   const [copiedGopay, setCopiedGopay] = useState(false);
@@ -51,59 +57,95 @@ function DaftarPelatihanForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Load site settings
+  // Prefill referral code from query params
   useEffect(() => {
-    async function loadSettings() {
-      try {
-        const data = await getSiteSettings();
-        if (data) {
-          setSiteSettings(data);
-        }
-      } catch (err) {
-        console.error("Gagal memuat pengaturan website:", err);
-      }
+    const urlRef = searchParams.get("ref");
+    if (urlRef) {
+      setRefCode(urlRef);
     }
-    loadSettings();
-  }, []);
+  }, [searchParams]);
 
-  // Load product info
+  // Load site settings & products list
   useEffect(() => {
     async function load() {
       try {
-        if (pkgSku) {
-          const res = await getProducts(true);
-          if (res.success && res.data) {
-            const found = res.data.find(
-              (p: any) => p.sku === pkgSku || p.id === pkgSku
-            );
-            if (found) {
-              setProduct(found as any);
-            } else {
-              // fallback ke brand-products static
-              const bp = brandProducts.find(
-                (b) => b.sku === pkgSku
-              );
-              if (bp) {
-                setProduct({
-                  id: bp.sku,
-                  name: bp.name,
-                  sku: bp.sku,
-                  price: bp.price,
-                  category: bp.categoryName,
-                  features: bp.features,
-                });
-              }
-            }
-          }
+        const settingsData = await getSiteSettings();
+        if (settingsData) {
+          setSiteSettings(settingsData);
         }
+
+        const res = await getProducts(true);
+        let list: ProductInfo[] = [];
+        if (res.success && res.data) {
+          const dbProducts = res.data
+            .filter((p: any) => p.sku !== "pkg-vinyl" && p.sku !== "pkg-elevator" && p.sku !== "pkg-kaset")
+            .map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              sku: p.sku,
+              price: p.price,
+              category: p.category,
+              features: p.features,
+            }));
+          list = [...dbProducts];
+        }
+
+        // Add brand products that are not already in DB by SKU
+        brandProducts.forEach(bp => {
+          if (!list.some(p => p.sku === bp.sku)) {
+            list.push({
+              id: bp.sku,
+              name: bp.name,
+              sku: bp.sku,
+              price: bp.price,
+              category: bp.categoryName,
+              features: bp.features,
+            });
+          }
+        });
+
+        setProductsList(list);
+
+        // Set initial selected product
+        const initialPkg = list.find(p => p.sku === pkgSku || p.id === pkgSku) || list[0] || null;
+        setProduct(initialPkg);
       } catch (err) {
-        console.error("Gagal memuat produk:", err);
+        console.error("Gagal memuat data pendaftaran:", err);
       } finally {
         setLoading(false);
       }
     }
     load();
   }, [pkgSku]);
+
+  // Poll affiliate lead status when lead is created
+  useEffect(() => {
+    if (!success || !createdLeadId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await getAffiliateLeadStatus(createdLeadId);
+        if (res.success && res.status) {
+          setLeadStatus(res.status);
+        }
+      } catch (err) {
+        console.error("Error polling lead status:", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [success, createdLeadId]);
+
+  // Handle lead status confirmation
+  useEffect(() => {
+    if (leadStatus === "followed_up" || leadStatus === "closed") {
+      setShowSuccessOverlay(true);
+      const timer = setTimeout(() => {
+        window.location.href = "/";
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [leadStatus]);
 
   // Determine WhatsApp number for sending payment confirmation
   const waNumber =
@@ -148,17 +190,22 @@ function DaftarPelatihanForm() {
         email: form.email || undefined,
         city: form.city || undefined,
         occupation: form.occupation || undefined,
-        productSku: pkgSku || undefined,
+        productSku: product?.sku || undefined,
         productName: product?.name || undefined,
         referralCode: refCode || undefined,
         notes: form.notes || undefined,
       });
 
-      if (res.success) {
+      if (res.success && res.data) {
+        setCreatedLeadId(res.data.id);
         setSuccess(true);
+        toast.success("Pendaftaran berhasil disimpan!");
+      } else {
+        toast.error(res.error || "Gagal menyimpan pendaftaran. Silakan coba lagi.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Submit error:", err);
+      toast.error(err.message || "Terjadi kesalahan koneksi.");
     } finally {
       setSubmitting(false);
     }
@@ -360,26 +407,27 @@ function DaftarPelatihanForm() {
                 </p>
               </div>
 
-              {/* Selected Program Preview Card */}
-              {product ? (
-                <div className="bg-white rounded-[2rem] border border-purple-200/60 p-6 flex items-start gap-4 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/5 to-transparent rounded-bl-full pointer-events-none" />
-                  <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
-                    <GraduationCap size={20} />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black text-purple-600 uppercase tracking-widest">
-                      {product.category || "Kelas Profesional"}
-                    </p>
-                    <h3 className="text-sm font-black text-[#3B2211]">{product.name}</h3>
-                    <p className="text-base font-black text-[#3B2211]">{formatPrice(product.price)}</p>
-                  </div>
+              {/* Program Selection Dropdown */}
+              <div>
+                <label className={labelClass}>Program Pelatihan *</label>
+                <div className="relative">
+                  <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-600" size={16} />
+                  <select
+                    value={product?.sku || ""}
+                    onChange={(e) => {
+                      const selected = productsList.find(p => p.sku === e.target.value);
+                      if (selected) setProduct(selected);
+                    }}
+                    className={`${inputClass} pl-9 appearance-none font-bold text-[#3B2211]`}
+                  >
+                    {productsList.map((p) => (
+                      <option key={p.sku} value={p.sku}>
+                        {p.name} — {formatPrice(p.price)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              ) : (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs font-bold text-amber-700">
-                  Peringatan: Program pelatihan tidak terdeteksi. Silakan pilih kelas dari halaman paket.
-                </div>
-              )}
+              </div>
 
               {/* Form Fields */}
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -418,20 +466,19 @@ function DaftarPelatihanForm() {
                     )}
                   </div>
 
-                  {refCode && (
-                    <div>
-                      <label className={labelClass}>Kode Referral</label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-600 font-black text-xs">@</span>
-                        <input
-                          type="text"
-                          value={refCode}
-                          disabled
-                          className={`${inputClass} pl-8 bg-purple-50/50 border-purple-200 text-purple-700 font-bold`}
-                        />
-                      </div>
+                  <div>
+                    <label className={labelClass}>Kode Referral (Opsional)</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-600 font-black text-xs">@</span>
+                      <input
+                        type="text"
+                        placeholder="Masukkan kode referral jika ada"
+                        value={refCode}
+                        onChange={(e) => setRefCode(e.target.value)}
+                        className={`${inputClass} pl-8 font-bold text-purple-700`}
+                      />
                     </div>
-                  )}
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -515,6 +562,75 @@ function DaftarPelatihanForm() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Confirmation Success Overlay (Green Flash + Checkmark Animation) */}
+      <AnimatePresence>
+        {showSuccessOverlay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
+          >
+            {/* Green Flash Effect */}
+            <motion.div
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute inset-0 bg-[#22C55E]"
+            />
+
+            {/* Checkmark Animation Container */}
+            <div className="relative z-10 flex flex-col items-center text-center px-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -45 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 10,
+                  delay: 0.3
+                }}
+                className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-6"
+              >
+                <motion.svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={4}
+                  stroke="currentColor"
+                  className="w-12 h-12 text-[#22C55E]"
+                  initial={{ strokeDasharray: 50, strokeDashoffset: 50 }}
+                  animate={{ strokeDashoffset: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </motion.svg>
+              </motion.div>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="text-2xl font-black text-[#3B2211] mb-2"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                Pendaftaran Dikonfirmasi!
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+                className="text-xs text-gray-500 font-bold"
+              >
+                Terima kasih, pendaftaran Anda berhasil diverifikasi oleh admin.
+                <span className="block mt-2 font-medium text-purple-600 animate-pulse">Mengalihkan ke beranda...</span>
+              </motion.p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

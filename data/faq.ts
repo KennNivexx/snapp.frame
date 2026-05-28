@@ -9,36 +9,36 @@ export const faqs: Faq[] = [
   {
     question: "Apakah perlu booking terlebih dahulu?",
     answer:
-      "Ya, kami menerima booking via WhatsApp atau Instagram DM. Booking diperlukan untuk memastikan studio dan fotografer tersedia di waktu yang Anda inginkan. Kami sarankan booking minimal 2–3 hari sebelumnya.",
+      "Ya, Anda dapat melakukan booking langsung melalui website ini dengan menekan tombol 'Booking Studio' atau menghubungi kami via WhatsApp. Kami menyarankan untuk melakukan booking minimal 1-2 hari sebelum sesi foto untuk memastikan slot waktu yang Anda inginkan tersedia.",
   },
   {
     question: "Berapa lama hasil foto siap?",
     answer:
-      "Hasil foto soft file biasanya siap dalam 2–3 hari kerja setelah sesi foto. File akan dikirim via Google Drive ke email atau WhatsApp Anda.",
+      "Hasil foto berupa soft file biasanya akan kami kirimkan dalam waktu 1-2 hari kerja setelah sesi foto selesai. Seluruh file foto akan dikirimkan dengan resolusi tinggi melalui link Google Drive.",
   },
   {
-    question: "Apakah bisa ganti latar belakang saat sesi?",
+    question: "Apakah bisa memilih latar belakang saat sesi?",
     answer:
-      "Bisa! Jumlah pergantian latar belakang tergantung paket yang dipilih. Paket Solo 1 latar, Couple 2 latar, dan Keluarga 3 latar. Kami memiliki berbagai pilihan warna dan tekstur backdrop.",
+      "Tentu saja! Kami memiliki beberapa pilihan latar belakang modern dan minimalis di studio kami. Anda dapat mendiskusikan konsep background yang diinginkan dengan fotografer kami sebelum sesi foto dimulai.",
   },
   {
     question: "Bolehkah membawa properti sendiri?",
     answer:
-      "Tentu boleh! Kami juga menyediakan berbagai properti studio (kursi, tanaman, aksesoris) yang bisa digunakan secara gratis. Properti pribadi seperti boneka, bunga, atau atribut khusus sangat diperbolehkan.",
+      "Tentu saja boleh! Selain properti aesthetic gratis yang sudah kami sediakan di dalam studio, Anda sangat diperbolehkan untuk membawa properti pribadi tambahan agar sesi foto Anda terasa lebih personal dan berkesan.",
   },
   {
-    question: "Berapa jumlah orang yang bisa masuk untuk Paket Keluarga?",
+    question: "Berapa kapasitas maksimal orang di dalam studio?",
     answer:
-      "Paket Keluarga cocok untuk 3–8 orang. Jika lebih dari 8 orang, silakan hubungi kami via WhatsApp untuk penawaran khusus grup.",
+      "Untuk kenyamanan dan kualitas foto terbaik, area studio kami sangat ideal untuk 1 hingga 5 orang. Jika Anda berencana melakukan foto grup dengan jumlah anggota lebih banyak, silakan koordinasikan dengan admin kami via WhatsApp terlebih dahulu.",
   },
   {
-    question: "Apakah foto langsung diedit atau raw?",
+    question: "Apakah foto yang dikirimkan sudah diedit?",
     answer:
-      "Semua foto yang kami kirimkan sudah melalui proses editing/retouching dasar — color grading, exposure, dan skin retouching ringan. Hasilnya adalah foto yang siap cetak atau share ke sosial media.",
+      "Ya, semua paket sudah termasuk basic color grading dan photo enhancement agar hasil foto Anda terlihat profesional dan siap dibagikan ke media sosial.",
   },
   {
-    question: "Metode pembayaran apa saja yang diterima?",
+    question: "Bagaimana sistem pembayarannya?",
     answer:
-      "Kami menerima transfer bank (semua bank), GoPay, OVO, QRIS, dan tunai. Pembayaran dilakukan saat konfirmasi booking (DP 50%) dan sisanya sebelum sesi dimulai.",
+      "Kami menerima pembayaran mudah melalui transfer bank atau dompet digital (DANA, GoPay, dll). Instruksi pembayaran dan nomor rekening admin akan ditampilkan setelah Anda menyelesaikan pengisian formulir booking di website ini.",
   },
 ];

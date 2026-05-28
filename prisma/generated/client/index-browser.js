@@ -288,6 +288,23 @@ exports.Prisma.AffiliateApplicationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AffiliateLeadScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  city: 'city',
+  occupation: 'occupation',
+  productSku: 'productSku',
+  productName: 'productName',
+  referralCode: 'referralCode',
+  snapperId: 'snapperId',
+  notes: 'notes',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -333,7 +350,8 @@ exports.Prisma.ModelName = {
   SiteSetting: 'SiteSetting',
   AffiliatePost: 'AffiliatePost',
   AffiliateCommission: 'AffiliateCommission',
-  AffiliateApplication: 'AffiliateApplication'
+  AffiliateApplication: 'AffiliateApplication',
+  AffiliateLead: 'AffiliateLead'
 };
 
 /**
